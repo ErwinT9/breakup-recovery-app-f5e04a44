@@ -532,12 +532,38 @@ function SettingsScreen() {
               aria-label={t("settings.notifications")}
             />
           </Row>
-          {notifOn ? (
-            <div className="space-y-3">
+          {systemBlocked ? (
+            <div className="space-y-3 rounded-2xl bg-muted/60 p-3">
+              <p className="text-sm text-muted-foreground">
+                {t("settings.notificationsSystemOff")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.notificationsSystemOffHint")}
+              </p>
               <Button
                 variant="outline"
                 className="press h-11 w-full rounded-2xl"
-                disabled={notifBusy}
+                onClick={() => {
+                  haptic.light();
+                  toast(t("settings.openingSystemSettings"));
+                  void openNotificationSettings();
+                }}
+              >
+                {t("settings.openSystemNotifications")}
+              </Button>
+            </div>
+          ) : null}
+          {notifOn || systemBlocked ? (
+            <div
+              className={
+                systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"
+              }
+              aria-disabled={systemBlocked}
+            >
+              <Button
+                variant="outline"
+                className="press h-11 w-full rounded-2xl"
+                disabled={notifBusy || systemBlocked}
                 onClick={() => void sendTestNotification()}
               >
                 {t("settings.sendTest")}
@@ -550,6 +576,7 @@ function SettingsScreen() {
                   <Switch
                     checked={notifs[key]}
                     onCheckedChange={(checked) => void saveNotifs({ [key]: checked })}
+                    disabled={systemBlocked}
                     aria-label={t(labelKey, label)}
                   />
                 </div>
@@ -558,6 +585,7 @@ function SettingsScreen() {
                 <span className="text-sm">{t("settings.morningReminder")}</span>
                 <Switch
                   checked={profile.data?.morning_reminder ?? true}
+                  disabled={systemBlocked}
                   onCheckedChange={(checked) => {
                     void update.mutateAsync({ morning_reminder: checked }).then(() =>
                       syncReminders({
@@ -574,6 +602,7 @@ function SettingsScreen() {
                 <span className="text-sm">{t("settings.eveningReminder")}</span>
                 <Switch
                   checked={profile.data?.evening_reminder ?? true}
+                  disabled={systemBlocked}
                   onCheckedChange={(checked) => {
                     void update.mutateAsync({ evening_reminder: checked }).then(() =>
                       syncReminders({
