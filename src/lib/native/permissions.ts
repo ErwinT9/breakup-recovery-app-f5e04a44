@@ -149,6 +149,25 @@ export async function openAppSettings(): Promise<void> {
 }
 
 /**
+ * Opens the Android "App notifications" screen for this app (the master
+ * notification switch), falling back to the app details page on platforms
+ * where that screen doesn't exist.
+ */
+export async function openNotificationSettings(): Promise<void> {
+  const opened = await safeNative(async () => {
+    const { NativeSettings, AndroidSettings, IOSSettings } = await import(
+      "capacitor-native-settings"
+    );
+    await NativeSettings.open({
+      optionAndroid: AndroidSettings.AppNotification,
+      optionIOS: IOSSettings.App,
+    });
+    return true;
+  }, false);
+  if (!opened) await openAppSettings();
+}
+
+/**
  * Global hook so library code (image picker, notifications) can surface the
  * "open settings" dialog without importing React UI.
  */

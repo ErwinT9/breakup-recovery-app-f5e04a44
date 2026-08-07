@@ -12,7 +12,7 @@ import {
   Upload,
   UserRound,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -66,7 +66,13 @@ import {
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
-import { notifyPermissionBlocked, requestPermission } from "@/lib/native/permissions";
+import {
+  checkPermission,
+  openNotificationSettings,
+  requestPermission,
+  type PermissionState,
+} from "@/lib/native/permissions";
+import { isNative } from "@/lib/native/platform";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -135,12 +141,49 @@ function SettingsScreen() {
   const [cropSource, setCropSource] = useState<string | null>(null);
   const [notifBusy, setNotifBusy] = useState(false);
   const [notifOn, setNotifOn] = useState(false);
+  // OS-level (Android system) notification permission — the master control.
+  const [permState, setPermState] = useState<PermissionState>("granted");
+
+  const systemBlocked = permState === "denied" || permState === "blocked";
+
+  const refreshPermission = useCallback(async () => {
+    const state = await checkPermission("notifications");
+    setPermState(state);
+    return state;
+  }, []);
 
   useEffect(() => {
     analytics.screen("settings");
     void loadNotificationPrefs().then(setNotifs);
     void storage.get<boolean>(NOTIF_ENABLED_KEY, false).then((value) => setNotifOn(Boolean(value)));
   }, []);
+
+  // Re-check the OS permission on open and whenever the user comes back from
+  // the Android settings screen, so the UI never shows a stale state.
+  useEffect(() => {
+    void refreshPermission();
+    let remove: (() => void) | undefined;
+    if (isNative()) {
+      void import("@capacitor/app")
+        .then(({ App }) =>
+          App.addListener("appStateChange", ({ isActive }) => {
+            if (isActive) void refreshPermission();
+          }),
+        )
+        .then((handle) => {
+          remove = () => void handle.remove();
+        })
+        .catch(() => {});
+    }
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refreshPermission();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      remove?.();
+    };
+  }, [refreshPermission]);
 
   const profile = useQuery({
     queryKey: ["profile", userId],
@@ -221,12 +264,15 @@ function SettingsScreen() {
 
       // Feature-time request: also routes a permanent denial to the settings dialog.
       const state = await requestPermission("notifications");
+      setPermState(state);
       if (state === "denied" || state === "blocked") {
-        if (state === "blocked") notifyPermissionBlocked("notifications");
         setNotifOn(false);
         await storage.set(NOTIF_ENABLED_KEY, false);
         await update.mutateAsync({ notifications_enabled: false });
-        toast(t("settings.permissionDenied"));
+        // Android best practice: don't leave a dead switch — send the user
+        // straight to the app's system notification screen.
+        toast(t("settings.notificationsSystemOff"));
+        await openNotificationSettings();
         return;
       }
 
@@ -486,12 +532,38 @@ function SettingsScreen() {
               aria-label={t("settings.notifications")}
             />
           </Row>
-          {notifOn ? (
-            <div className="space-y-3">
+          {systemBlocked ? (
+            <div className="space-y-3 rounded-2xl bg-muted/60 p-3">
+              <p className="text-sm text-muted-foreground">
+                {t("settings.notificationsSystemOff")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.notificationsSystemOffHint")}
+              </p>
               <Button
                 variant="outline"
                 className="press h-11 w-full rounded-2xl"
-                disabled={notifBusy}
+                onClick={() => {
+                  haptic.light();
+                  toast(t("settings.openingSystemSettings"));
+                  void openNotificationSettings();
+                }}
+              >
+                {t("settings.openSystemNotifications")}
+              </Button>
+            </div>
+          ) : null}
+          {notifOn || systemBlocked ? (
+            <div
+              className={
+                systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"
+              }
+              aria-disabled={systemBlocked}
+            >
+              <Button
+                variant="outline"
+                className="press h-11 w-full rounded-2xl"
+                disabled={notifBusy || systemBlocked}
                 onClick={() => void sendTestNotification()}
               >
                 {t("settings.sendTest")}
@@ -504,6 +576,7 @@ function SettingsScreen() {
                   <Switch
                     checked={notifs[key]}
                     onCheckedChange={(checked) => void saveNotifs({ [key]: checked })}
+                    disabled={systemBlocked}
                     aria-label={t(labelKey, label)}
                   />
                 </div>
@@ -512,6 +585,7 @@ function SettingsScreen() {
                 <span className="text-sm">{t("settings.morningReminder")}</span>
                 <Switch
                   checked={profile.data?.morning_reminder ?? true}
+                  disabled={systemBlocked}
                   onCheckedChange={(checked) => {
                     void update.mutateAsync({ morning_reminder: checked }).then(() =>
                       syncReminders({
@@ -528,6 +602,7 @@ function SettingsScreen() {
                 <span className="text-sm">{t("settings.eveningReminder")}</span>
                 <Switch
                   checked={profile.data?.evening_reminder ?? true}
+                  disabled={systemBlocked}
                   onCheckedChange={(checked) => {
                     void update.mutateAsync({ evening_reminder: checked }).then(() =>
                       syncReminders({
