@@ -108,6 +108,12 @@ export const en = {
     notificationsOff: "Notifications turned off.",
     permissionDenied:
       "Notifications are blocked. You can turn them on any time from your device settings.",
+    notificationsSystemOff:
+      "Notifications are currently disabled in your device settings. Enable them to receive reminders and motivational messages.",
+    openSystemNotifications: "Open device notification settings",
+    notificationsSystemOffHint:
+      "Turn notifications on for this app in Android settings, then come back — your preferences below will unlock automatically.",
+    openingSystemSettings: "Opening your device notification settings…",
     deleteBody1:
       "Deleting your account will permanently remove all data associated with your account from our servers. This action cannot be undone.",
     deleteBody2:
