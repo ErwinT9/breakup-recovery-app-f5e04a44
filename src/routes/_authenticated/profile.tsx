@@ -66,7 +66,13 @@ import {
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
-import { notifyPermissionBlocked, requestPermission } from "@/lib/native/permissions";
+import {
+  checkPermission,
+  openNotificationSettings,
+  requestPermission,
+  type PermissionState,
+} from "@/lib/native/permissions";
+import { isNative } from "@/lib/native/platform";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -135,12 +141,49 @@ function SettingsScreen() {
   const [cropSource, setCropSource] = useState<string | null>(null);
   const [notifBusy, setNotifBusy] = useState(false);
   const [notifOn, setNotifOn] = useState(false);
+  // OS-level (Android system) notification permission — the master control.
+  const [permState, setPermState] = useState<PermissionState>("granted");
+
+  const systemBlocked = permState === "denied" || permState === "blocked";
+
+  const refreshPermission = useCallback(async () => {
+    const state = await checkPermission("notifications");
+    setPermState(state);
+    return state;
+  }, []);
 
   useEffect(() => {
     analytics.screen("settings");
     void loadNotificationPrefs().then(setNotifs);
     void storage.get<boolean>(NOTIF_ENABLED_KEY, false).then((value) => setNotifOn(Boolean(value)));
   }, []);
+
+  // Re-check the OS permission on open and whenever the user comes back from
+  // the Android settings screen, so the UI never shows a stale state.
+  useEffect(() => {
+    void refreshPermission();
+    let remove: (() => void) | undefined;
+    if (isNative()) {
+      void import("@capacitor/app")
+        .then(({ App }) =>
+          App.addListener("appStateChange", ({ isActive }) => {
+            if (isActive) void refreshPermission();
+          }),
+        )
+        .then((handle) => {
+          remove = () => void handle.remove();
+        })
+        .catch(() => {});
+    }
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refreshPermission();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      remove?.();
+    };
+  }, [refreshPermission]);
 
   const profile = useQuery({
     queryKey: ["profile", userId],
@@ -221,12 +264,15 @@ function SettingsScreen() {
 
       // Feature-time request: also routes a permanent denial to the settings dialog.
       const state = await requestPermission("notifications");
+      setPermState(state);
       if (state === "denied" || state === "blocked") {
-        if (state === "blocked") notifyPermissionBlocked("notifications");
         setNotifOn(false);
         await storage.set(NOTIF_ENABLED_KEY, false);
         await update.mutateAsync({ notifications_enabled: false });
-        toast(t("settings.permissionDenied"));
+        // Android best practice: don't leave a dead switch — send the user
+        // straight to the app's system notification screen.
+        toast(t("settings.notificationsSystemOff"));
+        await openNotificationSettings();
         return;
       }
 
