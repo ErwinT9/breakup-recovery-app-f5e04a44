@@ -298,13 +298,21 @@ function AuthScreen() {
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
           {t("auth.agreePrefix", "By continuing you agree to our")}{" "}
-          <Link to="/terms" className="underline">
+          <button
+            type="button"
+            onClick={() => void openExternalUrl(TERMS_URL)}
+            className="press inline underline"
+          >
             {t("auth.termsLink", "Terms")}
-          </Link>{" "}
+          </button>{" "}
           {t("auth.and", "and")}{" "}
-          <Link to="/privacy" className="underline">
+          <button
+            type="button"
+            onClick={() => void openExternalUrl(PRIVACY_URL)}
+            className="press inline underline"
+          >
             {t("auth.privacyLink", "Privacy Policy")}
-          </Link>
+          </button>
           .
         </p>
       </div>
