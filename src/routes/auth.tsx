@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { cleanAuthFragment, waitForOAuthSession } from "@/lib/auth/oauthHash";
 import { setNativeOAuthHandlers, signInWithGoogle } from "@/lib/auth/oauthNative";
+import { openExternalUrl, PRIVACY_URL, TERMS_URL } from "@/lib/openExternal";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/auth")({
