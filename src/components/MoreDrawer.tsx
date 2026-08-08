@@ -37,6 +37,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { humanizeError } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { shareApp } from "@/lib/share";
+import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
 import { SUPPORT_EMAIL, copySupportEmail, openFeedbackEmail } from "@/lib/feedback";
 import { toastOnce } from "@/lib/toastOnce";
 import { cn } from "@/lib/utils";
@@ -128,12 +129,12 @@ export function MoreDrawer({
     {
       icon: FileText,
       label: t("drawer.privacy"),
-      onClick: () => void navigate({ to: "/privacy" }),
+      onClick: () => void openExternalUrl(PRIVACY_URL),
     },
     {
       icon: ScrollText,
       label: t("drawer.terms"),
-      onClick: () => void navigate({ to: "/terms" }),
+      onClick: () => void openExternalUrl(TERMS_URL),
     },
     { icon: Info, label: t("drawer.about"), onClick: () => setAboutOpen(true) },
     {
@@ -254,11 +255,22 @@ export function MoreDrawer({
       </Dialog>
 
       <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
-        <DialogContent className="rounded-3xl">
+        <DialogContent className="max-h-[85vh] overflow-y-auto rounded-3xl">
           <DialogHeader>
-            <DialogTitle>{t("drawer.about")}</DialogTitle>
+            <DialogTitle>No Contact Tracker: Breakup Reset</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 text-sm">
+          <div className="space-y-4 text-sm leading-relaxed">
+            <p>
+              No Contact Tracker: Breakup Reset is your private companion for getting through a
+              breakup and staying committed to your healing journey.
+            </p>
+            <p>
+              Track your No Contact streak, journal your thoughts, monitor your progress, set
+              helpful reminders, and celebrate the small wins along the way.
+            </p>
+            <p className="font-medium text-foreground">
+              No Contact. One day at a time. One step closer to healing.
+            </p>
             <p>
               <span className="text-muted-foreground">{t("drawer.version")}</span> · {APP_VERSION}
             </p>
@@ -274,6 +286,13 @@ export function MoreDrawer({
               )}
             </p>
             <p className="text-muted-foreground">{t("drawer.privacyNote")}</p>
+            <Button
+              variant="secondary"
+              className="press h-11 w-full rounded-2xl"
+              onClick={() => setAboutOpen(false)}
+            >
+              {t("common.close", "Close")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
