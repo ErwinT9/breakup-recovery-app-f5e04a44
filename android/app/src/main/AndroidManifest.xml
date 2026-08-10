@@ -40,7 +40,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="app.lovable.nocontacttracker"
+                    android:scheme="com.nocontacttracker.app"
                     android:host="auth-callback" />
             </intent-filter>
 
