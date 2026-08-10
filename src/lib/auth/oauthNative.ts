@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { isNative } from "@/lib/native/platform";
 
 /** Custom scheme registered in AndroidManifest.xml for the OAuth callback. */
-export const NATIVE_REDIRECT_URL = "app.lovable.nocontacttracker://auth-callback";
+export const NATIVE_REDIRECT_URL = "com.nocontacttracker.app://auth-callback";
 
 let listenersRegistered = false;
 let pendingSignIn = false;
@@ -92,7 +92,7 @@ export function initNativeOAuthListeners() {
   listenersRegistered = true;
 
   void App.addListener("appUrlOpen", (event) => {
-    if (!event.url?.startsWith("app.lovable.nocontacttracker://")) return;
+    if (!event.url?.startsWith("com.nocontacttracker.app://")) return;
     void completeNativeOAuth(event.url);
   });
 

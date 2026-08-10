@@ -19,10 +19,10 @@ if (hasReleaseKeystore) {
 }
 
 android {
-    namespace = "app.lovable.nocontacttracker"
+    namespace = "com.nocontacttracker.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "app.lovable.nocontacttracker"
+        applicationId "com.nocontacttracker.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

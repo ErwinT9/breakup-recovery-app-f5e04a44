@@ -1,4 +1,4 @@
-package app.lovable.nocontacttracker;
+package com.nocontacttracker.app;
 
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;

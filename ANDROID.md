@@ -1,6 +1,6 @@
 # Android (Capacitor) — build & release guide
 
-App ID: `app.lovable.nocontacttracker` · App name: **No Contact Tracker**
+App ID: `com.nocontacttracker.app` · App name: **No Contact Tracker**
 
 The native Android project lives in `android/` and is committed to the repo.
 
@@ -36,7 +36,7 @@ bun run open:android
 ## 3. Firebase Cloud Messaging
 
 1. Create a Firebase project and add an Android app with package
-   `app.lovable.nocontacttracker`.
+   `com.nocontacttracker.app`.
 2. Download `google-services.json` and place it at `android/app/google-services.json`.
    (It is gitignored — each developer/CI supplies their own.)
    The Google Services plugin is applied automatically when the file exists.
@@ -126,13 +126,13 @@ The APK does not use the web redirect. `signInWithOAuth` is called with
 returns to the app through this deep link:
 
 ```
-app.lovable.nocontacttracker://auth-callback
+com.nocontacttracker.app://auth-callback
 ```
 
 Setup:
 
 1. Supabase Dashboard -> Authentication -> URL Configuration -> Redirect URLs:
-   add `app.lovable.nocontacttracker://auth-callback`. Keep the existing
+   add `com.nocontacttracker.app://auth-callback`. Keep the existing
    `https://breakup-recovery-app.lovable.app/**` entry so the web app keeps working.
 2. Run `bun run sync:android` so `@capacitor/browser` and the updated web assets
    land in the native project, then rebuild the APK.

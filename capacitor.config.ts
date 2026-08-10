@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "app.lovable.nocontacttracker",
+  appId: "com.nocontacttracker.app",
   appName: "No Contact Tracker",
   webDir: "dist/client",
   android: {
