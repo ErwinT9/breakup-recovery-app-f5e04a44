@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { humanizeError } from "@/lib/analytics";
@@ -58,9 +58,8 @@ function ResetPassword() {
       <form onSubmit={submit} className="mt-8 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="new-password">{t("resetPassword.newPassword", "New password")}</Label>
-          <Input
+          <PasswordInput
             id="new-password"
-            type="password"
             autoComplete="new-password"
             maxLength={72}
             value={password}
