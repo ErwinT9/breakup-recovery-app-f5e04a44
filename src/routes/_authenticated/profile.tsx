@@ -518,6 +518,25 @@ function SettingsScreen() {
           >
             {t("settings.saveChanges")}
           </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="press h-12 w-full justify-start rounded-2xl"
+            onClick={() => {
+              haptic.light();
+              if (!canChangePassword) {
+                toastOnce(
+                  "google-password",
+                  "You signed in using your Google account. Your password is managed by Google and cannot be changed from within the app.",
+                );
+                return;
+              }
+              void navigate({ to: "/change-password" });
+            }}
+          >
+            <KeyRound className="size-4" aria-hidden />
+            Change Password
+          </Button>
         </SoftCard>
 
         <SoftCard className="space-y-4">
