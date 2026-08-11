@@ -336,6 +336,38 @@
   animation: breathe 8s ease-in-out infinite;
 }
 
+/* Splash logo reveal: soft fade + subtle scale-up, then a calm breathing hold. */
+@keyframes logo-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes logo-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@utility animate-logo-reveal {
+  animation:
+    logo-reveal 1.2s var(--ease-native) both,
+    logo-breathe 3.6s ease-in-out 1.2s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
