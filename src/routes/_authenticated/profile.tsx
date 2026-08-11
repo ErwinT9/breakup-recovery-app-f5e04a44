@@ -7,6 +7,7 @@ import {
   Crown,
 
   Image as ImageIcon,
+  KeyRound,
   Moon,
   Trash2,
   Upload,
@@ -625,14 +626,16 @@ function SettingsScreen() {
             title={t("settings.appearance")}
             description={t("settings.appearanceDesc")}
           />
-          <Select value={theme.mode} onValueChange={(value) => theme.setMode(value as ThemeMode)}>
+          <Select
+            value={theme.resolved}
+            onValueChange={(value) => theme.setMode(value as ThemeMode)}
+          >
             <SelectTrigger className="h-12 rounded-2xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="light">{t("settings.themeLight")}</SelectItem>
               <SelectItem value="dark">{t("settings.themeDark")}</SelectItem>
-              <SelectItem value="system">{t("settings.themeSystem")}</SelectItem>
             </SelectContent>
           </Select>
         </SoftCard>
