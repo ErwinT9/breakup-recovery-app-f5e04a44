@@ -59,7 +59,17 @@ export function subscribeTheme(listener: Listener): () => void {
 
 /** Applies the stored preference and keeps "system" in sync with the OS. */
 export function initTheme(): () => void {
-  const mode = readThemeMode();
+  let mode = readThemeMode();
+  // "System default" is no longer offered in Settings: pin legacy/first-run
+  // preferences to the concrete light/dark value the OS currently reports.
+  if (mode === "system") {
+    mode = resolveTheme("system");
+    try {
+      window.localStorage.setItem(THEME_KEY, mode);
+    } catch {
+      /* storage unavailable */
+    }
+  }
   applyTheme(mode);
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
   const query = window.matchMedia("(prefers-color-scheme: dark)");
