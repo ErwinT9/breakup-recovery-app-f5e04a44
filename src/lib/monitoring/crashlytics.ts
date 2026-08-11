@@ -79,19 +79,6 @@ export function clearCrashUser(): void {
   call((p) => p.setUserId({ userId: "" }));
 }
 
-/**
- * TEMPORARY TESTING FEATURE — remove before shipping to production.
- * Forces a native crash via Crashlytics' recommended `crash()` API so the
- * report can be verified in the Firebase console. On web (or when the native
- * plugin is missing) it throws instead, so the tester still sees a failure.
- */
-export function forceTestCrash(): void {
-  if (!isNative() || unavailable) {
-    throw new Error("Test Crashlytics: forced test crash (web/dev fallback)");
-  }
-  call((p) => p.crash({ message: "Test crash from debug menu" }));
-}
-
 /** Current route + high-level feature area, so a crash says where it happened. */
 export function setScreen(route: string, feature: string): void {
   setKey("current_screen", route);
