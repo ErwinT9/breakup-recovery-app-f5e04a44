@@ -126,6 +126,7 @@ function SettingsScreen() {
   const queryClient = useQueryClient();
   const { isPremium } = useSubscription();
   const theme = useTheme();
+  const canChangePassword = isPasswordUser(user);
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
