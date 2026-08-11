@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { HeartLeaf } from "@/components/HeartLeaf";
 import { OfflineScreen } from "@/components/OfflineScreen";
+import { PasswordInput } from "@/components/PasswordInput";
 import { getCachedSession } from "@/lib/auth/session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -258,9 +259,8 @@ function AuthScreen() {
             {mode !== "forgot" ? (
               <div className="space-y-2">
                 <Label htmlFor="password">{t("auth.passwordLabel", "Password")}</Label>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                   maxLength={72}
                   value={password}
