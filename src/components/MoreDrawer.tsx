@@ -11,6 +11,7 @@ import {
   ScrollText,
   Settings,
   Share2,
+  Bug,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { humanizeError } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
+import { forceTestCrash } from "@/lib/monitoring/crashlytics";
 import { shareApp } from "@/lib/share";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
 import { SUPPORT_EMAIL, copySupportEmail, openFeedbackEmail } from "@/lib/feedback";
@@ -63,6 +65,9 @@ export function MoreDrawer({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [redoOpen, setRedoOpen] = useState(false);
   const [noEmailOpen, setNoEmailOpen] = useState(false);
+  // TEMPORARY TESTING FEATURE — debug builds only, stripped from production.
+  const [crashOpen, setCrashOpen] = useState(false);
+  const showCrashTest = import.meta.env.DEV;
   const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 16));
 
   const profile = useQuery({
@@ -154,6 +159,16 @@ export function MoreDrawer({
       label: t("common.logOut"),
       onClick: () => setLogoutOpen(true),
     },
+    // TEMPORARY TESTING FEATURE: Crashlytics verification entry, debug builds only.
+    ...(showCrashTest
+      ? [
+          {
+            icon: Bug,
+            label: "Test Crashlytics",
+            onClick: () => setCrashOpen(true),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -344,6 +359,9 @@ export function MoreDrawer({
       </AlertDialog>
 
       <AlertDialog open={redoOpen} onOpenChange={setRedoOpen}>
+        <AlertDialogContent className="rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Redo Onboarding</AlertDialogTitle>
         <AlertDialogContent className="rounded-3xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Redo Onboarding</AlertDialogTitle>
