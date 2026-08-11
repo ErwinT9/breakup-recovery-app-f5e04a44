@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { HeartLeaf } from "@/components/HeartLeaf";
+import { AppLogo } from "@/components/AppLogo";
 import { OfflineScreen } from "@/components/OfflineScreen";
 import { PasswordInput } from "@/components/PasswordInput";
 import { getCachedSession } from "@/lib/auth/session";
@@ -202,7 +202,7 @@ function AuthScreen() {
           <ArrowLeft className="size-5" aria-hidden />
         </button>
       ) : null}
-      <HeartLeaf animate={false} className="size-16" />
+      <AppLogo className="size-20" />
       <h1 className="mt-6 text-3xl leading-tight font-semibold tracking-tight">
         {mode === "welcome" ? t("auth.welcomeTitle", "Welcome. You made it here.") : null}
         {mode === "signup" ? t("auth.signupTitle", "Create your account") : null}
