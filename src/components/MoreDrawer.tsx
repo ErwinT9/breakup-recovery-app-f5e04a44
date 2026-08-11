@@ -362,9 +362,6 @@ export function MoreDrawer({
         <AlertDialogContent className="rounded-3xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Redo Onboarding</AlertDialogTitle>
-        <AlertDialogContent className="rounded-3xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Redo Onboarding</AlertDialogTitle>
             <AlertDialogDescription>
               This will take you through the onboarding steps again so you can update your
               preferences and recovery plan. Your in-app data will remain unchanged. Do you want to
@@ -386,6 +383,27 @@ export function MoreDrawer({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* TEMPORARY TESTING FEATURE: debug-only Crashlytics verification dialog. */}
+      {showCrashTest ? (
+        <AlertDialog open={crashOpen} onOpenChange={setCrashOpen}>
+          <AlertDialogContent className="rounded-3xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Test Crashlytics</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will intentionally crash the app to verify Firebase Crashlytics is working.
+                Continue?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-2xl">Cancel</AlertDialogCancel>
+              <AlertDialogAction className="rounded-2xl" onClick={() => forceTestCrash()}>
+                Crash App
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : null}
     </>
   );
 }
