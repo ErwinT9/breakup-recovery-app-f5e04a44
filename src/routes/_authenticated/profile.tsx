@@ -48,6 +48,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { activity } from "@/lib/badgeActivity";
 import { useSubscription } from "@/hooks/useSubscription";
 import { analytics, humanizeError } from "@/lib/analytics";
+import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { pickImageSource } from "@/lib/avatar";
 import { haptic } from "@/lib/native/haptics";
