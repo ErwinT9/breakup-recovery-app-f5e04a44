@@ -208,7 +208,13 @@ function RootComponent() {
           <PermissionsProvider>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
-            <Toaster position="top-center" />
+            <Toaster
+              position="top-center"
+              // Keep toasts (badge unlocks, etc.) clear of the Android status
+              // bar / notch by honouring the device safe-area inset.
+              offset="calc(env(safe-area-inset-top, 0px) + 16px)"
+              mobileOffset="calc(env(safe-area-inset-top, 0px) + 16px)"
+            />
           </PermissionsProvider>
         </SubscriptionProvider>
         </AuthProvider>
