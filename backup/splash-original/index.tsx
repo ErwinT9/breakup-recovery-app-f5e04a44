@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { AppLogo } from "@/components/AppLogo";
+import { HeartLeaf } from "@/components/HeartLeaf";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { TAGLINE } from "@/lib/content";
@@ -51,7 +51,7 @@ function Splash() {
           aria-hidden
           className="animate-soft-pulse absolute inset-0 -z-10 rounded-full bg-mint blur-3xl"
         />
-        <AppLogo animate className="size-36" />
+        <HeartLeaf animate className="size-32" />
       </div>
       <h1 className="animate-rise mt-10 text-2xl font-semibold tracking-tight">
         {t("landing.title", "No Contact Tracker")}
