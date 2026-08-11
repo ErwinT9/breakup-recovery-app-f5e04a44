@@ -65,9 +65,9 @@ export function MoreDrawer({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [redoOpen, setRedoOpen] = useState(false);
   const [noEmailOpen, setNoEmailOpen] = useState(false);
-  // TEMPORARY TESTING FEATURE — debug builds only, stripped from production.
+  // TEMPORARY TESTING FEATURE — remove before the public store release.
   const [crashOpen, setCrashOpen] = useState(false);
-  const showCrashTest = import.meta.env.DEV;
+  const showCrashTest = true;
   const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 16));
 
   const profile = useQuery({
@@ -159,7 +159,7 @@ export function MoreDrawer({
       label: t("common.logOut"),
       onClick: () => setLogoutOpen(true),
     },
-    // TEMPORARY TESTING FEATURE: Crashlytics verification entry, debug builds only.
+    // TEMPORARY TESTING FEATURE: Crashlytics verification entry.
     ...(showCrashTest
       ? [
           {
@@ -391,8 +391,8 @@ export function MoreDrawer({
             <AlertDialogHeader>
               <AlertDialogTitle>Test Crashlytics</AlertDialogTitle>
               <AlertDialogDescription>
-                This will intentionally crash the app to verify Firebase Crashlytics is working.
-                Continue?
+                This will intentionally crash the app to verify Firebase Crashlytics is working. Do
+                you want to continue?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
