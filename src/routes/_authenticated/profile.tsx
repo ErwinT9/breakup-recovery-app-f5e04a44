@@ -7,6 +7,7 @@ import {
   Crown,
 
   Image as ImageIcon,
+  KeyRound,
   Moon,
   Trash2,
   Upload,
@@ -47,6 +48,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { activity } from "@/lib/badgeActivity";
 import { useSubscription } from "@/hooks/useSubscription";
 import { analytics, humanizeError } from "@/lib/analytics";
+import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { pickImageSource } from "@/lib/avatar";
 import { haptic } from "@/lib/native/haptics";
@@ -125,6 +127,7 @@ function SettingsScreen() {
   const queryClient = useQueryClient();
   const { isPremium } = useSubscription();
   const theme = useTheme();
+  const canChangePassword = isPasswordUser(user);
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
@@ -517,6 +520,25 @@ function SettingsScreen() {
           >
             {t("settings.saveChanges")}
           </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="press h-12 w-full justify-start rounded-2xl"
+            onClick={() => {
+              haptic.light();
+              if (!canChangePassword) {
+                toastOnce(
+                  "google-password",
+                  "You signed in using your Google account. Your password is managed by Google and cannot be changed from within the app.",
+                );
+                return;
+              }
+              void navigate({ to: "/change-password" });
+            }}
+          >
+            <KeyRound className="size-4" aria-hidden />
+            Change Password
+          </Button>
         </SoftCard>
 
         <SoftCard className="space-y-4">
@@ -625,14 +647,16 @@ function SettingsScreen() {
             title={t("settings.appearance")}
             description={t("settings.appearanceDesc")}
           />
-          <Select value={theme.mode} onValueChange={(value) => theme.setMode(value as ThemeMode)}>
+          <Select
+            value={theme.resolved}
+            onValueChange={(value) => theme.setMode(value as ThemeMode)}
+          >
             <SelectTrigger className="h-12 rounded-2xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="light">{t("settings.themeLight")}</SelectItem>
               <SelectItem value="dark">{t("settings.themeDark")}</SelectItem>
-              <SelectItem value="system">{t("settings.themeSystem")}</SelectItem>
             </SelectContent>
           </Select>
         </SoftCard>
