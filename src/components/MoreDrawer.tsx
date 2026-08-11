@@ -161,6 +161,7 @@ export function MoreDrawer({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="left"
+          hideClose
           className="w-[86%] max-w-xs border-r border-border bg-background p-0"
         >
           <div className="flex items-start justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)]">
