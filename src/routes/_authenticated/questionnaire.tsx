@@ -95,6 +95,7 @@ function Questionnaire() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     analytics.screen("questionnaire");
@@ -115,6 +116,16 @@ function Questionnaire() {
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
 
   const advance = (patch?: Answers) => {
+    // Step 0 (name) is required — reject empty and whitespace-only input.
+    if (step === 0) {
+      const nickname = (patch?.nickname ?? answers.nickname ?? "").trim();
+      if (!nickname) {
+        setNameError("Please enter your name or nickname.");
+        return;
+      }
+      setNameError(null);
+      patch = { ...patch, nickname };
+    }
     if (patch) set(patch);
     haptic.light();
     setStep((current) => Math.min(STEPS - 1, current + 1));
@@ -124,10 +135,24 @@ function Questionnaire() {
     if (!userId) return;
     setSaving(true);
     try {
-      await questionnaireRepo.save(userId, { ...answers, completed: true });
+      const nickname = (answers.nickname ?? "").trim();
+      if (!nickname) {
+        setSaving(false);
+        setStep(0);
+        setNameError("Please enter your name or nickname.");
+        return;
+      }
+      // "Under 18" is no longer an allowed answer.
+      const ageRange = answers.age_range === "Under 18" ? undefined : answers.age_range;
+      await questionnaireRepo.save(userId, {
+        ...answers,
+        nickname,
+        age_range: ageRange,
+        completed: true,
+      });
       const profile = await profileRepo.update(userId, {
         questionnaire_completed: true,
-        display_name: answers.nickname ?? null,
+        display_name: nickname,
         notifications_enabled: Boolean(answers.wants_reminders),
       });
       const startedAt = answers.last_contact_at ?? new Date().toISOString();
@@ -161,7 +186,7 @@ function Questionnaire() {
       haptic.success();
       analytics.track("questionnaire_completed");
       activity.onboardingDone();
-      if (answers.nickname) activity.profileSetupDone();
+      activity.profileSetupDone();
       void navigate({ to: "/home", replace: true });
     } catch (error) {
       analytics.error(error, { stage: "questionnaire" });
@@ -190,10 +215,20 @@ function Questionnaire() {
                 id="nickname"
                 maxLength={40}
                 value={answers.nickname ?? ""}
-                onChange={(event) => set({ nickname: event.target.value })}
+                onChange={(event) => {
+                  setNameError(null);
+                  set({ nickname: event.target.value });
+                }}
                 className="h-13 rounded-2xl"
                 placeholder={t("questionnaire.step0.placeholder")}
+                aria-invalid={Boolean(nameError)}
+                required
               />
+              {nameError ? (
+                <p role="alert" className="text-sm text-destructive">
+                  {nameError}
+                </p>
+              ) : null}
             </div>
           ),
         };
@@ -396,7 +431,7 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t]);
+  }, [step, answers, reasons, t, nameError]);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
