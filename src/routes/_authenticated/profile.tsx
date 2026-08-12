@@ -70,6 +70,7 @@ import {
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
+import { sendPushToSelf } from "@/lib/notifications/sendPush";
 import {
   checkPermission,
   openNotificationSettings,
@@ -315,13 +316,12 @@ function SettingsScreen() {
     haptic.light();
     setNotifBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-push-notification", {
-        body: {
-          title: "Test notification",
-          body: "If you can see this, push notifications are working.",
-        },
-      });
-      if (!error && (data as { sent?: number } | null)?.sent) {
+      const result = await sendPushToSelf(
+        "Test notification",
+        "If you can see this, push notifications are working.",
+        { deep_link: "/home" },
+      );
+      if (result.sent > 0) {
         toast.success(t("settings.testSent"));
         return;
       }
@@ -329,7 +329,11 @@ function SettingsScreen() {
       toast(local ? t("settings.testSentLocal") : t("settings.testFailed"));
     } catch (error) {
       analytics.error(error, { stage: "push_test" });
-      toast.error(humanizeError(error));
+      // Fall back to a local notification so the user still gets a signal,
+      // but keep the real reason visible for debugging.
+      const local = await sendTestLocalNotification();
+      if (local) toast(t("settings.testSentLocal"));
+      else toast.error(humanizeError(error));
     } finally {
       setNotifBusy(false);
     }
