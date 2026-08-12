@@ -248,6 +248,7 @@ function SettingsScreen() {
       morning: profile.data?.morning_reminder ?? true,
       evening: profile.data?.evening_reminder ?? true,
       categories: next,
+      recoveryDay: currentRecoveryDay(),
     });
   };
 
@@ -289,7 +290,10 @@ function SettingsScreen() {
         morning: profile.data?.morning_reminder ?? true,
         evening: profile.data?.evening_reminder ?? true,
         categories: notifs,
+        recoveryDay: currentRecoveryDay(),
       });
+      // Push the fresh permission + timezone up so the 16:30 dispatcher sees it.
+      await syncNotificationDeviceState(userId);
       toast.success(token ? t("settings.notificationsOnDevice") : t("settings.notificationsOn"));
     } catch (error) {
       setNotifOn(!enabled);
@@ -548,8 +552,18 @@ function SettingsScreen() {
             description={t("settings.notificationsDesc")}
           >
             <Switch
-              checked={notifOn}
-              onCheckedChange={(checked) => void toggleReminders(checked)}
+              // Android permission is authoritative: while blocked the switch
+              // reads OFF, but the saved preference in Supabase is untouched.
+              checked={notifOn && !systemBlocked}
+              onCheckedChange={(checked) => {
+                if (systemBlocked) {
+                  haptic.light();
+                  toast(t("settings.notificationsSystemOff"));
+                  void openNotificationSettings();
+                  return;
+                }
+                void toggleReminders(checked);
+              }}
               disabled={notifBusy}
               aria-label={t("settings.notifications")}
             />
@@ -614,6 +628,7 @@ function SettingsScreen() {
                         enabled: true,
                         morning: checked,
                         evening: profile.data?.evening_reminder ?? true,
+                        recoveryDay: currentRecoveryDay(),
                       }),
                     );
                   }}
@@ -621,7 +636,12 @@ function SettingsScreen() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">{t("settings.eveningReminder")}</span>
+                <span className="text-sm">
+                  {t("settings.eveningReminder")}
+                  <span className="block text-xs text-muted-foreground">
+                    {t("settings.eveningReminderDesc")}
+                  </span>
+                </span>
                 <Switch
                   checked={profile.data?.evening_reminder ?? true}
                   disabled={systemBlocked}
@@ -631,6 +651,7 @@ function SettingsScreen() {
                         enabled: true,
                         morning: profile.data?.morning_reminder ?? true,
                         evening: checked,
+                        recoveryDay: currentRecoveryDay(),
                       }),
                     );
                   }}
