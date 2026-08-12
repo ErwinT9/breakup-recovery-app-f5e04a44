@@ -9,7 +9,7 @@ export const NATIVE_RECOVERY_URL = "com.nocontacttracker.app://reset-password";
  * reporting its platform when the Forgot Password form is submitted.
  */
 function isAndroidAppBuild(): boolean {
-  return import.meta.env.VITE_CAPACITOR_BUILD === "true" || platformName() === "android" || isNative();
+  return import.meta.env["VITE_CAPACITOR_BUILD"] === "true" || platformName() === "android" || isNative();
 }
 
 /**
