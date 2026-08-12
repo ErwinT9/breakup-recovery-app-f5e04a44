@@ -197,7 +197,7 @@ export const screensEn = {
     step1: {
       title: "How old are you?",
       hint: "This tunes the tone of your daily messages.",
-      options: ["Under 18", "18-24", "25-34", "35-44", "45+"],
+      options: ["18-24", "25-34", "35-44", "45+"],
     },
     step2: {
       title: "How do you identify?",

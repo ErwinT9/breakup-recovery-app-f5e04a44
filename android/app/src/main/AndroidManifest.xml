@@ -44,6 +44,16 @@
                     android:host="auth-callback" />
             </intent-filter>
 
+            <!-- Supabase password-recovery deep link (email link returns here) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="com.nocontacttracker.app"
+                    android:host="reset-password" />
+            </intent-filter>
+
         </activity>
 
         <provider

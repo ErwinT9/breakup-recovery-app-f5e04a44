@@ -17,6 +17,7 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { cleanAuthFragment, waitForOAuthSession } from "@/lib/auth/oauthHash";
+import { passwordResetRedirectUrl } from "@/lib/auth/passwordRecovery";
 import { setNativeOAuthHandlers, signInWithGoogle } from "@/lib/auth/oauthNative";
 import { openExternalUrl, PRIVACY_URL, TERMS_URL } from "@/lib/openExternal";
 import { haptic } from "@/lib/native/haptics";
@@ -148,7 +149,7 @@ function AuthScreen() {
       if (!parsed.success) return setError(t("auth.invalidEmail", "Enter a valid email"));
       setBusy(true);
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(parsed.data, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: passwordResetRedirectUrl(),
       });
       setBusy(false);
       if (resetError) return setError(humanizeError(resetError));
