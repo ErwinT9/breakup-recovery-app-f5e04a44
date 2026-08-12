@@ -8,6 +8,8 @@ import { MoreDrawer } from "@/components/MoreDrawer";
 import { SosToolkit } from "@/components/SosToolkit";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
+import { useAuth } from "@/hooks/useAuth";
+import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 import { wireNotificationTaps } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +43,25 @@ export function AppShell({
     activity.appOpened();
     void wireNotificationTaps();
   }, []);
+
+  // Android permission + timezone are re-synced on every resume, so the
+  // backend never acts on a stale permission mirror.
+  useEffect(() => {
+    if (!authUserId) return;
+    void syncNotificationDeviceState(authUserId);
+    let remove: (() => void) | undefined;
+    void import("@capacitor/app")
+      .then(({ App }) =>
+        App.addListener("appStateChange", ({ isActive }) => {
+          if (isActive) void syncNotificationDeviceState(authUserId);
+        }),
+      )
+      .then((handle) => {
+        remove = () => void handle.remove();
+      })
+      .catch(() => {});
+    return () => remove?.();
+  }, [authUserId]);
 
   useEffect(() => {
     const tab = TABS.find((item) => item.to === pathname);
