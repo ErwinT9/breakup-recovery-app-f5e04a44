@@ -149,8 +149,12 @@ function AuthScreen() {
       const parsed = z.string().email().safeParse(email.trim());
       if (!parsed.success) return setError(t("auth.invalidEmail", "Enter a valid email"));
       setBusy(true);
+      const redirectTo = passwordResetRedirectUrl();
+      // This intentionally logs only the non-sensitive destination so Android
+      // WebView inspection can verify the exact value sent to Supabase.
+      console.info("[auth] password reset redirectTo", redirectTo);
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(parsed.data, {
-        redirectTo: passwordResetRedirectUrl(),
+        redirectTo,
       });
       setBusy(false);
       if (resetError) return setError(humanizeError(resetError));
