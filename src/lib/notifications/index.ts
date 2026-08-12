@@ -6,6 +6,7 @@ import {
   loadNotificationPrefs,
   type NotificationPrefs,
 } from "./categories";
+import { eveningNotificationForDay } from "./eveningContent";
 
 /**
  * Notification service.
@@ -93,9 +94,9 @@ async function ensureChannel(): Promise<void> {
   });
 }
 
-function atHour(hour: number): Date {
+function atHour(hour: number, minute = 0): Date {
   const when = new Date();
-  when.setHours(hour, 0, 0, 0);
+  when.setHours(hour, minute, 0, 0);
   if (when.getTime() <= Date.now()) when.setDate(when.getDate() + 1);
   return when;
 }
@@ -105,6 +106,8 @@ export type ReminderPrefs = {
   morning: boolean;
   evening: boolean;
   categories?: Partial<NotificationPrefs>;
+  /** 1-based recovery day, used to pick today's evening reminder copy. */
+  recoveryDay?: number;
 };
 
 /** Re-schedules every recurring reminder from scratch. Safe to call often. */
@@ -134,12 +137,15 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
       });
     }
     if (prefs.evening && categories.evening) {
+      // 16:30 local, copy from the deterministic 30-day rotation.
+      const content = eveningNotificationForDay(prefs.recoveryDay ?? 1);
       notifications.push({
         id: 1002,
         channelId: CHANNEL_ID,
-        title: "Evening check-in",
-        body: "How did today go? Log a win before bed.",
-        schedule: { at: atHour(20), repeats: true, every: "day" as const },
+        title: content.title,
+        body: content.description,
+        extra: { deep_link: content.deep_link, category: "evening_reminder" },
+        schedule: { at: atHour(16, 30), repeats: true, every: "day" as const },
       });
     }
     if (categories.inactivity) {
@@ -222,8 +228,15 @@ export {
 } from "./categories";
 export type { NotificationCategory, NotificationPrefs } from "./categories";
 export {
+  EVENING_NOTIFICATIONS,
+  EVENING_SCHEDULE_TIME,
+  eveningNotificationForDay,
+} from "./eveningContent";
+export { deviceTimezone, syncNotificationDeviceState } from "./deviceState";
+export {
   currentPushToken,
   deactivatePushToken,
+  setPushNavigator,
   ensurePushChannel,
   hasPushPermission,
   registerPush,

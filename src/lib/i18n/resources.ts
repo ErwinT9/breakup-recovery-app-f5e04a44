@@ -73,7 +73,7 @@ export const en = {
     notifications: "Notifications",
     notificationsDesc: "Choose what you want to hear about.",
     morningReminder: "Morning reminder (9:00)",
-    eveningReminder: "Evening reminder (20:00)",
+    eveningReminder: "Evening reminder (16:30)",
     language: "Language",
     languageDesc: "App language",
     exportTitle: "Export my data",

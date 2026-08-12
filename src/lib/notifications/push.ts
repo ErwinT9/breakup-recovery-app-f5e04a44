@@ -16,6 +16,12 @@ const DEVICE_KEY = "nc:device-id";
 const TOKEN_KEY = "nc:push-token";
 
 let listenersWired = false;
+let navigate: ((path: string) => void) | null = null;
+
+/** Lets the router handle notification taps (deep links) without importing it here. */
+export function setPushNavigator(fn: ((path: string) => void) | null): void {
+  navigate = fn;
+}
 let currentUserId: string | null = null;
 
 /**
@@ -99,9 +105,12 @@ async function wireListeners(): Promise<void> {
     await PushNotifications.addListener("pushNotificationReceived", (notification) => {
       analytics.track("push_received", { title: notification.title ?? "" });
     });
-    await PushNotifications.addListener("pushNotificationActionPerformed", () => {
+    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
       analytics.track("push_opened");
       activity.notificationReturn();
+      const data = (action.notification?.data ?? {}) as Record<string, string>;
+      const target = data['deep_link'] || data['deepLink'];
+      if (target && target.startsWith("/")) navigate?.(target);
     });
   });
 }
