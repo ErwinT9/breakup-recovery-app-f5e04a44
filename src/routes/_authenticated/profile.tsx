@@ -52,6 +52,7 @@ import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { pickImageSource } from "@/lib/avatar";
 import { haptic } from "@/lib/native/haptics";
+import { daysSince } from "@/lib/streak";
 import { clearAllLocalData, storage } from "@/lib/native/storage";
 import { deleteMyAccount } from "@/lib/account";
 import { toastOnce } from "@/lib/toastOnce";
@@ -61,6 +62,7 @@ import {
   deactivatePushToken,
   ensurePushChannel,
   loadNotificationPrefs,
+  syncNotificationDeviceState,
   registerPush,
   notificationPermissionGranted,
   saveNotificationPrefs,
@@ -152,8 +154,10 @@ function SettingsScreen() {
   const refreshPermission = useCallback(async () => {
     const state = await checkPermission("notifications");
     setPermState(state);
+    // Mirror the real OS state (and timezone) to Supabase on every re-check.
+    if (userId) void syncNotificationDeviceState(userId);
     return state;
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     analytics.screen("settings");
@@ -205,6 +209,10 @@ function SettingsScreen() {
     setBio(profile.data.bio ?? "");
     setAvatar(profile.data.avatar_url ?? "");
   }, [profile.data]);
+
+  /** 1-based recovery day, shared with the server-side 30-day rotation. */
+  const currentRecoveryDay = () =>
+    streak.data?.started_at ? daysSince(streak.data.started_at) + 1 : 1;
 
   useEffect(() => {
     if (streak.data?.started_at) setRecovery(streak.data.started_at.slice(0, 16));
