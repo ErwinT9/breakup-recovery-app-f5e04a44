@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { analytics } from "@/lib/analytics";
 import { getCachedSession } from "@/lib/auth/session";
 import { clearCrashUser, setCrashUser } from "@/lib/monitoring/crashlytics";
+import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 import { deactivatePushToken, syncPushRegistration } from "@/lib/notifications/push";
 import { isOnline } from "@/lib/offline/network";
 import { identifyUser, logOutRevenueCat } from "@/lib/subscription/revenuecat";
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         analytics.track("login", { provider: nextSession.user.app_metadata?.provider ?? "unknown" });
         void identifyUser(nextSession.user.id);
         void syncPushRegistration(nextSession.user.id);
+        void syncNotificationDeviceState(nextSession.user.id);
       }
     });
 
@@ -54,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(current);
         setCrashUser(current.user.id);
         void syncPushRegistration(current.user.id);
+        void syncNotificationDeviceState(current.user.id);
       } else if (!isOnline()) {
         // No network and nothing cached — don't wipe an in-memory session.
       } else {
