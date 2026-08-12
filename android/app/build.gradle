@@ -63,7 +63,9 @@ android {
             if (hasGoogleServices) {
                 firebaseCrashlytics {
                     mappingFileUploadEnabled true
-                    nativeSymbolUploadEnabled false
+                    // Native symbols for Crashlytics NDK reports. Uploaded by the
+                    // uploadCrashlyticsSymbolFileRelease task (run it after bundling).
+                    nativeSymbolUploadEnabled true
                 }
             }
         }
