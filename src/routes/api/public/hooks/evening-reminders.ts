@@ -54,7 +54,6 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const url = new URL(request.url);
         const anonKey = process.env['SUPABASE_ANON_KEY'] ?? process.env['SUPABASE_PUBLISHABLE_KEY'];
         const provided =
           request.headers.get("apikey") ??
@@ -67,16 +66,13 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
         // The Firebase service account lives only in the Supabase secret store,
         // so the actual FCM delivery is delegated to the deployed
         // `send-push-notification` Edge Function (service-role call).
-        if (url.searchParams.get("debug") === "env") {
-          return Response.json({
-            env: Object.keys(process.env).filter((k) => /SUPABASE|FIREBASE/.test(k)).sort(),
-          });
-        }
-
         const supabaseUrl = process.env['SUPABASE_URL'];
         const serviceRoleKey = process.env['SUPABASE_SERVICE_ROLE_KEY'];
         if (!supabaseUrl || !serviceRoleKey) {
-          return Response.json({ error: "Supabase server credentials are not configured" }, { status: 500 });
+          // Environments without the service-role key (local dev / preview) must
+          // not 500 the cron caller — report and no-op instead.
+          console.warn("[evening-reminders] missing SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY; skipping run");
+          return Response.json({ skippedRun: "server credentials unavailable", sent: 0 });
         }
         const pushEndpoint = `${supabaseUrl}/functions/v1/send-push-notification`;
 
