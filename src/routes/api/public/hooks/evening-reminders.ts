@@ -54,6 +54,7 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const url = new URL(request.url);
         const anonKey = process.env['SUPABASE_ANON_KEY'] ?? process.env['SUPABASE_PUBLISHABLE_KEY'];
         const provided =
           request.headers.get("apikey") ??
