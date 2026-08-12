@@ -1,7 +1,16 @@
-import { isNative } from "@/lib/native/platform";
+import { isNative, platformName } from "@/lib/native/platform";
 
 /** Custom-scheme deep link the Supabase recovery email returns to on Android. */
 export const NATIVE_RECOVERY_URL = "com.nocontacttracker.app://reset-password";
+
+/**
+ * The mobile build flag is compiled into the Android web bundle. It is a
+ * deliberate fallback for devices where the Capacitor bridge has not finished
+ * reporting its platform when the Forgot Password form is submitted.
+ */
+function isAndroidAppBuild(): boolean {
+  return import.meta.env.VITE_CAPACITOR_BUILD === "true" || platformName() === "android" || isNative();
+}
 
 /**
  * Where Supabase should send the user after they tap the reset link.
@@ -9,7 +18,7 @@ export const NATIVE_RECOVERY_URL = "com.nocontacttracker.app://reset-password";
  * NOTE: both URLs must be allow-listed in Supabase Auth → URL Configuration.
  */
 export function passwordResetRedirectUrl(): string {
-  if (isNative()) return NATIVE_RECOVERY_URL;
+  if (isAndroidAppBuild()) return NATIVE_RECOVERY_URL;
   return `${window.location.origin}/reset-password`;
 }
 
