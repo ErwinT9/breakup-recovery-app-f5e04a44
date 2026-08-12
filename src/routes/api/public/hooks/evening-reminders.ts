@@ -67,6 +67,12 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
         // The Firebase service account lives only in the Supabase secret store,
         // so the actual FCM delivery is delegated to the deployed
         // `send-push-notification` Edge Function (service-role call).
+        if (url.searchParams.get("debug") === "env") {
+          return Response.json({
+            env: Object.keys(process.env).filter((k) => /SUPABASE|FIREBASE/.test(k)).sort(),
+          });
+        }
+
         const supabaseUrl = process.env['SUPABASE_URL'];
         const serviceRoleKey = process.env['SUPABASE_SERVICE_ROLE_KEY'];
         if (!supabaseUrl || !serviceRoleKey) {
