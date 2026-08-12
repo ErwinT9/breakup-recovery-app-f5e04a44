@@ -3,6 +3,7 @@ import { Browser } from "@capacitor/browser";
 
 import { supabase } from "@/integrations/supabase/client";
 import { isNative } from "@/lib/native/platform";
+import { goToResetPassword, isRecoveryUrl, setRecoveryActive } from "@/lib/auth/passwordRecovery";
 
 /** Custom scheme registered in AndroidManifest.xml for the OAuth callback. */
 export const NATIVE_REDIRECT_URL = "com.nocontacttracker.app://auth-callback";
@@ -43,6 +44,9 @@ export async function completeNativeOAuth(url: string): Promise<boolean> {
     return false;
   }
 
+  const recovery = isRecoveryUrl(url);
+  if (recovery) setRecoveryActive(true);
+
   const query = parsed.searchParams;
   const fragment = new URLSearchParams(parsed.hash.replace(/^#/, ""));
   const errorDescription =
@@ -75,6 +79,9 @@ export async function completeNativeOAuth(url: string): Promise<boolean> {
       if (error) throw error;
     }
     setPending(false);
+    // A recovery link must land on the dedicated Reset Password screen,
+    // never in onboarding or the main app.
+    if (recovery) goToResetPassword();
     return true;
   } catch (error) {
     setPending(false);
