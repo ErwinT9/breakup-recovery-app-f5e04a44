@@ -4,12 +4,41 @@ import { isNative, platformName } from "@/lib/native/platform";
 export const NATIVE_RECOVERY_URL = "com.nocontacttracker.app://reset-password";
 
 /**
- * The mobile build flag is compiled into the Android web bundle. It is a
- * deliberate fallback for devices where the Capacitor bridge has not finished
- * reporting its platform when the Forgot Password form is submitted.
+ * Multi-signal native detection. Any single signal is enough, because a false
+ * negative here silently sends the user to the website instead of the app.
+ *
+ * 1. Capacitor bridge (may report late on cold start)
+ * 2. window.Capacitor injected object (present before the ESM wrapper resolves)
+ * 3. Android WebView UA marker injected by Capacitor
+ * 4. The WebView origin: Capacitor serves the bundle from https://localhost
+ *    (androidScheme "https") or capacitor://localhost — never a public host.
+ * 5. The compiled mobile build flag.
  */
-function isAndroidAppBuild(): boolean {
-  return import.meta.env["VITE_CAPACITOR_BUILD"] === "true" || platformName() === "android" || isNative();
+export function detectRecoveryPlatform(): { native: boolean; reason: string } {
+  if (typeof window === "undefined") return { native: false, reason: "ssr" };
+  const w = window as unknown as { Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string } };
+
+  if (isNative()) return { native: true, reason: "Capacitor.isNativePlatform" };
+  if (platformName() === "android" || platformName() === "ios") return { native: true, reason: "Capacitor.getPlatform" };
+  try {
+    if (w.Capacitor?.isNativePlatform?.()) return { native: true, reason: "window.Capacitor.isNativePlatform" };
+    if (w.Capacitor?.getPlatform?.() && w.Capacitor.getPlatform() !== "web")
+      return { native: true, reason: "window.Capacitor.getPlatform" };
+  } catch {
+    /* ignore */
+  }
+
+  const ua = window.navigator?.userAgent ?? "";
+  if (/CapacitorHttp|com\.nocontacttracker\.app/i.test(ua)) return { native: true, reason: "userAgent" };
+
+  const origin = window.location.origin;
+  if (/^capacitor:\/\//i.test(origin)) return { native: true, reason: "capacitor origin" };
+  if (!import.meta.env.DEV && /^https?:\/\/localhost(:\d+)?$/i.test(origin))
+    return { native: true, reason: "webview localhost origin" };
+
+  if (import.meta.env["VITE_CAPACITOR_BUILD"] === "true") return { native: true, reason: "mobile build flag" };
+
+  return { native: false, reason: `web origin ${origin}` };
 }
 
 /**
@@ -18,8 +47,10 @@ function isAndroidAppBuild(): boolean {
  * NOTE: both URLs must be allow-listed in Supabase Auth → URL Configuration.
  */
 export function passwordResetRedirectUrl(): string {
-  if (isAndroidAppBuild()) return NATIVE_RECOVERY_URL;
-  return `${window.location.origin}/reset-password`;
+  const { native, reason } = detectRecoveryPlatform();
+  const url = native ? NATIVE_RECOVERY_URL : `${window.location.origin}/reset-password`;
+  console.info(`[auth] recovery redirect: ${url} (native=${native}, via ${reason})`);
+  return url;
 }
 
 let recoveryActive = false;
