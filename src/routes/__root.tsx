@@ -27,6 +27,7 @@ import {
 import { migrateAppState } from "@/lib/appState/migrate";
 import { initNativeOAuthListeners } from "@/lib/auth/oauthNative";
 import { initAndroidBackButton } from "@/lib/native/backButton";
+import { setPushNavigator } from "@/lib/notifications/push";
 import { hideNativeSplash } from "@/lib/native/splash";
 import { initTheme } from "@/lib/theme";
 import i18n from "@/lib/i18n";
@@ -170,11 +171,13 @@ function RootComponent() {
     markAppReady();
     // Dismiss the native launch splash now that the UI has mounted.
     hideNativeSplash();
+    setPushNavigator((path: string) => void router.navigate({ to: path as never }));
     const disposeTheme = initTheme();
     const disposeBack = initAndroidBackButton(() => {
       void router.navigate({ to: "/home", replace: true });
     });
     return () => {
+      setPushNavigator(null);
       disposeTheme?.();
       disposeBack();
     };

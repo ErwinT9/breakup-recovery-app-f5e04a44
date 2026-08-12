@@ -73,7 +73,8 @@ export const en = {
     notifications: "Notifications",
     notificationsDesc: "Choose what you want to hear about.",
     morningReminder: "Morning reminder (9:00)",
-    eveningReminder: "Evening reminder (20:00)",
+    eveningReminder: "Evening reminder (16:30)",
+    eveningReminderDesc: "Reflect on your day before the evening ends.",
     language: "Language",
     languageDesc: "App language",
     exportTitle: "Export my data",
@@ -108,8 +109,7 @@ export const en = {
     notificationsOff: "Notifications turned off.",
     permissionDenied:
       "Notifications are blocked. You can turn them on any time from your device settings.",
-    notificationsSystemOff:
-      "Notifications are currently disabled in your device settings. Enable them to receive reminders and motivational messages.",
+    notificationsSystemOff: "Notifications are disabled in your device settings.",
     openSystemNotifications: "Open device notification settings",
     notificationsSystemOffHint:
       "Turn notifications on for this app in Android settings, then come back — your preferences below will unlock automatically.",

@@ -52,6 +52,7 @@ import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { pickImageSource } from "@/lib/avatar";
 import { haptic } from "@/lib/native/haptics";
+import { daysSince } from "@/lib/streak";
 import { clearAllLocalData, storage } from "@/lib/native/storage";
 import { deleteMyAccount } from "@/lib/account";
 import { toastOnce } from "@/lib/toastOnce";
@@ -61,6 +62,7 @@ import {
   deactivatePushToken,
   ensurePushChannel,
   loadNotificationPrefs,
+  syncNotificationDeviceState,
   registerPush,
   notificationPermissionGranted,
   saveNotificationPrefs,
@@ -152,8 +154,10 @@ function SettingsScreen() {
   const refreshPermission = useCallback(async () => {
     const state = await checkPermission("notifications");
     setPermState(state);
+    // Mirror the real OS state (and timezone) to Supabase on every re-check.
+    if (userId) void syncNotificationDeviceState(userId);
     return state;
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     analytics.screen("settings");
@@ -206,6 +210,10 @@ function SettingsScreen() {
     setAvatar(profile.data.avatar_url ?? "");
   }, [profile.data]);
 
+  /** 1-based recovery day, shared with the server-side 30-day rotation. */
+  const currentRecoveryDay = () =>
+    streak.data?.started_at ? daysSince(streak.data.started_at) + 1 : 1;
+
   useEffect(() => {
     if (streak.data?.started_at) setRecovery(streak.data.started_at.slice(0, 16));
   }, [streak.data?.started_at]);
@@ -248,6 +256,7 @@ function SettingsScreen() {
       morning: profile.data?.morning_reminder ?? true,
       evening: profile.data?.evening_reminder ?? true,
       categories: next,
+      recoveryDay: currentRecoveryDay(),
     });
   };
 
@@ -289,7 +298,10 @@ function SettingsScreen() {
         morning: profile.data?.morning_reminder ?? true,
         evening: profile.data?.evening_reminder ?? true,
         categories: notifs,
+        recoveryDay: currentRecoveryDay(),
       });
+      // Push the fresh permission + timezone up so the 16:30 dispatcher sees it.
+      await syncNotificationDeviceState(userId);
       toast.success(token ? t("settings.notificationsOnDevice") : t("settings.notificationsOn"));
     } catch (error) {
       setNotifOn(!enabled);
@@ -548,8 +560,18 @@ function SettingsScreen() {
             description={t("settings.notificationsDesc")}
           >
             <Switch
-              checked={notifOn}
-              onCheckedChange={(checked) => void toggleReminders(checked)}
+              // Android permission is authoritative: while blocked the switch
+              // reads OFF, but the saved preference in Supabase is untouched.
+              checked={notifOn && !systemBlocked}
+              onCheckedChange={(checked) => {
+                if (systemBlocked) {
+                  haptic.light();
+                  toast(t("settings.notificationsSystemOff"));
+                  void openNotificationSettings();
+                  return;
+                }
+                void toggleReminders(checked);
+              }}
               disabled={notifBusy}
               aria-label={t("settings.notifications")}
             />
@@ -614,6 +636,7 @@ function SettingsScreen() {
                         enabled: true,
                         morning: checked,
                         evening: profile.data?.evening_reminder ?? true,
+                        recoveryDay: currentRecoveryDay(),
                       }),
                     );
                   }}
@@ -621,7 +644,12 @@ function SettingsScreen() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">{t("settings.eveningReminder")}</span>
+                <span className="text-sm">
+                  {t("settings.eveningReminder")}
+                  <span className="block text-xs text-muted-foreground">
+                    {t("settings.eveningReminderDesc")}
+                  </span>
+                </span>
                 <Switch
                   checked={profile.data?.evening_reminder ?? true}
                   disabled={systemBlocked}
@@ -631,6 +659,7 @@ function SettingsScreen() {
                         enabled: true,
                         morning: profile.data?.morning_reminder ?? true,
                         evening: checked,
+                        recoveryDay: currentRecoveryDay(),
                       }),
                     );
                   }}

@@ -19,7 +19,7 @@ export const NOTIFICATION_CATEGORIES: {
 }[] = [
   { key: "daily_motivation", label: "Daily motivation", labelKey: "notif.daily_motivation" },
   { key: "morning", label: "Morning reminder (9:00)", labelKey: "notif.morning" },
-  { key: "evening", label: "Evening reminder (20:00)", labelKey: "notif.evening" },
+  { key: "evening", label: "Evening reminder (16:30)", labelKey: "notif.evening" },
   { key: "milestone", label: "No contact milestone", labelKey: "notif.milestone" },
   { key: "streak", label: "Streak reminder", labelKey: "notif.streak" },
   { key: "sos", label: "SOS encouragement", labelKey: "notif.sos" },
