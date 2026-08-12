@@ -135,6 +135,17 @@ function HomeScreen() {
 
   const [checkInOpen, setCheckInOpen] = useState(false);
 
+  // Deep link from the Evening Reminder notification (/check-in -> /home?checkin=1).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkin") !== "1") return;
+    setCheckInOpen(true);
+    params.delete("checkin");
+    const query = params.toString();
+    window.history.replaceState({}, "", window.location.pathname + (query ? `?${query}` : ""));
+  }, []);
+
   const saveCheckIn = useMutation({
     mutationFn: async (result: MoodCheckInResult) => {
       if (!userId) return;

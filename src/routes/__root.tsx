@@ -170,11 +170,13 @@ function RootComponent() {
     markAppReady();
     // Dismiss the native launch splash now that the UI has mounted.
     hideNativeSplash();
+    setPushNavigator((path) => void router.navigate({ to: path as never }));
     const disposeTheme = initTheme();
     const disposeBack = initAndroidBackButton(() => {
       void router.navigate({ to: "/home", replace: true });
     });
     return () => {
+      setPushNavigator(null);
       disposeTheme?.();
       disposeBack();
     };

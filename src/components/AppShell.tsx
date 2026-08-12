@@ -38,6 +38,8 @@ export function AppShell({
   const { t } = useTranslation();
   const [sosOpen, setSosOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const { user } = useAuth();
+  const authUserId = user?.id ?? null;
 
   useEffect(() => {
     activity.appOpened();
