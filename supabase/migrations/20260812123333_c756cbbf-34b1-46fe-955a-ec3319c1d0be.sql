@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS evening_reminder_time_override text;
+COMMENT ON COLUMN public.profiles.evening_reminder_time_override IS 'Temporary testing override for the evening reminder local send time (HH:MM). NULL = production default 16:30.';

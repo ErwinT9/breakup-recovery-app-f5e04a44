@@ -297,6 +297,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           evening_reminder: boolean
+          evening_reminder_time_override: string | null
           id: string
           is_premium: boolean
           morning_reminder: boolean
@@ -316,6 +317,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           evening_reminder?: boolean
+          evening_reminder_time_override?: string | null
           id: string
           is_premium?: boolean
           morning_reminder?: boolean
@@ -335,6 +337,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           evening_reminder?: boolean
+          evening_reminder_time_override?: string | null
           id?: string
           is_premium?: boolean
           morning_reminder?: boolean
