@@ -215,6 +215,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_history: {
+        Row: {
+          category: string
+          created_at: string
+          device_id: string | null
+          error: string | null
+          id: string
+          local_date: string
+          notification_id: number
+          scheduled_local_time: string
+          sent_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          device_id?: string | null
+          error?: string | null
+          id?: string
+          local_date: string
+          notification_id: number
+          scheduled_local_time?: string
+          sent_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          device_id?: string | null
+          error?: string | null
+          id?: string
+          local_date?: string
+          notification_id?: number
+          scheduled_local_time?: string
+          sent_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pictures: {
         Row: {
           caption: string | null
@@ -257,9 +302,12 @@ export type Database = {
           morning_reminder: boolean
           notification_prefs: Json
           notifications_enabled: boolean
+          notifications_permission_granted: boolean
+          permission_synced_at: string | null
           push_token: string | null
           questionnaire_completed: boolean
           recovery_started_at: string
+          timezone: string | null
           updated_at: string
         }
         Insert: {
@@ -273,9 +321,12 @@ export type Database = {
           morning_reminder?: boolean
           notification_prefs?: Json
           notifications_enabled?: boolean
+          notifications_permission_granted?: boolean
+          permission_synced_at?: string | null
           push_token?: string | null
           questionnaire_completed?: boolean
           recovery_started_at?: string
+          timezone?: string | null
           updated_at?: string
         }
         Update: {
@@ -289,9 +340,12 @@ export type Database = {
           morning_reminder?: boolean
           notification_prefs?: Json
           notifications_enabled?: boolean
+          notifications_permission_granted?: boolean
+          permission_synced_at?: string | null
           push_token?: string | null
           questionnaire_completed?: boolean
           recovery_started_at?: string
+          timezone?: string | null
           updated_at?: string
         }
         Relationships: []
