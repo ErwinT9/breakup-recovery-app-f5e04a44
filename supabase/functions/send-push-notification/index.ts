@@ -208,7 +208,19 @@ Deno.serve(async (req) => {
       await admin.from("push_tokens").update({ is_active: false }).in("id", invalid);
     }
 
-    return json({ sent, deactivated: invalid.length, total: tokens.length });
+    return json({
+      sent,
+      deactivated: invalid.length,
+      total: tokens.length,
+      ...(sent === 0
+        ? {
+            message:
+              invalid.length > 0
+                ? "Device tokens were rejected by Firebase (unregistered) and have been deactivated. Reopen the app to re-register."
+                : "Firebase rejected the send. Check the function logs for details.",
+          }
+        : {}),
+    });
   } catch (error) {
     console.error("send-push-notification error", error);
     return json({ error: (error as Error).message ?? "Unexpected error" }, 500);
