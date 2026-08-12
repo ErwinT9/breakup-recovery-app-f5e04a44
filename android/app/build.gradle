@@ -29,6 +29,11 @@ android {
         versionName "1.0.0"
         resourceConfigurations += ["en"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Native debug symbols (Crashlytics NDK ships .so libraries) are packaged
+        // into the AAB so Play Console can symbolicate native crashes/ANRs.
+        ndk {
+            debugSymbolLevel 'FULL'
+        }
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -58,7 +63,9 @@ android {
             if (hasGoogleServices) {
                 firebaseCrashlytics {
                     mappingFileUploadEnabled true
-                    nativeSymbolUploadEnabled false
+                    // Native symbols for Crashlytics NDK reports. Uploaded by the
+                    // uploadCrashlyticsSymbolFileRelease task (run it after bundling).
+                    nativeSymbolUploadEnabled true
                 }
             }
         }
