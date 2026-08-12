@@ -143,7 +143,7 @@ function Questionnaire() {
         return;
       }
       // "Under 18" is no longer an allowed answer.
-      const ageRange = answers.age_range === "Under 18" ? undefined : answers.age_range;
+      const ageRange = answers.age_range === "Under 18" ? null : (answers.age_range ?? null);
       await questionnaireRepo.save(userId, {
         ...answers,
         nickname,
