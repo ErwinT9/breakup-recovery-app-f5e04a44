@@ -107,14 +107,27 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization") ?? "";
     const bearer = authHeader.replace("Bearer ", "").trim();
-    if (!bearer) return json({ error: "Unauthorized" }, 401);
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    if (!bearer) {
+      return json({ error: "Missing Authorization header — sign in and retry." }, 401);
+    }
+    if (anonKey && bearer === anonKey) {
+      // The client sent the publishable/anon key instead of the user session.
+      return json(
+        { error: "Missing user access token — the request was sent with the anon key." },
+        401,
+      );
+    }
 
     // Trusted server callers may pass the service-role key and target any user.
     const isServiceCall = bearer === serviceRoleKey;
     let callerId: string | null = null;
     if (!isServiceCall) {
       const { data, error } = await admin.auth.getUser(bearer);
-      if (error || !data.user) return json({ error: "Unauthorized" }, 401);
+      if (error || !data.user) {
+        console.error("auth.getUser failed", error?.message ?? "no user for token");
+        return json({ error: "Invalid or expired session — please sign in again." }, 401);
+      }
       callerId = data.user.id;
     }
 
@@ -126,17 +139,39 @@ Deno.serve(async (req) => {
     if (!targetUserId) return json({ error: "user_id is required" }, 400);
     if (!title || !body) return json({ error: "title and body are required" }, 400);
     // Signed-in users may only notify their own devices.
-    if (!isServiceCall && targetUserId !== callerId) return json({ error: "Forbidden" }, 403);
+    if (!isServiceCall && targetUserId !== callerId) {
+      return json({ error: "You can only send notifications to your own devices." }, 403);
+    }
 
     const { data: tokens, error: tokenError } = await admin
       .from("push_tokens")
       .select("id, token")
       .eq("user_id", targetUserId)
       .eq("is_active", true);
-    if (tokenError) throw tokenError;
-    if (!tokens || tokens.length === 0) return json({ sent: 0, message: "No active devices" });
+    if (tokenError) {
+      console.error("push_tokens query failed", tokenError.message);
+      throw tokenError;
+    }
+    if (!tokens || tokens.length === 0) {
+      return json({
+        sent: 0,
+        deactivated: 0,
+        total: 0,
+        message:
+          "No active push token for this user. Open the Android app once with notifications enabled.",
+      });
+    }
 
-    const accessToken = await getAccessToken(serviceAccount);
+    let accessToken: string;
+    try {
+      accessToken = await getAccessToken(serviceAccount);
+    } catch (error) {
+      console.error("firebase auth failed", (error as Error).message);
+      return json(
+        { error: "Firebase authentication failed — check FIREBASE_SERVICE_ACCOUNT." },
+        502,
+      );
+    }
     const endpoint = `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`;
 
     let sent = 0;
