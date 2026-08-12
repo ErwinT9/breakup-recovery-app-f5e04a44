@@ -23,17 +23,26 @@ type EveningItem = {
 
 const ITEMS = (eveningContent as { notifications: EveningItem[] }).notifications;
 const CATEGORY = "evening_reminder";
+// Production default. A profile may carry a temporary
+// `evening_reminder_time_override` ("HH:MM") used for testing only; when it is
+// null every user follows this default.
 const SCHEDULED_LOCAL_TIME = "16:30";
 // The cron runs every 15 minutes; every IANA offset is a multiple of 15 min,
-// so 16:30–16:44 catches each timezone exactly once per day.
-const WINDOW_START = 16 * 60 + 30;
-const WINDOW_END = 16 * 60 + 44;
+// so a 15-minute window catches each timezone exactly once per day.
+const WINDOW_MINUTES = 14;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function minutesOfDay(hhmm: string): number {
   const [h, m] = hhmm.split(":");
   return Number(h) * 60 + Number(m);
+}
+
+/** "HH:MM" the given profile should be sent at (override wins, else 16:30). */
+function sendTimeFor(override: unknown): string {
+  return typeof override === "string" && /^\d{2}:\d{2}$/.test(override)
+    ? override
+    : SCHEDULED_LOCAL_TIME;
 }
 
 /** Same recovery-day counter the app uses: days since streak start, 1-based. */
@@ -83,7 +92,7 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
         // Android permission are candidates.
         const { data: profiles, error } = await supabaseAdmin
           .from("profiles")
-          .select("id, timezone, notifications_enabled, evening_reminder, notification_prefs, notifications_permission_granted")
+          .select("id, timezone, notifications_enabled, evening_reminder, notification_prefs, notifications_permission_granted, evening_reminder_time_override")
           .eq("notifications_enabled", true)
           .eq("evening_reminder", true)
           .eq("notifications_permission_granted", true)
@@ -95,8 +104,9 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
           if (prefs['evening'] === false) return false;
           const clock = localClock(profile.timezone as string, now);
           if (!clock) return false;
+          const start = minutesOfDay(sendTimeFor(profile.evening_reminder_time_override));
           const minutes = minutesOfDay(clock.time);
-          return minutes >= WINDOW_START && minutes <= WINDOW_END;
+          return minutes >= start && minutes <= start + WINDOW_MINUTES;
         });
 
         let sent = 0;
@@ -124,7 +134,7 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
             category: CATEGORY,
             notification_id: item.id,
             local_date: clock.date,
-            scheduled_local_time: SCHEDULED_LOCAL_TIME,
+            scheduled_local_time: sendTimeFor(profile.evening_reminder_time_override),
             status: "pending",
           } as never);
           if (claimError) {
