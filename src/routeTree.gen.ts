@@ -31,6 +31,7 @@ import { Route as AuthenticatedQuestionnaireRouteImport } from './routes/_authen
 import { Route as AuthenticatedRitualsRouteImport } from './routes/_authenticated/rituals'
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as AuthenticatedWinsRouteImport } from './routes/_authenticated/wins'
+import { Route as ApiPublicHooksEveningRemindersRouteImport } from './routes/api/public/hooks/evening-reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -144,6 +145,12 @@ const AuthenticatedWinsRoute = AuthenticatedWinsRouteImport.update({
   path: '/wins',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksEveningRemindersRoute =
+  ApiPublicHooksEveningRemindersRouteImport.update({
+    id: '/api/public/hooks/evening-reminders',
+    path: '/api/public/hooks/evening-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/rituals': typeof AuthenticatedRitualsRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
+  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -190,6 +198,7 @@ export interface FileRoutesByTo {
   '/rituals': typeof AuthenticatedRitualsRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
+  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/rituals': typeof AuthenticatedRitualsRoute
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/_authenticated/wins': typeof AuthenticatedWinsRoute
+  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/rituals'
     | '/triggers'
     | '/wins'
+    | '/api/public/hooks/evening-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/rituals'
     | '/triggers'
     | '/wins'
+    | '/api/public/hooks/evening-reminders'
   id:
     | '__root__'
     | '/'
@@ -287,6 +299,7 @@ export interface FileRouteTypes {
     | '/_authenticated/rituals'
     | '/_authenticated/triggers'
     | '/_authenticated/wins'
+    | '/api/public/hooks/evening-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,6 +310,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicHooksEveningRemindersRoute: typeof ApiPublicHooksEveningRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -455,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWinsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/evening-reminders': {
+      id: '/api/public/hooks/evening-reminders'
+      path: '/api/public/hooks/evening-reminders'
+      fullPath: '/api/public/hooks/evening-reminders'
+      preLoaderRoute: typeof ApiPublicHooksEveningRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -505,6 +526,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
+  ApiPublicHooksEveningRemindersRoute: ApiPublicHooksEveningRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
