@@ -1,12 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import eveningContent from "@/data/notifications/eveningCheckins.json";
-import {
-  getAccessToken,
-  loadServiceAccount,
-  localClock,
-  sendToToken,
-} from "@/lib/notifications/fcm.server";
+import { localClock } from "@/lib/notifications/fcm.server";
 
 /**
  * Evening Reminder dispatcher (category: evening_reminder, 16:30 local).
@@ -68,10 +63,15 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
           return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const serviceAccount = loadServiceAccount();
-        if (!serviceAccount) {
-          return Response.json({ error: "FIREBASE_SERVICE_ACCOUNT is not configured" }, { status: 500 });
+        // The Firebase service account lives only in the Supabase secret store,
+        // so the actual FCM delivery is delegated to the deployed
+        // `send-push-notification` Edge Function (service-role call).
+        const supabaseUrl = process.env['SUPABASE_URL'];
+        const serviceRoleKey = process.env['SUPABASE_SERVICE_ROLE_KEY'];
+        if (!supabaseUrl || !serviceRoleKey) {
+          return Response.json({ error: "Supabase server credentials are not configured" }, { status: 500 });
         }
+        const pushEndpoint = `${supabaseUrl}/functions/v1/send-push-notification`;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const now = new Date();
@@ -99,7 +99,6 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
         let sent = 0;
         let skipped = 0;
         let failed = 0;
-        let accessToken: string | null = null;
 
         for (const profile of due) {
           const clock = localClock(profile.timezone as string, now)!;
@@ -132,7 +131,7 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
 
           const { data: tokens } = await supabaseAdmin
             .from("push_tokens")
-            .select("id, token, device_id")
+            .select("id, device_id")
             .eq("user_id", profile.id)
             .eq("is_active", true);
 
@@ -147,36 +146,39 @@ export const Route = createFileRoute("/api/public/hooks/evening-reminders")({
             continue;
           }
 
-          if (!accessToken) accessToken = await getAccessToken(serviceAccount);
-
+          // The Edge Function fans out to every active device of the user and
+          // deactivates tokens that FCM reports as unregistered/invalid.
           let anyOk = false;
           let lastError = "";
-          const invalid: string[] = [];
-          // One send per device; the same device is never targeted twice.
-          const seen = new Set<string>();
-          for (const row of tokens) {
-            if (seen.has(row.token)) continue;
-            seen.add(row.token);
-            const result = await sendToToken(
-              accessToken,
-              serviceAccount.project_id,
-              row.token,
-              item.title,
-              item.description,
-              { deep_link: item.deep_link, category: CATEGORY, notification_id: String(item.id) },
-            );
-            if (result.ok) anyOk = true;
-            else {
-              lastError = `${result.status} ${result.detail}`.slice(0, 500);
-              if (result.invalid) invalid.push(row.id as string);
+          try {
+            const response = await fetch(pushEndpoint, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${serviceRoleKey}`,
+                apikey: serviceRoleKey,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_id: profile.id,
+                title: item.title,
+                body: item.description,
+                data: {
+                  deep_link: item.deep_link,
+                  category: CATEGORY,
+                  notification_id: String(item.id),
+                },
+              }),
+            });
+            const result = (await response.json().catch(() => ({}))) as {
+              sent?: number;
+              error?: string;
+            };
+            anyOk = response.ok && (result.sent ?? 0) > 0;
+            if (!anyOk) {
+              lastError = `${response.status} ${result.error ?? JSON.stringify(result)}`.slice(0, 500);
             }
-          }
-
-          if (invalid.length > 0) {
-            await supabaseAdmin
-              .from("push_tokens")
-              .update({ is_active: false } as never)
-              .in("id", invalid);
+          } catch (sendError) {
+            lastError = String((sendError as Error).message ?? sendError).slice(0, 500);
           }
 
           await supabaseAdmin
