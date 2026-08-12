@@ -70,6 +70,7 @@ import {
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
+import { sendPushToSelf } from "@/lib/notifications/sendPush";
 import {
   checkPermission,
   openNotificationSettings,
