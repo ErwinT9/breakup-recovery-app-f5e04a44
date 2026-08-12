@@ -20,6 +20,7 @@ import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAffirmationsRouteImport } from './routes/_authenticated/affirmations'
 import { Route as AuthenticatedBadgesRouteImport } from './routes/_authenticated/badges'
 import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
+import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedFlagsRouteImport } from './routes/_authenticated/flags'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
@@ -87,6 +88,11 @@ const AuthenticatedChangePasswordRoute =
     path: '/change-password',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCheckInRoute = AuthenticatedCheckInRouteImport.update({
+  id: '/check-in',
+  path: '/check-in',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFlagsRoute = AuthenticatedFlagsRouteImport.update({
   id: '/flags',
   path: '/flags',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/affirmations': typeof AuthenticatedAffirmationsRoute
   '/badges': typeof AuthenticatedBadgesRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/check-in': typeof AuthenticatedCheckInRoute
   '/flags': typeof AuthenticatedFlagsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/journal': typeof AuthenticatedJournalRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/affirmations': typeof AuthenticatedAffirmationsRoute
   '/badges': typeof AuthenticatedBadgesRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/check-in': typeof AuthenticatedCheckInRoute
   '/flags': typeof AuthenticatedFlagsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/journal': typeof AuthenticatedJournalRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/_authenticated/affirmations': typeof AuthenticatedAffirmationsRoute
   '/_authenticated/badges': typeof AuthenticatedBadgesRoute
   '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
+  '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/flags': typeof AuthenticatedFlagsRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/affirmations'
     | '/badges'
     | '/change-password'
+    | '/check-in'
     | '/flags'
     | '/home'
     | '/journal'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/affirmations'
     | '/badges'
     | '/change-password'
+    | '/check-in'
     | '/flags'
     | '/home'
     | '/journal'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/affirmations'
     | '/_authenticated/badges'
     | '/_authenticated/change-password'
+    | '/_authenticated/check-in'
     | '/_authenticated/flags'
     | '/_authenticated/home'
     | '/_authenticated/journal'
@@ -366,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/check-in': {
+      id: '/_authenticated/check-in'
+      path: '/check-in'
+      fullPath: '/check-in'
+      preLoaderRoute: typeof AuthenticatedCheckInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/flags': {
       id: '/_authenticated/flags'
       path: '/flags'
@@ -444,6 +463,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAffirmationsRoute: typeof AuthenticatedAffirmationsRoute
   AuthenticatedBadgesRoute: typeof AuthenticatedBadgesRoute
   AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
+  AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedFlagsRoute: typeof AuthenticatedFlagsRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
@@ -461,6 +481,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAffirmationsRoute: AuthenticatedAffirmationsRoute,
   AuthenticatedBadgesRoute: AuthenticatedBadgesRoute,
   AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
+  AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedFlagsRoute: AuthenticatedFlagsRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
@@ -488,13 +509,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
