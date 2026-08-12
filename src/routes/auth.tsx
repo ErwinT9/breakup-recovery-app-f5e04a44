@@ -17,7 +17,7 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { cleanAuthFragment, waitForOAuthSession } from "@/lib/auth/oauthHash";
-import { passwordResetRedirectUrl } from "@/lib/auth/passwordRecovery";
+import { isRecoveryActive, passwordResetRedirectUrl } from "@/lib/auth/passwordRecovery";
 import { setNativeOAuthHandlers, signInWithGoogle } from "@/lib/auth/oauthNative";
 import { openExternalUrl, PRIVACY_URL, TERMS_URL } from "@/lib/openExternal";
 import { haptic } from "@/lib/native/haptics";
@@ -79,7 +79,7 @@ function AuthScreen() {
     let cancelled = false;
     void waitForOAuthSession().then((oauthSession) => {
       if (cancelled) return;
-      if (oauthSession) void navigate({ to: "/home", replace: true });
+      if (oauthSession && !isRecoveryActive()) void navigate({ to: "/home", replace: true });
     });
     return () => {
       cancelled = true;
@@ -87,7 +87,8 @@ function AuthScreen() {
   }, [navigate]);
 
   useEffect(() => {
-    if (session) void navigate({ to: "/home", replace: true });
+    // A password-recovery session must not drop the user into the app.
+    if (session && !isRecoveryActive()) void navigate({ to: "/home", replace: true });
   }, [session, navigate]);
 
   // Relaunching offline: a persisted session means the user has authenticated
@@ -97,7 +98,7 @@ function AuthScreen() {
     let cancelled = false;
     void getCachedSession().then((cached) => {
       if (cancelled) return;
-      if (cached) void navigate({ to: "/home", replace: true });
+      if (cached && !isRecoveryActive()) void navigate({ to: "/home", replace: true });
       setCachedChecked(true);
     });
     return () => {

@@ -13,6 +13,17 @@ export function passwordResetRedirectUrl(): string {
   return `${window.location.origin}/reset-password`;
 }
 
+let recoveryActive = false;
+
+/** True while a password-recovery session is being handled. */
+export function isRecoveryActive() {
+  return recoveryActive;
+}
+
+export function setRecoveryActive(next: boolean) {
+  recoveryActive = next;
+}
+
 let navigator: ((path: string) => void) | null = null;
 
 /** Root route registers a router-aware navigator for recovery deep links. */
@@ -21,6 +32,7 @@ export function setRecoveryNavigator(next: ((path: string) => void) | null) {
 }
 
 export function goToResetPassword() {
+  recoveryActive = true;
   if (navigator) navigator("/reset-password");
   else if (typeof window !== "undefined") window.location.assign("/reset-password");
 }

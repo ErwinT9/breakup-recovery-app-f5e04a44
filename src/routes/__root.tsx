@@ -26,6 +26,8 @@ import {
 } from "@/lib/monitoring/performance";
 import { migrateAppState } from "@/lib/appState/migrate";
 import { initNativeOAuthListeners } from "@/lib/auth/oauthNative";
+import { goToResetPassword, setRecoveryNavigator } from "@/lib/auth/passwordRecovery";
+import { supabase } from "@/integrations/supabase/client";
 import { initAndroidBackButton } from "@/lib/native/backButton";
 import { setPushNavigator } from "@/lib/notifications/push";
 import { hideNativeSplash } from "@/lib/native/splash";
@@ -172,12 +174,19 @@ function RootComponent() {
     // Dismiss the native launch splash now that the UI has mounted.
     hideNativeSplash();
     setPushNavigator((path: string) => void router.navigate({ to: path as never }));
+    setRecoveryNavigator((path: string) => void router.navigate({ to: path as never, replace: true }));
+    // Supabase raises PASSWORD_RECOVERY once the reset link's session is parsed.
+    const { data: recoverySub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") goToResetPassword();
+    });
     const disposeTheme = initTheme();
     const disposeBack = initAndroidBackButton(() => {
       void router.navigate({ to: "/home", replace: true });
     });
     return () => {
       setPushNavigator(null);
+      setRecoveryNavigator(null);
+      recoverySub.subscription.unsubscribe();
       disposeTheme?.();
       disposeBack();
     };
