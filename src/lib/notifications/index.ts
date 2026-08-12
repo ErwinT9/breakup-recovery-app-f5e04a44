@@ -7,6 +7,7 @@ import {
   type NotificationPrefs,
 } from "./categories";
 import { eveningNotificationForDay } from "./eveningContent";
+import { notificationNavigate } from "./push";
 
 /**
  * Notification service.
@@ -26,8 +27,10 @@ export async function wireNotificationTaps(): Promise<void> {
   tapsWired = true;
   await safeNative(async () => {
     const LocalNotifications = await localPlugin();
-    await LocalNotifications.addListener("localNotificationActionPerformed", () => {
+    await LocalNotifications.addListener("localNotificationActionPerformed", (action) => {
       activity.notificationReturn();
+      const extra = (action.notification?.extra ?? {}) as Record<string, string>;
+      notificationNavigate(extra['deep_link']);
     });
   });
 }

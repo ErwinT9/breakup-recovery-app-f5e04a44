@@ -22,6 +22,11 @@ let navigate: ((path: string) => void) | null = null;
 export function setPushNavigator(fn: ((path: string) => void) | null): void {
   navigate = fn;
 }
+
+/** Navigates to an in-app path when a notification (push or local) is tapped. */
+export function notificationNavigate(path: string | undefined | null): void {
+  if (path && path.startsWith("/")) navigate?.(path);
+}
 let currentUserId: string | null = null;
 
 /**
