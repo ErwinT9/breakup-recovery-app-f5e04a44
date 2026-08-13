@@ -65,6 +65,7 @@ function MoodAnalyticsScreen() {
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   useEffect(() => {
     analytics.screen("mood_analytics");
