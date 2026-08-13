@@ -37,6 +37,29 @@ function base64url(input: ArrayBuffer | string): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+/**
+ * True when the bearer credential is a trusted server-to-server key rather
+ * than a user session. Covers: an exact match with the function's own
+ * SUPABASE_SERVICE_ROLE_KEY, new-format opaque secret keys (sb_secret_*), and
+ * any legacy JWT whose payload role is `service_role` (the project may have
+ * been issued a different-but-valid service key than the one injected here).
+ */
+function isServiceRoleCredential(bearer: string, serviceRoleKey: string): boolean {
+  if (!bearer) return false;
+  if (serviceRoleKey && bearer === serviceRoleKey) return true;
+  if (bearer.startsWith("sb_secret_")) return true;
+  const parts = bearer.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(parts[1].length / 4) * 4, "=")),
+    ) as { role?: string };
+    return payload.role === "service_role";
+  } catch {
+    return false;
+  }
+}
+
 function pemToDer(pem: string): ArrayBuffer {
   const body = pem
     .replace(/-----BEGIN PRIVATE KEY-----/, "")
@@ -119,8 +142,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Trusted server callers may pass the service-role key and target any user.
-    const isServiceCall = bearer === serviceRoleKey;
+    // Trusted server callers (pg_cron → scheduler route) pass a service-role
+    // credential and may target any user; no user session is required.
+    const isServiceCall = isServiceRoleCredential(bearer, serviceRoleKey);
     let callerId: string | null = null;
     if (!isServiceCall) {
       const { data, error } = await admin.auth.getUser(bearer);
