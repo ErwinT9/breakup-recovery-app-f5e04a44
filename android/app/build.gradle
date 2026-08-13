@@ -25,8 +25,8 @@ android {
         applicationId "com.nocontacttracker.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 4
+        versionName "1.0.1"
         resourceConfigurations += ["en"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Native debug symbols (Crashlytics NDK ships .so libraries) are packaged
