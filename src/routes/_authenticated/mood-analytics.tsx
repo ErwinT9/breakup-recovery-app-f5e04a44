@@ -116,7 +116,8 @@ function MoodAnalyticsScreen() {
     [week.all],
   );
 
-  const scaleMax = Math.max(4, Math.min(MAX_PER_DAY, ...[Math.max(...week.days.map((d) => d.total), 4)]));
+  const busiestTotal = Math.max(0, ...week.days.map((day) => day.total));
+  const scaleMax = Math.min(MAX_PER_DAY, Math.max(4, busiestTotal));
 
   const percent = (value: number) => (week.total ? Math.round((value / week.total) * 100) : 0);
 
