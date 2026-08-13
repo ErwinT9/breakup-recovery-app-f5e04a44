@@ -29,7 +29,7 @@ export const Route = createFileRoute("/paywall")({
       { title: "Premium | No Contact Tracker" },
       { name: "description", content: "Unlock unlimited flags and letters, every badge, advanced reminders and cloud backup." },
       { property: "og:title", content: "Premium | No Contact Tracker" },
-      { property: "og:description", content: "7 days free, then cancel anytime." },
+      { property: "og:description", content: "Unlock every healing tool. Cancel anytime." },
     ],
   }),
   component: Paywall,
@@ -95,10 +95,9 @@ function Paywall() {
         {t("paywall.title", "Heal with the full toolkit")}
       </h1>
       <p className="mt-3 text-muted-foreground">
-        {t(
-          "paywall.subtitle",
-          "Unlock every tool that keeps your streak alive. Cancel anytime.",
-        )}
+        {selected?.trialPeriod
+          ? `Start with ${selected.trialPeriod} free${selected.priceString ? `, then ${selected.priceString}` : ""}${selected.period ? ` every ${selected.period}` : ""}. Cancel anytime.`
+          : "Unlock every tool that keeps your streak alive. Cancel anytime."}
       </p>
 
       <SoftCard className="mt-6 space-y-4 animate-rise">
@@ -199,8 +198,10 @@ function Paywall() {
           {isPremium
             ? t("paywall.alreadyPremium", "Pro is active")
             : selected
-              ? `Continue — ${selected.priceString}`
-              : t("paywall.continue", "Continue")}
+              ? selected.trialPeriod
+                ? `Start ${selected.trialPeriod} free trial`
+                : `Continue — ${selected.priceString}`
+              : "Continue"}
         </Button>
         <p className="mt-4 text-center text-xs text-muted-foreground">
           {t(
