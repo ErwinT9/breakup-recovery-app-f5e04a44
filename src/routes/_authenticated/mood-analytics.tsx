@@ -133,7 +133,7 @@ function MoodAnalyticsScreen() {
   })();
 
   return (
-    <AppShell title="Mood analytics" back="/home">
+    <AppShell title="Mood analytics" subtitle="Your real mood data, week by week.">
       <div className="space-y-4 pb-6">
         <SoftCard className="space-y-4">
           <div className="flex items-center justify-between gap-2">
