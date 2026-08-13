@@ -25,6 +25,7 @@ import { Route as AuthenticatedFlagsRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedLettersRouteImport } from './routes/_authenticated/letters'
+import { Route as AuthenticatedMoodAnalyticsRouteImport } from './routes/_authenticated/mood-analytics'
 import { Route as AuthenticatedPicturesRouteImport } from './routes/_authenticated/pictures'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuestionnaireRouteImport } from './routes/_authenticated/questionnaire'
@@ -114,6 +115,12 @@ const AuthenticatedLettersRoute = AuthenticatedLettersRouteImport.update({
   path: '/letters',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMoodAnalyticsRoute =
+  AuthenticatedMoodAnalyticsRouteImport.update({
+    id: '/mood-analytics',
+    path: '/mood-analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPicturesRoute = AuthenticatedPicturesRouteImport.update({
   id: '/pictures',
   path: '/pictures',
@@ -168,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/letters': typeof AuthenticatedLettersRoute
+  '/mood-analytics': typeof AuthenticatedMoodAnalyticsRoute
   '/pictures': typeof AuthenticatedPicturesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
@@ -192,6 +200,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/letters': typeof AuthenticatedLettersRoute
+  '/mood-analytics': typeof AuthenticatedMoodAnalyticsRoute
   '/pictures': typeof AuthenticatedPicturesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
@@ -218,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/letters': typeof AuthenticatedLettersRoute
+  '/_authenticated/mood-analytics': typeof AuthenticatedMoodAnalyticsRoute
   '/_authenticated/pictures': typeof AuthenticatedPicturesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/questionnaire': typeof AuthenticatedQuestionnaireRoute
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/journal'
     | '/letters'
+    | '/mood-analytics'
     | '/pictures'
     | '/profile'
     | '/questionnaire'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/journal'
     | '/letters'
+    | '/mood-analytics'
     | '/pictures'
     | '/profile'
     | '/questionnaire'
@@ -293,6 +305,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/journal'
     | '/_authenticated/letters'
+    | '/_authenticated/mood-analytics'
     | '/_authenticated/pictures'
     | '/_authenticated/profile'
     | '/_authenticated/questionnaire'
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLettersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mood-analytics': {
+      id: '/_authenticated/mood-analytics'
+      path: '/mood-analytics'
+      fullPath: '/mood-analytics'
+      preLoaderRoute: typeof AuthenticatedMoodAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pictures': {
       id: '/_authenticated/pictures'
       path: '/pictures'
@@ -489,6 +509,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedLettersRoute: typeof AuthenticatedLettersRoute
+  AuthenticatedMoodAnalyticsRoute: typeof AuthenticatedMoodAnalyticsRoute
   AuthenticatedPicturesRoute: typeof AuthenticatedPicturesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuestionnaireRoute: typeof AuthenticatedQuestionnaireRoute
@@ -507,6 +528,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedLettersRoute: AuthenticatedLettersRoute,
+  AuthenticatedMoodAnalyticsRoute: AuthenticatedMoodAnalyticsRoute,
   AuthenticatedPicturesRoute: AuthenticatedPicturesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuestionnaireRoute: AuthenticatedQuestionnaireRoute,
