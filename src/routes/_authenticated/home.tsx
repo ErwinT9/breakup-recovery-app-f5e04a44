@@ -400,27 +400,6 @@ function HomeScreen() {
           open={checkInOpen}
           onOpenChange={setCheckInOpen}
           saving={saveCheckIn.isPending}
-          viewOnly={Boolean(checkin)}
-          summary={
-            checkin ? (
-              <div className="space-y-1">
-                <p>
-                  <span aria-hidden>{checkinMood?.emoji ?? "🫶"}</span>{" "}
-                  {checkinMood?.label ?? checkin.mood}
-                </p>
-                <p>
-                  {checkinAction ? (
-                    <>
-                      <span aria-hidden>{checkinAction.emoji}</span> {checkinAction.label}
-                    </>
-                  ) : null}
-                </p>
-                {checkin.custom_intention ? (
-                  <p className="text-muted-foreground">{checkin.custom_intention}</p>
-                ) : null}
-              </div>
-            ) : null
-          }
           onComplete={async (result) => {
             await saveCheckIn.mutateAsync(result);
           }}
