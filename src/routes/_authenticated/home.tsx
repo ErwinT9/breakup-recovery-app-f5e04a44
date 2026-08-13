@@ -324,86 +324,77 @@ function HomeScreen() {
         </SoftCard>
 
 
-        {checkin ? (
-          <SoftCard className="animate-rise space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs tracking-wide text-muted-foreground uppercase">{t("home.todaysMood")}</p>
-                <p className="mt-1 font-medium">
-                  <span aria-hidden>{checkinMood?.emoji ?? "🫶"}</span>{" "}
-                  {checkinMood?.label ?? checkin.mood}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs tracking-wide text-muted-foreground uppercase">
-                  {t("home.todaysIntention")}
-                </p>
-                <p className="mt-1 font-medium">
-                  {checkinAction ? (
-                    <>
-                      <span aria-hidden>{checkinAction.emoji}</span> {checkinAction.label}
-                    </>
-                  ) : (
-                    (checkin.custom_intention ?? "—")
-                  )}
-                </p>
-              </div>
-            </div>
-            {checkinAction && checkin.custom_intention ? (
-              <p className="text-sm text-muted-foreground">{checkin.custom_intention}</p>
-            ) : null}
-            <p className="text-sm text-muted-foreground">
-              {t("home.completedAt")}{" "}
-              {new Date(checkin.completed_at).toLocaleTimeString([], {
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                className="press h-11 flex-1 rounded-2xl"
-                onClick={() => {
-                  haptic.light();
-                  setCheckInOpen(true);
-                }}
-              >
-                {t("home.viewCheckin")}
-              </Button>
-              <Button
-                variant="ghost"
-                className="press h-11 rounded-2xl text-muted-foreground"
-                disabled={resetCheckIn.isPending}
-                onClick={() => resetCheckIn.mutate()}
-              >
-                {t("reset.action")}
-              </Button>
-            </div>
-          </SoftCard>
-        ) : (
-          <SoftCard className="animate-rise">
+        <SoftCard className="animate-rise space-y-4">
+          <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-lavender">
                 <HeartHandshake className="size-5 text-on-tint" aria-hidden />
               </span>
-              <div className="flex-1">
-                <p className="font-medium">🫶 {t("home.dailyMoodCheckin")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("home.pauseForMinute")}
-                </p>
+              <div>
+                <p className="font-medium">Mood Check-In</p>
+                <p className="text-sm text-muted-foreground">{t("home.pauseForMinute")}</p>
               </div>
             </div>
             <Button
-              className="press mt-4 h-12 w-full rounded-2xl"
-              onClick={() => {
-                haptic.light();
-                setCheckInOpen(true);
-              }}
+              asChild
+              variant="secondary"
+              size="sm"
+              className="press shrink-0 rounded-2xl"
             >
-              {t("home.checkInBtn")}
+              <Link to="/mood-analytics">
+                <BarChart3 className="size-4" aria-hidden /> Analytics
+              </Link>
             </Button>
-          </SoftCard>
-        )}
+          </div>
+
+          {checkin ? (
+            <div className="rounded-2xl border border-border p-3">
+              <p className="text-xs tracking-wide text-muted-foreground uppercase">
+                {t("home.todaysMood")}
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="font-medium">
+                  <span aria-hidden>{checkinMood?.emoji ?? "🫶"}</span>{" "}
+                  {checkinMood?.label ?? checkin.mood}
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs text-on-tint ${categoryMeta(moodCategory(checkin.mood)).chip}`}
+                >
+                  {categoryMeta(moodCategory(checkin.mood)).label}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(checkin.completed_at).toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              {checkinAction ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  <span aria-hidden>{checkinAction.emoji}</span> {checkinAction.label}
+                </p>
+              ) : null}
+              {checkin.custom_intention ? (
+                <p className="mt-1 text-sm text-muted-foreground">{checkin.custom_intention}</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {limitReached ? (
+            <p className="text-sm text-muted-foreground">You've reached today's mood limit.</p>
+          ) : null}
+
+          <Button
+            className="press h-12 w-full rounded-2xl"
+            disabled={limitReached}
+            onClick={() => {
+              haptic.light();
+              setCheckInOpen(true);
+            }}
+          >
+            {checkin ? "Log another mood" : t("home.checkInBtn")}
+          </Button>
+        </SoftCard>
 
         <MoodCheckIn
           open={checkInOpen}
