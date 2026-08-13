@@ -175,6 +175,13 @@
   --coral: oklch(0.33 0.04 20);
   --on-tint: oklch(0.95 0.005 265);
 
+  --mood-bright: oklch(0.68 0.13 155);
+  --mood-balanced: oklch(0.66 0.09 240);
+  --mood-bitter: oklch(0.66 0.12 25);
+  --mood-bright-soft: oklch(0.33 0.05 155);
+  --mood-balanced-soft: oklch(0.32 0.035 240);
+  --mood-bitter-soft: oklch(0.33 0.05 25);
+
   --border: oklch(0.95 0 0 / 12%);
   --input: oklch(0.95 0 0 / 16%);
   --ring: oklch(0.72 0.14 148 / 45%);
