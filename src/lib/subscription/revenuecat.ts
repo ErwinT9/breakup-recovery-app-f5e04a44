@@ -113,17 +113,71 @@ export type OfferingPackage = {
   priceString: string;
   currencyCode: string;
   period: string | null;
-  /** e.g. "7 days free" when RevenueCat reports an intro/free trial. */
+  /** e.g. "30 days free" — always derived from RevenueCat's intro/free-trial data. */
   trial: string | null;
+  /** The trial phrase without the "free" suffix, e.g. "30 days". */
+  trialPeriod: string | null;
 };
 
 function periodLabel(iso: string | null | undefined): string | null {
   if (!iso) return null;
-  const match = /^P(\d+)([DWMY])$/.exec(iso);
+  const match = /^P(\d+)([DWMY])$/i.exec(iso.trim());
   if (!match) return null;
   const count = Number(match[1]);
-  const unit = { D: "day", W: "week", M: "month", Y: "year" }[match[2] as "D" | "W" | "M" | "Y"];
+  const unit = { D: "day", W: "week", M: "month", Y: "year" }[
+    match[2]!.toUpperCase() as "D" | "W" | "M" | "Y"
+  ];
   return `${count} ${unit}${count === 1 ? "" : "s"}`;
+}
+
+function unitLabel(count: number, unit: string | null | undefined): string | null {
+  if (!count || !unit) return null;
+  const normalized = String(unit).toUpperCase();
+  const name =
+    normalized.startsWith("DAY") || normalized === "D"
+      ? "day"
+      : normalized.startsWith("WEEK") || normalized === "W"
+        ? "week"
+        : normalized.startsWith("MONTH") || normalized === "M"
+          ? "month"
+          : normalized.startsWith("YEAR") || normalized === "Y"
+            ? "year"
+            : null;
+  return name ? `${count} ${name}${count === 1 ? "" : "s"}` : null;
+}
+
+/** Finds the free-trial duration RevenueCat reports, across every SDK payload shape. */
+function freeTrialPeriod(product: any): string | null {
+  const options: any[] = [
+    product?.defaultOption,
+    ...(Array.isArray(product?.subscriptionOptions) ? product.subscriptionOptions : []),
+  ].filter(Boolean);
+
+  for (const option of options) {
+    const phases: any[] = [
+      option?.freePhase,
+      ...(Array.isArray(option?.pricingPhases) ? option.pricingPhases : []),
+    ].filter(Boolean);
+    for (const phase of phases) {
+      const amount =
+        phase?.price?.amountMicros ?? phase?.price?.amount ?? phase?.priceAmountMicros ?? null;
+      const isFree = phase === option?.freePhase || amount === 0;
+      if (!isFree) continue;
+      const label =
+        periodLabel(phase?.billingPeriod?.iso8601 ?? phase?.billingPeriod) ??
+        unitLabel(Number(phase?.billingPeriod?.value ?? 0), phase?.billingPeriod?.unit);
+      if (label) return label;
+    }
+  }
+
+  const intro = product?.introPrice ?? null;
+  if (intro && (intro.price === 0 || intro.priceString === "" || intro.price === "0")) {
+    return (
+      periodLabel(intro.periodISO8601 ?? intro.period ?? null) ??
+      unitLabel(Number(intro.periodNumberOfUnits ?? 0), intro.periodUnit)
+    );
+  }
+  return null;
 }
 
 function toOfferingPackage(pkg: any): OfferingPackage {
@@ -140,11 +194,7 @@ function toOfferingPackage(pkg: any): OfferingPackage {
         : "other";
 
   const option = product.defaultOption ?? null;
-  const freePhase = option?.freePhase ?? null;
-  const introPrice = product.introPrice ?? null;
-  const trial =
-    periodLabel(freePhase?.billingPeriod?.iso8601) ??
-    (introPrice && introPrice.price === 0 ? periodLabel(introPrice.periodISO8601 ?? null) : null);
+  const trial = freeTrialPeriod(product);
 
   const period =
     periodLabel(option?.pricingPhases?.at?.(-1)?.billingPeriod?.iso8601) ??
@@ -160,6 +210,7 @@ function toOfferingPackage(pkg: any): OfferingPackage {
     currencyCode: String(product.currencyCode ?? ""),
     period,
     trial: trial ? `${trial} free` : null,
+    trialPeriod: trial,
   };
 }
 
