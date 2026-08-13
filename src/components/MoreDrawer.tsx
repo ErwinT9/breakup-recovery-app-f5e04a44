@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
   CalendarClock,
+  Crown,
   FileText,
   Info,
   LogOut,
@@ -56,7 +57,7 @@ export function MoreDrawer({
   const userId = user?.id ?? "";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { restore, busy } = useSubscription();
+  const { restore, busy, isPremium } = useSubscription();
   const [resetOpen, setResetOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -193,6 +194,33 @@ export function MoreDrawer({
           </div>
 
           <nav className="mt-6 px-3 pb-6">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.light();
+                onOpenChange(false);
+                void navigate({ to: "/paywall" });
+              }}
+              className={cn(
+                "press mb-3 flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left",
+                isPremium ? "border border-border bg-muted" : "bg-lavender text-on-tint",
+              )}
+            >
+              <Crown className={cn("size-5", isPremium && "text-muted-foreground")} aria-hidden />
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold tracking-wide uppercase">
+                  {isPremium ? "Pro Active" : "Pro"}
+                </span>
+                <span
+                  className={cn(
+                    "block text-xs",
+                    isPremium ? "text-muted-foreground" : "text-on-tint/80",
+                  )}
+                >
+                  {isPremium ? "Manage or restore your subscription" : "Unlock all premium features"}
+                </span>
+              </span>
+            </button>
             {items.map(({ icon: Icon, label, onClick }, index) => (
               <div key={label}>
                 {index > 0 ? <div className="mx-4 h-px bg-border" /> : null}
