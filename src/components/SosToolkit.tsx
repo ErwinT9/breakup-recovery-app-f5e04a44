@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { CircleDot, Flag as FlagIcon, Mail, Sparkles, Trophy, Wind } from "lucide-react";
+import { CircleDot, Flag as FlagIcon, Flame, Mail, Sparkles, Trophy, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@tanstack/react-router";
 
 import { SoftCard } from "@/components/SoftCard";
 import { PopIt } from "@/components/PopIt";
@@ -53,13 +54,28 @@ export function SosToolkit({
     urge: { title: t("sos.urgeTitle"), subtitle: t("sos.urgeSubtitle") },
   };
 
-  const MENU: { key: Tool; label: string; hint: string; icon: typeof Wind; tint: string }[] = [
+  const navigate = useNavigate();
+
+  const MENU: {
+    key: Tool | "motivation";
+    label: string;
+    hint: string;
+    icon: typeof Wind;
+    tint: string;
+  }[] = [
     { key: "breathe", label: t("sos.breathe"), hint: t("sos.breatheHint"), icon: Wind, tint: "bg-sky" },
     { key: "ground", label: t("sos.ground"), hint: t("sos.groundHint"), icon: Sparkles, tint: "bg-lavender" },
     { key: "flags", label: t("sos.flags"), hint: t("sos.flagsHint"), icon: FlagIcon, tint: "bg-coral" },
     { key: "wins", label: t("sos.wins"), hint: t("sos.winsHint"), icon: Trophy, tint: "bg-mint" },
     { key: "letters", label: t("sos.letters"), hint: t("sos.lettersHint"), icon: Mail, tint: "bg-lavender" },
     { key: "urge", label: t("sos.urge"), hint: t("sos.urgeHint"), icon: CircleDot, tint: "bg-mint" },
+    {
+      key: "motivation",
+      label: "Motivation",
+      hint: "A little reminder to keep choosing yourself.",
+      icon: Flame,
+      tint: "bg-mint",
+    },
   ];
 
   useEffect(() => {
@@ -146,6 +162,11 @@ export function SosToolkit({
                     type="button"
                     onClick={() => {
                       haptic.light();
+                      if (key === "motivation") {
+                        onOpenChange(false);
+                        void navigate({ to: "/motivation" });
+                        return;
+                      }
                       setTool(key);
                     }}
                     className={cn(

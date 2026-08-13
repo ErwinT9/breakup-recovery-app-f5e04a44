@@ -32,6 +32,8 @@ import { Route as AuthenticatedQuestionnaireRouteImport } from './routes/_authen
 import { Route as AuthenticatedRitualsRouteImport } from './routes/_authenticated/rituals'
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as AuthenticatedWinsRouteImport } from './routes/_authenticated/wins'
+import { Route as AuthenticatedMotivationIndexRouteImport } from './routes/_authenticated/motivation/index'
+import { Route as AuthenticatedMotivationTopicIdRouteImport } from './routes/_authenticated/motivation/$topicId'
 import { Route as ApiPublicHooksEveningRemindersRouteImport } from './routes/api/public/hooks/evening-reminders'
 
 const IndexRoute = IndexRouteImport.update({
@@ -152,6 +154,18 @@ const AuthenticatedWinsRoute = AuthenticatedWinsRouteImport.update({
   path: '/wins',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMotivationIndexRoute =
+  AuthenticatedMotivationIndexRouteImport.update({
+    id: '/motivation/',
+    path: '/motivation/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMotivationTopicIdRoute =
+  AuthenticatedMotivationTopicIdRouteImport.update({
+    id: '/motivation/$topicId',
+    path: '/motivation/$topicId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksEveningRemindersRoute =
   ApiPublicHooksEveningRemindersRouteImport.update({
     id: '/api/public/hooks/evening-reminders',
@@ -182,6 +196,8 @@ export interface FileRoutesByFullPath {
   '/rituals': typeof AuthenticatedRitualsRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
+  '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -207,6 +223,8 @@ export interface FileRoutesByTo {
   '/rituals': typeof AuthenticatedRitualsRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
+  '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesById {
@@ -234,6 +252,8 @@ export interface FileRoutesById {
   '/_authenticated/rituals': typeof AuthenticatedRitualsRoute
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/_authenticated/wins': typeof AuthenticatedWinsRoute
+  '/_authenticated/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRouteTypes {
@@ -261,6 +281,8 @@ export interface FileRouteTypes {
     | '/rituals'
     | '/triggers'
     | '/wins'
+    | '/motivation/$topicId'
+    | '/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -286,6 +308,8 @@ export interface FileRouteTypes {
     | '/rituals'
     | '/triggers'
     | '/wins'
+    | '/motivation/$topicId'
+    | '/motivation'
     | '/api/public/hooks/evening-reminders'
   id:
     | '__root__'
@@ -312,6 +336,8 @@ export interface FileRouteTypes {
     | '/_authenticated/rituals'
     | '/_authenticated/triggers'
     | '/_authenticated/wins'
+    | '/_authenticated/motivation/$topicId'
+    | '/_authenticated/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesById: FileRoutesById
 }
@@ -489,6 +515,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWinsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/motivation/': {
+      id: '/_authenticated/motivation/'
+      path: '/motivation'
+      fullPath: '/motivation/'
+      preLoaderRoute: typeof AuthenticatedMotivationIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/motivation/$topicId': {
+      id: '/_authenticated/motivation/$topicId'
+      path: '/motivation/$topicId'
+      fullPath: '/motivation/$topicId'
+      preLoaderRoute: typeof AuthenticatedMotivationTopicIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/evening-reminders': {
       id: '/api/public/hooks/evening-reminders'
       path: '/api/public/hooks/evening-reminders'
@@ -516,6 +556,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRitualsRoute: typeof AuthenticatedRitualsRoute
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedWinsRoute: typeof AuthenticatedWinsRoute
+  AuthenticatedMotivationTopicIdRoute: typeof AuthenticatedMotivationTopicIdRoute
+  AuthenticatedMotivationIndexRoute: typeof AuthenticatedMotivationIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -535,6 +577,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRitualsRoute: AuthenticatedRitualsRoute,
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedWinsRoute: AuthenticatedWinsRoute,
+  AuthenticatedMotivationTopicIdRoute: AuthenticatedMotivationTopicIdRoute,
+  AuthenticatedMotivationIndexRoute: AuthenticatedMotivationIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

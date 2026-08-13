@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BookOpen,
   Camera,
+  Flame,
   HeartHandshake,
   Repeat,
   Sparkles,
@@ -159,6 +160,22 @@ function Activity() {
           ))}
         </ul>
       </section>
+
+      <Link
+        to="/motivation"
+        onClick={() => haptic.select()}
+        className="press soft-card mt-5 flex items-start gap-3 rounded-3xl bg-mint p-5"
+      >
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-background/40">
+          <Flame className="size-5 text-on-tint" aria-hidden />
+        </span>
+        <span className="min-w-0">
+          <span className="block font-medium text-on-tint">Motivation</span>
+          <span className="mt-1 block text-sm text-on-tint/80">
+            A little reminder to keep choosing yourself.
+          </span>
+        </span>
+      </Link>
 
       <SoftCard className="mt-5 bg-mint">
         <div className="flex items-start gap-3">
