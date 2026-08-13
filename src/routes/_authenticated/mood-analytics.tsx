@@ -144,7 +144,10 @@ function MoodAnalyticsScreen() {
               size="icon"
               className="press rounded-2xl"
               aria-label="Previous week"
-              onClick={() => setWeekStart((current) => addDays(current, -7))}
+              onClick={() => {
+                setSelectedDay(null);
+                setWeekStart((current) => addDays(current, -7));
+              }}
             >
               <ChevronLeft className="size-5" aria-hidden />
             </Button>
@@ -160,7 +163,10 @@ function MoodAnalyticsScreen() {
               className="press rounded-2xl"
               aria-label="Next week"
               disabled={isThisWeek}
-              onClick={() => setWeekStart((current) => addDays(current, 7))}
+              onClick={() => {
+                setSelectedDay(null);
+                setWeekStart((current) => addDays(current, 7));
+              }}
             >
               <ChevronRight className="size-5" aria-hidden />
             </Button>
@@ -172,35 +178,78 @@ function MoodAnalyticsScreen() {
             </p>
           ) : (
             <>
-              <div className="flex h-48 items-end gap-2">
-                {week.days.map((day) => (
-                  <div key={day.key} className="flex flex-1 flex-col items-center gap-2">
-                    <div className="flex w-full flex-1 items-end justify-center">
-                      {day.total === 0 ? (
-                        <div className="h-1.5 w-full rounded-full bg-muted" aria-hidden />
-                      ) : (
-                        <div
-                          className="flex w-full flex-col-reverse overflow-hidden rounded-xl"
-                          style={{ height: `${(day.total / scaleMax) * 100}%` }}
-                          role="img"
-                          aria-label={`${day.label}: ${day.total} entries`}
+              <div className="flex gap-2">
+                <div className="flex h-52 w-6 shrink-0 flex-col justify-between py-0.5 text-right text-[10px] text-muted-foreground">
+                  {yTicks.map((tick) => (
+                    <span key={tick}>{tick}</span>
+                  ))}
+                </div>
+                <div className="flex flex-1 items-end gap-1.5">
+                  {week.days.map((day) => {
+                    const active = selectedDay === day.key;
+                    return (
+                      <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+                        <span
+                          className={`text-[11px] font-medium ${day.total ? "text-foreground" : "text-transparent"}`}
                         >
-                          {MOOD_CATEGORIES.map((category) =>
-                            day.counts[category.key] > 0 ? (
-                              <div
-                                key={category.key}
-                                className={category.bar}
-                                style={{ height: `${(day.counts[category.key] / day.total) * 100}%` }}
-                              />
-                            ) : null,
+                          {day.total || 0}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedDay(active ? null : day.key)}
+                          className={`relative h-52 w-full rounded-xl transition-colors ${active ? "bg-muted" : "hover:bg-muted/60"}`}
+                          aria-label={`${day.label}: ${day.total} entries — ${day.counts.bright} bright, ${day.counts.balanced} balanced, ${day.counts.bitter} bitter`}
+                        >
+                          {day.total === 0 ? (
+                            <span
+                              className="absolute inset-x-0 bottom-0 h-1.5 rounded-full bg-muted"
+                              aria-hidden
+                            />
+                          ) : (
+                            <span
+                              className="absolute inset-x-0 bottom-0 flex flex-col-reverse overflow-hidden rounded-lg"
+                              style={{ height: `${(day.total / scaleMax) * 100}%` }}
+                              aria-hidden
+                            >
+                              {MOOD_CATEGORIES.map((category) =>
+                                day.counts[category.key] > 0 ? (
+                                  <span
+                                    key={category.key}
+                                    className={`block w-full ${category.bar}`}
+                                    style={{
+                                      height: `${(day.counts[category.key] / day.total) * 100}%`,
+                                    }}
+                                  />
+                                ) : null,
+                              )}
+                            </span>
                           )}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs text-muted-foreground">{day.label}</span>
-                  </div>
-                ))}
+                        </button>
+                        <span className="text-xs text-muted-foreground">{day.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+              {selected ? (
+                <div className="rounded-2xl border border-border p-3 text-sm">
+                  <p className="font-medium">
+                    {selected.label} · {selected.total} {selected.total === 1 ? "entry" : "entries"}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {MOOD_CATEGORIES.map((category) => (
+                      <span
+                        key={category.key}
+                        className={`rounded-full px-2 py-0.5 text-xs text-on-tint ${category.chip}`}
+                      >
+                        {category.label} {selected.counts[category.key]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-xs text-muted-foreground">Tap a bar to see that day's counts.</p>
+              )}
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {MOOD_CATEGORIES.map((category) => (
                   <span key={category.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
