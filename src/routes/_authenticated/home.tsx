@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, ArrowRight, HeartHandshake, Mail, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowRight, BarChart3, HeartHandshake, Mail, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -42,6 +42,7 @@ import { celebrate } from "@/lib/celebrate";
 import { actionByKey, BADGES, moodByKey } from "@/lib/content";
 import { useBadges } from "@/hooks/useBadges";
 import { haptic } from "@/lib/native/haptics";
+import { DAILY_MOOD_LIMIT, categoryMeta, moodCategory } from "@/lib/mood";
 import { celebrateMilestone } from "@/lib/notifications";
 import { daysSince, elapsedSince } from "@/lib/streak";
 
@@ -127,9 +128,9 @@ function HomeScreen() {
     queryFn: () => letterRepo.list(userId),
     enabled: Boolean(userId),
   });
-  const todayMood = useQuery({
+  const todayMoods = useQuery({
     queryKey: ["mood-today", userId],
-    queryFn: () => moodRepo.today(userId),
+    queryFn: () => moodRepo.todayEntries(userId),
     enabled: Boolean(userId),
   });
 
@@ -162,21 +163,11 @@ function HomeScreen() {
     onError: (error) => toast.error(humanizeError(error)),
   });
 
-  const resetCheckIn = useMutation({
-    mutationFn: async () => {
-      if (!userId) return;
-      await moodRepo.removeToday(userId);
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["mood-today", userId] });
-      toast(t("home.checkinCleared"));
-    },
-    onError: (error) => toast.error(humanizeError(error)),
-  });
-
-  const checkin = todayMood.data ?? null;
+  const todayEntries = todayMoods.data ?? [];
+  const checkin = todayEntries[0] ?? null;
   const checkinMood = moodByKey(checkin?.mood);
   const checkinAction = actionByKey(checkin?.action);
+  const limitReached = todayEntries.length >= DAILY_MOOD_LIMIT;
 
   useEffect(() => {
     if (profile.isLoading || profile.isFetching || !profile.data) return;
