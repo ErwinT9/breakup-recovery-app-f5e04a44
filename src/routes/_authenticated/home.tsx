@@ -9,6 +9,8 @@ import { AppShell } from "@/components/AppShell";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useTheme } from "@/hooks/useTheme";
 import { Moon, Sun } from "lucide-react";
+import { Crown } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
 import { DailyTasks } from "@/components/DailyTasks";
 import { FireflyJar } from "@/components/FireflyJar";
 import { HealingProgress } from "@/components/HealingProgress";
@@ -222,6 +224,7 @@ function HomeScreen() {
   const rawName = profile.data?.display_name;
   const name = rawName ? capitalizeName(rawName) : "";
   const theme = useTheme();
+  const { isPremium } = useSubscription();
 
   return (
     <AppShell
@@ -240,21 +243,39 @@ function HomeScreen() {
         </button>
       }
       action={
-        <button
+        <div className="mt-1 flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            aria-label={isPremium ? "Pro active" : "Upgrade to Pro"}
+            onClick={() => {
+              haptic.light();
+              void navigate({ to: "/paywall" });
+            }}
+            className={
+              isPremium
+                ? "press flex h-10 items-center gap-1 rounded-full border border-border bg-muted px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+                : "press flex h-10 items-center gap-1 rounded-full bg-lavender px-3 text-xs font-semibold tracking-wide text-on-tint uppercase shadow-sm"
+            }
+          >
+            <Crown className="size-4" aria-hidden />
+            Pro
+          </button>
+          <button
           type="button"
           aria-label={t("home.switchTheme")}
           onClick={() => {
             haptic.select();
             theme.toggle();
           }}
-          className="press mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground"
+          className="press flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground"
         >
           {theme.resolved === "dark" ? (
             <Sun className="size-5 animate-in fade-in zoom-in-75 duration-300" aria-hidden />
           ) : (
             <Moon className="size-5 animate-in fade-in zoom-in-75 duration-300" aria-hidden />
           )}
-        </button>
+          </button>
+        </div>
       }
       subtitle={
         <span key={dailyQuote} className="animate-fade-in block">

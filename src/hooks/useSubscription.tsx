@@ -6,11 +6,20 @@ import { haptic } from "@/lib/native/haptics";
 import { isNative } from "@/lib/native/platform";
 import {
   getCachedEntitlement,
+  loadOfferings,
   presentPaywall,
+  purchasePackageById,
   refreshEntitlement,
   restorePurchases,
   type EntitlementState,
+  type OfferingPackage,
 } from "@/lib/subscription/revenuecat";
+
+type OfferingsState =
+  | { status: "loading" }
+  | { status: "ok"; packages: OfferingPackage[] }
+  | { status: "unavailable" }
+  | { status: "error"; message: string };
 
 type SubscriptionValue = {
   entitlement: EntitlementState | null;
@@ -18,6 +27,9 @@ type SubscriptionValue = {
   busy: boolean;
   subscribe: () => Promise<void>;
   restore: () => Promise<void>;
+  offerings: OfferingsState;
+  reloadOfferings: () => Promise<void>;
+  purchase: (packageId: string) => Promise<void>;
 };
 
 const SubscriptionContext = createContext<SubscriptionValue>({
@@ -26,16 +38,78 @@ const SubscriptionContext = createContext<SubscriptionValue>({
   busy: false,
   subscribe: async () => {},
   restore: async () => {},
+  offerings: { status: "loading" },
+  reloadOfferings: async () => {},
+  purchase: async () => {},
 });
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [entitlement, setEntitlement] = useState<EntitlementState | null>(null);
   const [busy, setBusy] = useState(false);
+  const [offerings, setOfferings] = useState<OfferingsState>({ status: "loading" });
 
   useEffect(() => {
     void getCachedEntitlement().then(setEntitlement);
     void refreshEntitlement().then(setEntitlement);
   }, []);
+
+  const reloadOfferings = useCallback(async () => {
+    setOfferings({ status: "loading" });
+    const result = await loadOfferings();
+    setOfferings(
+      result.status === "ok"
+        ? { status: "ok", packages: result.packages }
+        : result.status === "error"
+          ? { status: "error", message: result.message }
+          : { status: "unavailable" },
+    );
+  }, []);
+
+  useEffect(() => {
+    void reloadOfferings();
+  }, [reloadOfferings]);
+
+  const handleOutcome = useCallback(
+    (result: Awaited<ReturnType<typeof purchasePackageById>>) => {
+      if (result.status === "success") {
+        setEntitlement(result.state);
+        haptic.success();
+        toast.success("Welcome to Pro. Everything is unlocked.");
+      } else if (result.status === "cancelled") {
+        toast("No worries — the free tools are still yours.");
+      } else if (result.status === "pending") {
+        toast("Purchase pending. We'll unlock Pro as soon as it clears.");
+      } else if (result.status === "unavailable") {
+        toast(
+          isNative()
+            ? "That plan isn't available right now."
+            : "Purchases run in the Android build — this preview shows the Pro screen only.",
+        );
+      } else {
+        toast.error(result.message);
+      }
+    },
+    [],
+  );
+
+  const purchase = useCallback(
+    async (packageId: string) => {
+      setBusy(true);
+      try {
+        const result = await purchasePackageById(packageId);
+        handleOutcome(result);
+        if (result.status === "success" || result.status === "pending") {
+          setEntitlement(await refreshEntitlement());
+        }
+      } catch (error) {
+        analytics.error(error, { stage: "purchase" });
+        toast.error("We couldn't reach the store. Please try again.");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [handleOutcome],
+  );
 
   const subscribe = useCallback(async () => {
     setBusy(true);
@@ -85,7 +159,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   return (
     <SubscriptionContext.Provider
-      value={{ entitlement, isPremium: Boolean(entitlement?.isPremium), busy, subscribe, restore }}
+      value={{
+        entitlement,
+        isPremium: Boolean(entitlement?.isPremium),
+        busy,
+        subscribe,
+        restore,
+        offerings,
+        reloadOfferings,
+        purchase,
+      }}
     >
       {children}
     </SubscriptionContext.Provider>
