@@ -498,8 +498,8 @@ export const moodRepo = {
         .from("mood_checkins")
         .select("*")
         .eq("user_id", userId)
-        .order("checkin_on", { ascending: false })
-        .limit(180);
+        .order("completed_at", { ascending: false })
+        .limit(1000);
       if (error) throw error;
       return (data ?? []) as unknown as MoodCheckin[];
     });
@@ -509,36 +509,35 @@ export const moodRepo = {
     const today = localDayKey();
     return list.find((item) => item.checkin_on === today) ?? null;
   },
+  /** All of today's entries, newest first. */
+  async todayEntries(userId: string): Promise<MoodCheckin[]> {
+    const list = await moodRepo.list(userId);
+    const today = localDayKey();
+    return list
+      .filter((item) => item.checkin_on === today)
+      .sort((a, b) => b.completed_at.localeCompare(a.completed_at));
+  },
   async save(
     userId: string,
     input: { mood: string; action: string | null; custom_intention: string | null },
   ): Promise<MoodCheckin[]> {
     const list = await cacheRead<MoodCheckin[]>("moods", userId, []);
     const today = localDayKey();
-    const existing = list.find((item) => item.checkin_on === today);
     const now = new Date().toISOString();
+    // Every selection is an independent record — entries are never overwritten.
     const row: MoodCheckin = {
-      id: existing?.id ?? newId(),
+      id: newId(),
       user_id: userId,
       checkin_on: today,
       mood: input.mood,
       action: input.action,
       custom_intention: input.custom_intention,
       completed_at: now,
-      created_at: existing?.created_at ?? now,
+      created_at: now,
     };
-    const next = [row, ...list.filter((item) => item.id !== row.id)];
+    const next = [row, ...list];
     await cacheWrite("moods", userId, next);
-    await writeThrough("mood_checkins", row.id, { ...row }, "user_id,checkin_on");
-    return next;
-  },
-  async removeToday(userId: string): Promise<MoodCheckin[]> {
-    const list = await cacheRead<MoodCheckin[]>("moods", userId, []);
-    const today = localDayKey();
-    const existing = list.find((item) => item.checkin_on === today);
-    const next = list.filter((item) => item.checkin_on !== today);
-    await cacheWrite("moods", userId, next);
-    if (existing) await enqueue({ id: existing.id, table: "mood_checkins", op: "delete", payload: { id: existing.id } });
+    await writeThrough("mood_checkins", row.id, { ...row });
     return next;
   },
 };
