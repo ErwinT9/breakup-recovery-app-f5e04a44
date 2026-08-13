@@ -1,0 +1,1 @@
+ALTER TABLE public.mood_checkins DROP CONSTRAINT IF EXISTS mood_checkins_user_id_checkin_on_key;

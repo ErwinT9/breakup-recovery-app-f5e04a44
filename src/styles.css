@@ -21,6 +21,12 @@
   --color-bubble-3: var(--bubble-3);
   --color-bubble-4: var(--bubble-4);
   --color-bubble-5: var(--bubble-5);
+  --color-mood-bright: var(--mood-bright);
+  --color-mood-balanced: var(--mood-balanced);
+  --color-mood-bitter: var(--mood-bitter);
+  --color-mood-bright-soft: var(--mood-bright-soft);
+  --color-mood-balanced-soft: var(--mood-balanced-soft);
+  --color-mood-bitter-soft: var(--mood-bitter-soft);
   --radius-sm: calc(var(--radius) - 8px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
@@ -103,6 +109,14 @@
   --bubble-4: oklch(0.83 0.1 25);
   --bubble-5: oklch(0.87 0.11 90);
 
+  /* Mood categories */
+  --mood-bright: oklch(0.78 0.13 155);
+  --mood-balanced: oklch(0.79 0.09 240);
+  --mood-bitter: oklch(0.78 0.11 25);
+  --mood-bright-soft: oklch(0.949 0.043 155);
+  --mood-balanced-soft: oklch(0.955 0.025 240);
+  --mood-bitter-soft: oklch(0.947 0.03 25);
+
   --border: oklch(0.26 0 0 / 8%);
   --input: oklch(0.26 0 0 / 12%);
   --ring: oklch(0.76 0.15 148 / 45%);
@@ -160,6 +174,13 @@
   --lavender: oklch(0.33 0.04 295);
   --coral: oklch(0.33 0.04 20);
   --on-tint: oklch(0.95 0.005 265);
+
+  --mood-bright: oklch(0.68 0.13 155);
+  --mood-balanced: oklch(0.66 0.09 240);
+  --mood-bitter: oklch(0.66 0.12 25);
+  --mood-bright-soft: oklch(0.33 0.05 155);
+  --mood-balanced-soft: oklch(0.32 0.035 240);
+  --mood-bitter-soft: oklch(0.33 0.05 25);
 
   --border: oklch(0.95 0 0 / 12%);
   --input: oklch(0.95 0 0 / 16%);
