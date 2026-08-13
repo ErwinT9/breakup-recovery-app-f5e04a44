@@ -2,7 +2,7 @@ import { analytics } from "@/lib/analytics";
 import { isNative, safeNative } from "@/lib/native/platform";
 import { STORAGE_KEYS, storage } from "@/lib/native/storage";
 
-export const REVENUECAT_ANDROID_KEY = "test_KVYhNrHVOtralMcOrRabSXyoGOd";
+export const REVENUECAT_ANDROID_KEY = import.meta.env.VITE_REVENUECAT_ANDROID_KEY ?? "";
 export const ENTITLEMENT_ID = "pro";
 
 export type EntitlementState = {
