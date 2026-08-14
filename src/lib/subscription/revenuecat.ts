@@ -1,6 +1,7 @@
 import { analytics } from "@/lib/analytics";
-import { isNative, safeNative } from "@/lib/native/platform";
+import { isNative, platformName, safeNative } from "@/lib/native/platform";
 import { STORAGE_KEYS, storage } from "@/lib/native/storage";
+import { rcLog, rcLogError } from "@/lib/subscription/rcDebug";
 
 export const REVENUECAT_ANDROID_KEY = import.meta.env["VITE_REVENUECAT_ANDROID_KEY"] ?? "";
 export const ENTITLEMENT_ID = "pro";
@@ -20,6 +21,16 @@ const DEFAULT_STATE: EntitlementState = {
 };
 
 let configured = false;
+/** TEMPORARY: last configure() failure, surfaced in diagnostics instead of being swallowed. */
+let configureError: string | null = null;
+
+export function lastConfigureError(): string | null {
+  return configureError;
+}
+
+export function isRevenueCatConfigured(): boolean {
+  return configured;
+}
 
 /**
  * The RevenueCat plugin registers itself against browser globals on import,
@@ -40,17 +51,43 @@ async function cacheEntitlement(state: EntitlementState): Promise<EntitlementSta
 }
 
 export async function configureRevenueCat(appUserId?: string): Promise<void> {
-  if (!isNative() || configured) return;
-  await safeNative(async () => {
+  if (!isNative()) {
+    rcLog("configure:skipped_not_native", { platform: platformName() });
+    return;
+  }
+  if (configured) {
+    rcLog("configure:already_configured");
+    return;
+  }
+  const key = REVENUECAT_ANDROID_KEY;
+  rcLog("configure:start", {
+    platform: platformName(),
+    keyPresent: Boolean(key),
+    keyPrefix: key ? key.slice(0, 5) : null,
+    keyLength: key.length,
+    appUserId: appUserId ? `${appUserId.slice(0, 8)}…` : null,
+  });
+  if (!key) {
+    configureError = "VITE_REVENUECAT_ANDROID_KEY is empty in this build";
+    rcLog("configure:missing_key");
+    return;
+  }
+  try {
     const { Purchases, LOG_LEVEL } = await rc();
-    await Purchases.setLogLevel({ level: import.meta.env.DEV ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR });
+    // TEMPORARY: verbose native logs so `adb logcat` shows RevenueCat's own trace.
+    await Purchases.setLogLevel({ level: LOG_LEVEL.VERBOSE });
     await Purchases.configure(
       appUserId
-        ? { apiKey: REVENUECAT_ANDROID_KEY, appUserID: appUserId }
-        : { apiKey: REVENUECAT_ANDROID_KEY },
+        ? { apiKey: key, appUserID: appUserId }
+        : { apiKey: key },
     );
     configured = true;
-  });
+    configureError = null;
+    rcLog("configure:success");
+  } catch (error) {
+    configureError = (error as Error)?.message ?? String(error);
+    rcLogError("configure:failed", error);
+  }
 }
 
 export async function identifyUser(appUserId: string): Promise<void> {
@@ -221,19 +258,57 @@ export type OfferingsResult =
 
 /** Loads the current (`default`) offering and normalises its packages for the UI. */
 export async function loadOfferings(): Promise<OfferingsResult> {
-  if (!isNative()) return { status: "unavailable" };
+  if (!isNative()) {
+    rcLog("offerings:skipped_not_native", { platform: platformName() });
+    return { status: "unavailable" };
+  }
   try {
     await configureRevenueCat();
+    if (!configured) {
+      rcLog("offerings:aborted_not_configured", { configureError });
+      return {
+        status: "error",
+        message: `RevenueCat not configured: ${configureError ?? "unknown reason"}`,
+      };
+    }
     const { Purchases } = await rc();
+    rcLog("offerings:getOfferings:start");
     const offerings = await Purchases.getOfferings();
+    rcLog("offerings:getOfferings:success", {
+      currentIdentifier: offerings.current?.identifier ?? null,
+      allIdentifiers: Object.keys(offerings.all ?? {}),
+      hasDefault: Boolean(offerings.all?.["default"]),
+      currentPackages: (offerings.current?.availablePackages ?? []).map((p: any) => ({
+        packageId: p.identifier,
+        packageType: p.packageType,
+        productId: p.product?.identifier,
+        priceString: p.product?.priceString,
+      })),
+      defaultPackages: ((offerings.all?.["default"]?.availablePackages ?? []) as any[]).map((p) => ({
+        packageId: p.identifier,
+        packageType: p.packageType,
+        productId: p.product?.identifier,
+      })),
+    });
     const current = offerings.current ?? offerings.all?.["default"] ?? null;
     const available = current?.availablePackages ?? [];
-    if (!available.length) return { status: "unavailable" };
+    if (!current) {
+      rcLog("offerings:no_current_or_default_offering", {
+        allIdentifiers: Object.keys(offerings.all ?? {}),
+      });
+      return { status: "unavailable" };
+    }
+    if (!available.length) {
+      rcLog("offerings:empty_package_list", { offeringIdentifier: current.identifier });
+      return { status: "unavailable" };
+    }
     const packages = available.map(toOfferingPackage);
+    rcLog("offerings:normalised", packages);
     const order = { yearly: 0, weekly: 1, other: 2 } as const;
     packages.sort((a, b) => order[a.kind] - order[b.kind]);
     return { status: "ok", packages };
   } catch (error) {
+    rcLogError("offerings:getOfferings:failed", error);
     analytics.error(error, { stage: "revenuecat_offerings" });
     return { status: "error", message: (error as Error).message ?? "Could not load plans" };
   }

@@ -20,6 +20,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
+import { rcLogsText, subscribeRcLogs } from "@/lib/subscription/rcDebug";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/paywall")({
@@ -49,6 +50,14 @@ function Paywall() {
   const navigate = useNavigate();
   const { restore, busy, isPremium, offerings, reloadOfferings, purchase } = useSubscription();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [diagnostics, setDiagnostics] = useState("");
+
+  useEffect(() => {
+    const sync = () => setDiagnostics(rcLogsText());
+    sync();
+    return subscribeRcLogs(sync);
+  }, []);
 
   useEffect(() => analytics.screen("paywall"), []);
 
@@ -173,6 +182,9 @@ function Paywall() {
                 ? "We couldn't load subscription plans right now."
                 : "Subscription plans aren't available on this device yet."}
             </p>
+            {offerings.status === "error" ? (
+              <p className="text-xs break-words text-destructive">{offerings.message}</p>
+            ) : null}
             <Button
               variant="secondary"
               className="press h-11 w-full rounded-2xl"
@@ -180,6 +192,29 @@ function Paywall() {
             >
               <RefreshCw className="size-4" aria-hidden /> Try again
             </Button>
+            <button
+              type="button"
+              className="press w-full text-xs underline text-muted-foreground"
+              onClick={() => setShowDiagnostics((v) => !v)}
+            >
+              {showDiagnostics ? "Hide diagnostics" : "Show diagnostics"}
+            </button>
+            {showDiagnostics ? (
+              <div className="space-y-2 text-left">
+                <pre className="max-h-72 overflow-auto rounded-xl bg-muted p-3 text-[0.65rem] leading-snug whitespace-pre-wrap break-all">
+                  {diagnostics || "No RevenueCat log entries captured yet."}
+                </pre>
+                <Button
+                  variant="secondary"
+                  className="press h-10 w-full rounded-2xl text-xs"
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(diagnostics);
+                  }}
+                >
+                  Copy diagnostics
+                </Button>
+              </div>
+            ) : null}
           </SoftCard>
         )}
       </div>
