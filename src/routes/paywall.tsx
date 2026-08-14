@@ -20,6 +20,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
+import { rcLogsText, subscribeRcLogs } from "@/lib/subscription/rcDebug";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/paywall")({
@@ -49,6 +50,14 @@ function Paywall() {
   const navigate = useNavigate();
   const { restore, busy, isPremium, offerings, reloadOfferings, purchase } = useSubscription();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [diagnostics, setDiagnostics] = useState("");
+
+  useEffect(() => {
+    const sync = () => setDiagnostics(rcLogsText());
+    sync();
+    return subscribeRcLogs(sync);
+  }, []);
 
   useEffect(() => analytics.screen("paywall"), []);
 
