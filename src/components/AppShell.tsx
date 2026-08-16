@@ -72,7 +72,7 @@ export function AppShell({
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col">
-      <header className="flex items-start gap-3 px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)]">
+      <header className="flex items-center gap-3 px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)]">
         <button
           type="button"
           aria-label={t("shell.openMenu", "Open menu")}
@@ -81,13 +81,13 @@ export function AppShell({
             haptic.select();
             setMoreOpen(true);
           }}
-          className="press mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground"
+          className="press flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground"
         >
           <Menu className="size-5" aria-hidden />
         </button>
         {leading}
         <div className="min-w-0 flex-1">
-          <h1 className="text-[1.75rem] font-semibold tracking-tight">{title}</h1>
+          <h1 className="truncate text-2xl font-semibold tracking-tight">{title}</h1>
           {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
         </div>
         {action}
