@@ -247,6 +247,23 @@ function AuthScreen() {
           </div>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-4 animate-rise" noValidate>
+            {mode === "signup" ? (
+              <>
+                <Button
+                  type="button"
+                  className="press h-13 rounded-2xl text-base"
+                  disabled={busy}
+                  onClick={google}
+                >
+                  {t("auth.continueGoogle", "Continue with Google")}
+                </Button>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="h-px flex-1 bg-border" />
+                  {t("auth.or", "or")}
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+              </>
+            ) : null}
             <div className="space-y-2">
               <Label htmlFor="email">{t("auth.emailLabel", "Email")}</Label>
               <Input

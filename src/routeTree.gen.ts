@@ -19,6 +19,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
 import { Route as AuthenticatedAffirmationsRouteImport } from './routes/_authenticated/affirmations'
 import { Route as AuthenticatedBadgesRouteImport } from './routes/_authenticated/badges'
+import { Route as AuthenticatedChangeEmailRouteImport } from './routes/_authenticated/change-email'
 import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedCheckInRouteImport } from './routes/_authenticated/check-in'
 import { Route as AuthenticatedFlagsRouteImport } from './routes/_authenticated/flags'
@@ -86,6 +87,12 @@ const AuthenticatedBadgesRoute = AuthenticatedBadgesRouteImport.update({
   path: '/badges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangeEmailRoute =
+  AuthenticatedChangeEmailRouteImport.update({
+    id: '/change-email',
+    path: '/change-email',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChangePasswordRoute =
   AuthenticatedChangePasswordRouteImport.update({
     id: '/change-password',
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof AuthenticatedActivityRoute
   '/affirmations': typeof AuthenticatedAffirmationsRoute
   '/badges': typeof AuthenticatedBadgesRoute
+  '/change-email': typeof AuthenticatedChangeEmailRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/flags': typeof AuthenticatedFlagsRoute
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/activity': typeof AuthenticatedActivityRoute
   '/affirmations': typeof AuthenticatedAffirmationsRoute
   '/badges': typeof AuthenticatedBadgesRoute
+  '/change-email': typeof AuthenticatedChangeEmailRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
   '/check-in': typeof AuthenticatedCheckInRoute
   '/flags': typeof AuthenticatedFlagsRoute
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/affirmations': typeof AuthenticatedAffirmationsRoute
   '/_authenticated/badges': typeof AuthenticatedBadgesRoute
+  '/_authenticated/change-email': typeof AuthenticatedChangeEmailRoute
   '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/check-in': typeof AuthenticatedCheckInRoute
   '/_authenticated/flags': typeof AuthenticatedFlagsRoute
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/affirmations'
     | '/badges'
+    | '/change-email'
     | '/change-password'
     | '/check-in'
     | '/flags'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/affirmations'
     | '/badges'
+    | '/change-email'
     | '/change-password'
     | '/check-in'
     | '/flags'
@@ -323,6 +335,7 @@ export interface FileRouteTypes {
     | '/_authenticated/activity'
     | '/_authenticated/affirmations'
     | '/_authenticated/badges'
+    | '/_authenticated/change-email'
     | '/_authenticated/change-password'
     | '/_authenticated/check-in'
     | '/_authenticated/flags'
@@ -422,6 +435,13 @@ declare module '@tanstack/react-router' {
       path: '/badges'
       fullPath: '/badges'
       preLoaderRoute: typeof AuthenticatedBadgesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/change-email': {
+      id: '/_authenticated/change-email'
+      path: '/change-email'
+      fullPath: '/change-email'
+      preLoaderRoute: typeof AuthenticatedChangeEmailRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/change-password': {
@@ -543,6 +563,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedAffirmationsRoute: typeof AuthenticatedAffirmationsRoute
   AuthenticatedBadgesRoute: typeof AuthenticatedBadgesRoute
+  AuthenticatedChangeEmailRoute: typeof AuthenticatedChangeEmailRoute
   AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedCheckInRoute: typeof AuthenticatedCheckInRoute
   AuthenticatedFlagsRoute: typeof AuthenticatedFlagsRoute
@@ -564,6 +585,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedActivityRoute: AuthenticatedActivityRoute,
   AuthenticatedAffirmationsRoute: AuthenticatedAffirmationsRoute,
   AuthenticatedBadgesRoute: AuthenticatedBadgesRoute,
+  AuthenticatedChangeEmailRoute: AuthenticatedChangeEmailRoute,
   AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedCheckInRoute: AuthenticatedCheckInRoute,
   AuthenticatedFlagsRoute: AuthenticatedFlagsRoute,
