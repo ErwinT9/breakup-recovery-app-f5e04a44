@@ -34,7 +34,7 @@ import {
 } from "@/data/repository";
 import { MoodCheckIn, type MoodCheckInResult } from "@/components/MoodCheckIn";
 import { useAuth } from "@/hooks/useAuth";
-import { useDailyQuote, useRotatingHomeQuote } from "@/hooks/useDailyQuote";
+import { useRotatingHomeQuote } from "@/hooks/useDailyQuote";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { activity } from "@/lib/badgeActivity";
 import { celebrate } from "@/lib/celebrate";
@@ -220,64 +220,28 @@ function HomeScreen() {
 
   const rawName = profile.data?.display_name;
   const name = rawName ? capitalizeName(rawName) : "";
-  const theme = useTheme();
   const { isPremium } = useSubscription();
 
   return (
     <AppShell
       title={name ? t("home.greeting", { name }) : t("home.welcome")}
-      leading={
+      action={
         <button
           type="button"
-          aria-label={t("home.openProfile")}
+          aria-label={isPremium ? "Pro active" : "Upgrade to Pro"}
           onClick={() => {
             haptic.light();
-            void navigate({ to: "/profile" });
+            void navigate({ to: "/paywall" });
           }}
-          className="press mt-1 shrink-0 rounded-full"
+          className={
+            isPremium
+              ? "press flex h-10 shrink-0 items-center gap-1 rounded-full border border-border bg-muted px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+              : "press flex h-10 shrink-0 items-center gap-1 rounded-full bg-lavender px-3 text-xs font-semibold tracking-wide text-on-tint uppercase shadow-sm"
+          }
         >
-          <UserAvatar src={profile.data?.avatar_url} name={name} className="size-10" />
+          <Crown className="size-4" aria-hidden />
+          Pro
         </button>
-      }
-      action={
-        <div className="mt-1 flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            aria-label={isPremium ? "Pro active" : "Upgrade to Pro"}
-            onClick={() => {
-              haptic.light();
-              void navigate({ to: "/paywall" });
-            }}
-            className={
-              isPremium
-                ? "press flex h-10 items-center gap-1 rounded-full border border-border bg-muted px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
-                : "press flex h-10 items-center gap-1 rounded-full bg-lavender px-3 text-xs font-semibold tracking-wide text-on-tint uppercase shadow-sm"
-            }
-          >
-            <Crown className="size-4" aria-hidden />
-            Pro
-          </button>
-          <button
-          type="button"
-          aria-label={t("home.switchTheme")}
-          onClick={() => {
-            haptic.select();
-            theme.toggle();
-          }}
-          className="press flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground"
-        >
-          {theme.resolved === "dark" ? (
-            <Sun className="size-5 animate-in fade-in zoom-in-75 duration-300" aria-hidden />
-          ) : (
-            <Moon className="size-5 animate-in fade-in zoom-in-75 duration-300" aria-hidden />
-          )}
-          </button>
-        </div>
-      }
-      subtitle={
-        <span key={dailyQuote} className="animate-fade-in block">
-          {dailyQuote}
-        </span>
       }
     >
       <div className="space-y-4">
