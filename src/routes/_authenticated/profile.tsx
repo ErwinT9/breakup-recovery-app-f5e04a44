@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Bell,
   CalendarDays,
-  Crown,
 
   Image as ImageIcon,
   KeyRound,
+  Pencil,
   Moon,
   Trash2,
   Upload,
@@ -46,7 +46,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { clearUserCache, profileRepo, streakRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { activity } from "@/lib/badgeActivity";
-import { useSubscription } from "@/hooks/useSubscription";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,11 +65,9 @@ import {
   registerPush,
   notificationPermissionGranted,
   saveNotificationPrefs,
-  sendTestLocalNotification,
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
-import { sendPushToSelf } from "@/lib/notifications/sendPush";
 import {
   checkPermission,
   openNotificationSettings,
@@ -128,7 +125,6 @@ function SettingsScreen() {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { isPremium } = useSubscription();
   const theme = useTheme();
   const canChangePassword = isPasswordUser(user);
 
@@ -312,33 +308,6 @@ function SettingsScreen() {
     }
   };
 
-  const sendTestNotification = async () => {
-    haptic.light();
-    setNotifBusy(true);
-    try {
-      const result = await sendPushToSelf(
-        "Test notification",
-        "If you can see this, push notifications are working.",
-        { deep_link: "/home" },
-      );
-      if (result.sent > 0) {
-        toast.success(t("settings.testSent"));
-        return;
-      }
-      const local = await sendTestLocalNotification();
-      toast(local ? t("settings.testSentLocal") : t("settings.testFailed"));
-    } catch (error) {
-      analytics.error(error, { stage: "push_test" });
-      // Fall back to a local notification so the user still gets a signal,
-      // but keep the real reason visible for debugging.
-      const local = await sendTestLocalNotification();
-      if (local) toast(t("settings.testSentLocal"));
-      else toast.error(humanizeError(error));
-    } finally {
-      setNotifBusy(false);
-    }
-  };
-
   const saveProfile = async () => {
     haptic.light();
     await update.mutateAsync({
@@ -447,7 +416,20 @@ function SettingsScreen() {
           <ArrowLeft className="size-5" aria-hidden />
         </button>
         <h1 className="mt-4 text-[2rem] font-semibold tracking-tight">{t("settings.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>
+        <div className="mt-1 flex min-w-0 items-center gap-1.5">
+          <p className="min-w-0 truncate text-sm text-muted-foreground">{user?.email}</p>
+          <button
+            type="button"
+            aria-label="Change email"
+            onClick={() => {
+              haptic.light();
+              void navigate({ to: "/change-email" });
+            }}
+            className="press flex size-7 shrink-0 items-center justify-center rounded-full bg-background/70 text-muted-foreground"
+          >
+            <Pencil className="size-3.5" aria-hidden />
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 space-y-4 px-5 py-5">
@@ -608,14 +590,6 @@ function SettingsScreen() {
               }
               aria-disabled={systemBlocked}
             >
-              <Button
-                variant="outline"
-                className="press h-11 w-full rounded-2xl"
-                disabled={notifBusy || systemBlocked}
-                onClick={() => void sendTestNotification()}
-              >
-                {t("settings.sendTest")}
-              </Button>
               {NOTIFICATION_CATEGORIES.filter(
                 ({ key }) => key !== "morning" && key !== "evening",
               ).map(({ key, labelKey, label }) => (
@@ -693,23 +667,6 @@ function SettingsScreen() {
             </SelectContent>
           </Select>
         </SoftCard>
-
-        {!isPremium ? (
-          <Link to="/paywall" className="press block">
-            <SoftCard className="bg-lavender flex items-center gap-3">
-              <Crown className="size-5 text-on-tint" aria-hidden />
-              <div className="flex-1">
-                <p className="font-medium text-on-tint">{t("settings.goPremium")}</p>
-                <p className="text-sm text-on-tint/75">{t("settings.goPremiumDesc")}</p>
-              </div>
-            </SoftCard>
-          </Link>
-        ) : (
-          <SoftCard className="bg-lavender flex items-center gap-3">
-            <Crown className="size-5 text-on-tint" aria-hidden />
-            <p className="font-medium text-on-tint">{t("settings.premiumActive")}</p>
-          </SoftCard>
-        )}
 
         <Button
           variant="ghost"
