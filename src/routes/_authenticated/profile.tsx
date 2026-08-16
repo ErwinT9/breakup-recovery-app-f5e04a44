@@ -8,6 +8,8 @@ import {
 
   Image as ImageIcon,
   KeyRound,
+  Mail,
+  Pencil,
   Moon,
   Trash2,
   Upload,
@@ -66,11 +68,9 @@ import {
   registerPush,
   notificationPermissionGranted,
   saveNotificationPrefs,
-  sendTestLocalNotification,
   syncReminders,
   type NotificationPrefs,
 } from "@/lib/notifications";
-import { sendPushToSelf } from "@/lib/notifications/sendPush";
 import {
   checkPermission,
   openNotificationSettings,
@@ -307,33 +307,6 @@ function SettingsScreen() {
     } catch (error) {
       setNotifOn(!enabled);
       toast.error(humanizeError(error));
-    } finally {
-      setNotifBusy(false);
-    }
-  };
-
-  const sendTestNotification = async () => {
-    haptic.light();
-    setNotifBusy(true);
-    try {
-      const result = await sendPushToSelf(
-        "Test notification",
-        "If you can see this, push notifications are working.",
-        { deep_link: "/home" },
-      );
-      if (result.sent > 0) {
-        toast.success(t("settings.testSent"));
-        return;
-      }
-      const local = await sendTestLocalNotification();
-      toast(local ? t("settings.testSentLocal") : t("settings.testFailed"));
-    } catch (error) {
-      analytics.error(error, { stage: "push_test" });
-      // Fall back to a local notification so the user still gets a signal,
-      // but keep the real reason visible for debugging.
-      const local = await sendTestLocalNotification();
-      if (local) toast(t("settings.testSentLocal"));
-      else toast.error(humanizeError(error));
     } finally {
       setNotifBusy(false);
     }
@@ -608,14 +581,6 @@ function SettingsScreen() {
               }
               aria-disabled={systemBlocked}
             >
-              <Button
-                variant="outline"
-                className="press h-11 w-full rounded-2xl"
-                disabled={notifBusy || systemBlocked}
-                onClick={() => void sendTestNotification()}
-              >
-                {t("settings.sendTest")}
-              </Button>
               {NOTIFICATION_CATEGORIES.filter(
                 ({ key }) => key !== "morning" && key !== "evening",
               ).map(({ key, labelKey, label }) => (
