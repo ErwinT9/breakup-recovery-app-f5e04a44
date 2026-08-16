@@ -6,9 +6,6 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
-import { UserAvatar } from "@/components/UserAvatar";
-import { useTheme } from "@/hooks/useTheme";
-import { Moon, Sun } from "lucide-react";
 import { Crown } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { DailyTasks } from "@/components/DailyTasks";
