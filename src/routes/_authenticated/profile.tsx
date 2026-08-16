@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Bell,
   CalendarDays,
-  Crown,
 
   Image as ImageIcon,
   KeyRound,
-  Mail,
   Pencil,
   Moon,
   Trash2,
@@ -48,7 +46,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { clearUserCache, profileRepo, streakRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { activity } from "@/lib/badgeActivity";
-import { useSubscription } from "@/hooks/useSubscription";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { isPasswordUser } from "@/lib/authProvider";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,7 +125,6 @@ function SettingsScreen() {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { isPremium } = useSubscription();
   const theme = useTheme();
   const canChangePassword = isPasswordUser(user);
 
