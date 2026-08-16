@@ -95,7 +95,6 @@ function HomeScreen() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   useTick();
-  const dailyQuote = useDailyQuote();
   const rotatingQuote = useRotatingHomeQuote();
 
   useEffect(() => {
