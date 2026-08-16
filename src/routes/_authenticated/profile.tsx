@@ -420,7 +420,20 @@ function SettingsScreen() {
           <ArrowLeft className="size-5" aria-hidden />
         </button>
         <h1 className="mt-4 text-[2rem] font-semibold tracking-tight">{t("settings.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>
+        <div className="mt-1 flex min-w-0 items-center gap-1.5">
+          <p className="min-w-0 truncate text-sm text-muted-foreground">{user?.email}</p>
+          <button
+            type="button"
+            aria-label="Change email"
+            onClick={() => {
+              haptic.light();
+              void navigate({ to: "/change-email" });
+            }}
+            className="press flex size-7 shrink-0 items-center justify-center rounded-full bg-background/70 text-muted-foreground"
+          >
+            <Pencil className="size-3.5" aria-hidden />
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 space-y-4 px-5 py-5">
@@ -658,23 +671,6 @@ function SettingsScreen() {
             </SelectContent>
           </Select>
         </SoftCard>
-
-        {!isPremium ? (
-          <Link to="/paywall" className="press block">
-            <SoftCard className="bg-lavender flex items-center gap-3">
-              <Crown className="size-5 text-on-tint" aria-hidden />
-              <div className="flex-1">
-                <p className="font-medium text-on-tint">{t("settings.goPremium")}</p>
-                <p className="text-sm text-on-tint/75">{t("settings.goPremiumDesc")}</p>
-              </div>
-            </SoftCard>
-          </Link>
-        ) : (
-          <SoftCard className="bg-lavender flex items-center gap-3">
-            <Crown className="size-5 text-on-tint" aria-hidden />
-            <p className="font-medium text-on-tint">{t("settings.premiumActive")}</p>
-          </SoftCard>
-        )}
 
         <Button
           variant="ghost"
