@@ -28,9 +28,9 @@ export const Route = createFileRoute("/paywall")({
   head: () => ({
     meta: [
       { title: "Premium | No Contact Tracker" },
-      { name: "description", content: "Unlock unlimited flags and letters, every badge, advanced reminders and cloud backup." },
-      { property: "og:title", content: "Premium | No Contact Tracker" },
-      { property: "og:description", content: "Unlock every healing tool. Cancel anytime." },
+      { name: "description", content: "30 days free, full Pro access during your trial, and cancel anytime. Keep your progress, streaks & personal data." },
+      { property: "og:title", content: "30 Days Free. Your Best Chance to Reset." },
+      { property: "og:description", content: "Get full access to all the tools. 30 days completely free. Cancel anytime." },
     ],
   }),
   component: Paywall,
@@ -38,11 +38,11 @@ export const Route = createFileRoute("/paywall")({
 
 const BENEFIT_ICONS = [BookHeart, BarChart3, Target, CloudUpload, Palette];
 const BENEFIT_KEYS = [
-  { key: "unlimitedFlags", fallback: "Unlimited flags, wins and letters" },
-  { key: "analytics", fallback: "Mood and urge analytics" },
-  { key: "toolkitBadges", fallback: "Full emergency toolkit and badges" },
-  { key: "cloudBackup", fallback: "Encrypted cloud backup" },
-  { key: "themes", fallback: "Premium themes and widgets" },
+  { key: "trial", fallback: "30 days completely free" },
+  { key: "fullAccess", fallback: "Full Pro access during your trial" },
+  { key: "keepProgress", fallback: "Keep your progress, streaks & personal data" },
+  { key: "billing", fallback: "Choose weekly or yearly billing after your trial" },
+  { key: "cancel", fallback: "Cancel anytime" },
 ] as const;
 
 function Paywall() {
@@ -101,12 +101,10 @@ function Paywall() {
       </span>
 
       <h1 className="mt-4 text-3xl leading-tight font-semibold tracking-tight text-gradient">
-        {t("paywall.title", "Heal with the full toolkit")}
+        {t("paywall.title", "30 Days Free. Your Best Chance to Reset.")}
       </h1>
       <p className="mt-3 text-muted-foreground">
-        {selected?.trialPeriod
-          ? `Start with ${selected.trialPeriod} free${selected.priceString ? `, then ${selected.priceString}` : ""}${selected.period ? ` every ${selected.period}` : ""}. Cancel anytime.`
-          : "Unlock every tool that keeps your streak alive. Cancel anytime."}
+        {t("paywall.subtitle", "Get full access to all the tools.")}
       </p>
 
       <SoftCard className="mt-6 space-y-4 animate-rise">
