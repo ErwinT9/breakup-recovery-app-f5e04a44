@@ -171,9 +171,10 @@ function Questionnaire() {
         display_name: nickname,
         notifications_enabled: Boolean(answers.wants_reminders),
       });
+      // The saved "last contact" moment is the single source of truth for the counter.
       const startedAt = answers.last_contact_at ?? new Date().toISOString();
       const streak = await streakRepo.ensure(userId, startedAt);
-      if (!redo && streak.started_at !== startedAt) {
+      if (streak.started_at !== startedAt) {
         await streakRepo.setStart(userId, streak, startedAt);
       }
       if (answers.wants_reminders) {
