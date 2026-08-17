@@ -96,6 +96,7 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
 
   useEffect(() => {
     analytics.screen("questionnaire");
@@ -125,6 +126,15 @@ function Questionnaire() {
       }
       setNameError(null);
       patch = { ...patch, nickname };
+    }
+    // Step 5 (last contact) is required — the counter starts from it.
+    if (step === 5) {
+      const lastContact = patch?.last_contact_at ?? answers.last_contact_at ?? null;
+      if (!lastContact || Number.isNaN(new Date(lastContact).getTime())) {
+        setContactError("Please select when you last had contact.");
+        return;
+      }
+      setContactError(null);
     }
     if (patch) set(patch);
     haptic.light();
