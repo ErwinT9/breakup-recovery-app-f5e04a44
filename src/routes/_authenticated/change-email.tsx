@@ -86,10 +86,8 @@ function ChangeEmailScreen() {
               We sent a confirmation link to <span className="font-medium">{sent}</span>.
             </p>
             <p className="text-sm text-muted-foreground">
-              Your email address will only change once you open that link. If your account also has
-              the old address confirmed, you may receive a confirmation request at both addresses —
-              open both links to complete the change. Keep signing in with your current email until
-              then.
+              Your account stays exactly the same — same account, same data. The address only
+              updates once you open that link. Keep signing in with your current email until then.
             </p>
             <Button
               className="press h-12 w-full rounded-2xl"
