@@ -152,6 +152,12 @@ function Questionnaire() {
         setNameError("Please enter your name or nickname.");
         return;
       }
+      if (!answers.last_contact_at || Number.isNaN(new Date(answers.last_contact_at).getTime())) {
+        setSaving(false);
+        setStep(5);
+        setContactError("Please select when you last had contact.");
+        return;
+      }
       // "Under 18" is no longer an allowed answer.
       const ageRange = answers.age_range === "Under 18" ? null : (answers.age_range ?? null);
       await questionnaireRepo.save(userId, {
@@ -250,7 +256,7 @@ function Questionnaire() {
             <Choice
               options={t("questionnaire.step1.options", { returnObjects: true }) as string[]}
               value={answers.age_range}
-              onSelect={(age_range) => advance({ age_range })}
+              onSelect={(age_range) => set({ age_range })}
             />
           ),
         };
@@ -262,7 +268,7 @@ function Questionnaire() {
             <Choice
               options={t("questionnaire.step2.options", { returnObjects: true }) as string[]}
               value={answers.gender}
-              onSelect={(gender) => advance({ gender })}
+              onSelect={(gender) => set({ gender })}
             />
           ),
         };
@@ -274,7 +280,7 @@ function Questionnaire() {
             <Choice
               options={t("questionnaire.step3.options", { returnObjects: true }) as string[]}
               value={answers.relationship_length}
-              onSelect={(relationship_length) => advance({ relationship_length })}
+              onSelect={(relationship_length) => set({ relationship_length })}
             />
           ),
         };
@@ -286,7 +292,7 @@ function Questionnaire() {
             <Choice
               options={t("questionnaire.step4.options", { returnObjects: true }) as string[]}
               value={answers.who_ended}
-              onSelect={(who_ended) => advance({ who_ended })}
+              onSelect={(who_ended) => set({ who_ended })}
             />
           ),
         };
@@ -296,28 +302,45 @@ function Questionnaire() {
           hint: t("questionnaire.step5.hint"),
           body: (
             <div className="space-y-3">
-              <Label htmlFor="last-contact">{t("questionnaire.step5.label")}</Label>
+              <Label htmlFor="last-contact">
+                {t("questionnaire.step5.label")}{" "}
+                <span aria-hidden className="text-destructive">
+                  *
+                </span>
+                <span className="sr-only">(required)</span>
+              </Label>
               <Input
                 id="last-contact"
                 type="datetime-local"
+                required
+                aria-invalid={Boolean(contactError)}
                 value={
                   answers.last_contact_at
                     ? new Date(answers.last_contact_at).toISOString().slice(0, 16)
                     : ""
                 }
-                onChange={(event) =>
+                onChange={(event) => {
+                  setContactError(null);
                   set({
                     last_contact_at: event.target.value
                       ? new Date(event.target.value).toISOString()
                       : null,
-                  })
-                }
+                  });
+                }}
                 className="h-13 rounded-2xl"
               />
+              {contactError ? (
+                <p role="alert" className="text-sm text-destructive">
+                  {contactError}
+                </p>
+              ) : null}
               <button
                 type="button"
                 className="press text-sm text-primary"
-                onClick={() => set({ last_contact_at: new Date().toISOString() })}
+                onClick={() => {
+                  setContactError(null);
+                  set({ last_contact_at: new Date().toISOString() });
+                }}
               >
                 {t("questionnaire.step5.justNow")}
               </button>
@@ -364,7 +387,7 @@ function Questionnaire() {
             <Choice
               options={t("questionnaire.step7.options", { returnObjects: true }) as string[]}
               value={answers.checks_social}
-              onSelect={(checks_social) => advance({ checks_social })}
+              onSelect={(checks_social) => set({ checks_social })}
             />
           ),
         };
@@ -417,7 +440,7 @@ function Questionnaire() {
                       : t("questionnaire.step10.no")
                 }
                 onSelect={(option) =>
-                  advance({ wants_reminders: option === t("questionnaire.step10.yes") })
+                  set({ wants_reminders: option === t("questionnaire.step10.yes") })
                 }
               />
               <SoftCard className="bg-sky">
@@ -441,7 +464,32 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t, nameError]);
+  }, [step, answers, reasons, t, nameError, contactError]);
+
+  const canContinue = (() => {
+    switch (step) {
+      case 0:
+        return Boolean((answers.nickname ?? "").trim());
+      case 1:
+        return Boolean(answers.age_range);
+      case 2:
+        return Boolean(answers.gender);
+      case 3:
+        return Boolean(answers.relationship_length);
+      case 4:
+        return Boolean(answers.who_ended);
+      case 5:
+        return Boolean(
+          answers.last_contact_at && !Number.isNaN(new Date(answers.last_contact_at).getTime()),
+        );
+      case 7:
+        return Boolean(answers.checks_social);
+      case 10:
+        return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
+      default:
+        return true;
+    }
+  })();
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
@@ -477,7 +525,7 @@ function Questionnaire() {
         ) : null}
         <Button
           className="press h-13 flex-1 rounded-2xl text-base"
-          disabled={saving}
+          disabled={saving || !canContinue}
           onClick={() => (step === STEPS - 1 ? void finish() : advance())}
         >
           {step === STEPS - 1 ? t("questionnaire.start") : t("questionnaire.continue")}
