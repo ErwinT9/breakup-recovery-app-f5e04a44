@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import {
+  clampToNow,
   formatLocalDateTime,
   localPartsToISO,
   parseTimestamp,
@@ -29,12 +30,32 @@ const selectClass =
  * timezone and emits a UTC ISO string.
  */
 export function DateTimeField({ value, onChange, disableFuture, id, invalid, className }: Props) {
+  // Ticks so "now" (and therefore which options are selectable) stays live.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    if (!disableFuture) return;
+    const timer = setInterval(() => setNow(new Date()), 15000);
+    return () => clearInterval(timer);
+  }, [disableFuture]);
+
   const parts = useMemo(() => toLocalParts(parseTimestamp(value) ?? new Date()), [value]);
+
+  const isToday = disableFuture && parts.dateValue === toLocalDateValue(now);
+  const nowHour = now.getHours();
+  const nowMinute = now.getMinutes();
+  const selectedHour24 = (parts.hour12 % 12) + (parts.meridiem === "PM" ? 12 : 0);
+
+  const hourDisabled = (hour: number) =>
+    isToday && (hour % 12) + (parts.meridiem === "PM" ? 12 : 0) > nowHour;
+  const minuteDisabled = (minute: number) =>
+    isToday && selectedHour24 === nowHour && minute > nowMinute;
 
   const emit = (patch: Partial<ReturnType<typeof toLocalParts>>) => {
     const next = { ...parts, ...patch };
     const iso = localPartsToISO(next.dateValue, next.hour12, next.minute, next.meridiem);
-    if (iso) onChange(iso);
+    if (!iso) return;
+    // Hard guard: a manually typed/entered future moment is clamped to now.
+    onChange(disableFuture ? clampToNow(iso) : iso);
   };
 
   return (
@@ -58,7 +79,7 @@ export function DateTimeField({ value, onChange, disableFuture, id, invalid, cla
           onChange={(event) => emit({ hour12: Number(event.target.value) })}
         >
           {Array.from({ length: 12 }, (_, index) => index + 1).map((hour) => (
-            <option key={hour} value={hour}>
+            <option key={hour} value={hour} disabled={hourDisabled(hour)}>
               {String(hour).padStart(2, "0")}
             </option>
           ))}
@@ -73,7 +94,7 @@ export function DateTimeField({ value, onChange, disableFuture, id, invalid, cla
           onChange={(event) => emit({ minute: Number(event.target.value) })}
         >
           {Array.from({ length: 60 }, (_, index) => index).map((minute) => (
-            <option key={minute} value={minute}>
+            <option key={minute} value={minute} disabled={minuteDisabled(minute)}>
               {String(minute).padStart(2, "0")}
             </option>
           ))}
@@ -85,7 +106,9 @@ export function DateTimeField({ value, onChange, disableFuture, id, invalid, cla
           onChange={(event) => emit({ meridiem: event.target.value as "AM" | "PM" })}
         >
           <option value="AM">AM</option>
-          <option value="PM">PM</option>
+          <option value="PM" disabled={isToday && nowHour < 12}>
+            PM
+          </option>
         </select>
       </div>
       {value ? <p className="text-xs text-muted-foreground">{formatLocalDateTime(value)}</p> : null}
