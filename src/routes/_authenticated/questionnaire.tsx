@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { SoftCard } from "@/components/SoftCard";
+import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -310,25 +311,15 @@ function Questionnaire() {
                 </span>
                 <span className="sr-only">(required)</span>
               </Label>
-              <Input
+              <DateTimeField
                 id="last-contact"
-                type="datetime-local"
-                required
-                aria-invalid={Boolean(contactError)}
-                value={
-                  answers.last_contact_at
-                    ? new Date(answers.last_contact_at).toISOString().slice(0, 16)
-                    : ""
-                }
-                onChange={(event) => {
+                value={answers.last_contact_at ?? null}
+                invalid={Boolean(contactError)}
+                disableFuture
+                onChange={(iso) => {
                   setContactError(null);
-                  set({
-                    last_contact_at: event.target.value
-                      ? new Date(event.target.value).toISOString()
-                      : null,
-                  });
+                  set({ last_contact_at: iso });
                 }}
-                className="h-13 rounded-2xl"
               />
               {contactError ? (
                 <p role="alert" className="text-sm text-destructive">
