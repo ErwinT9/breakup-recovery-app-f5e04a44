@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Bell,
   CalendarDays,
-
   Image as ImageIcon,
   KeyRound,
   Pencil,
@@ -18,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { SoftCard } from "@/components/SoftCard";
+import { DateTimeField } from "@/components/DateTimeField";
 import { AvatarCropper } from "@/components/AvatarCropper";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useTheme } from "@/hooks/useTheme";
@@ -212,7 +212,7 @@ function SettingsScreen() {
     streak.data?.started_at ? daysSince(streak.data.started_at) + 1 : 1;
 
   useEffect(() => {
-    if (streak.data?.started_at) setRecovery(streak.data.started_at.slice(0, 16));
+    if (streak.data?.started_at) setRecovery(new Date(streak.data.started_at).toISOString());
   }, [streak.data?.started_at]);
 
   // The switch mirrors the saved preference; if the OS permission was revoked
@@ -316,7 +316,7 @@ function SettingsScreen() {
       avatar_url: avatar.trim() || null,
     });
     if (recovery && streak.data) {
-      const next = await streakRepo.setStart(userId, streak.data, new Date(recovery).toISOString());
+      const next = await streakRepo.setStart(userId, streak.data, recovery);
       queryClient.setQueryData(["streak", userId], next);
     }
     toastOnce("profile-saved", t("toast.saved"), "success");
@@ -502,13 +502,11 @@ function SettingsScreen() {
             <Label htmlFor="recovery-date" className="flex items-center gap-2">
               <CalendarDays className="size-4" aria-hidden /> {t("settings.recoveryStart")}
             </Label>
-            <Input
+            <DateTimeField
               id="recovery-date"
-              type="datetime-local"
-              value={recovery}
-              max={new Date().toISOString().slice(0, 16)}
-              onChange={(event) => setRecovery(event.target.value)}
-              className="h-12 rounded-2xl"
+              value={recovery || null}
+              disableFuture
+              onChange={setRecovery}
             />
           </div>
           <Button
@@ -585,9 +583,7 @@ function SettingsScreen() {
           ) : null}
           {notifOn || systemBlocked ? (
             <div
-              className={
-                systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"
-              }
+              className={systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"}
               aria-disabled={systemBlocked}
             >
               {NOTIFICATION_CATEGORIES.filter(

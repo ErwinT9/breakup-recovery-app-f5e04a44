@@ -27,9 +27,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { clearUserCache, profileRepo, streakRepo } from "@/data/repository";
@@ -64,7 +64,7 @@ export function MoreDrawer({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [redoOpen, setRedoOpen] = useState(false);
   const [noEmailOpen, setNoEmailOpen] = useState(false);
-  const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 16));
+  const [newDate, setNewDate] = useState(() => new Date().toISOString());
 
   const profile = useQuery({
     queryKey: ["profile", userId],
@@ -217,7 +217,9 @@ export function MoreDrawer({
                     isPremium ? "text-muted-foreground" : "text-on-tint/80",
                   )}
                 >
-                  {isPremium ? "Manage or restore your subscription" : "Unlock all premium features"}
+                  {isPremium
+                    ? "Manage or restore your subscription"
+                    : "Unlock all premium features"}
                 </span>
               </span>
             </button>
@@ -265,18 +267,11 @@ export function MoreDrawer({
             <DialogTitle>{t("reset.pickNew")}</DialogTitle>
           </DialogHeader>
           <Label htmlFor="reset-date">{t("reset.since")}</Label>
-          <Input
-            id="reset-date"
-            type="datetime-local"
-            value={newDate}
-            max={new Date().toISOString().slice(0, 16)}
-            onChange={(event) => setNewDate(event.target.value)}
-            className="h-12 rounded-2xl"
-          />
+          <DateTimeField id="reset-date" value={newDate} disableFuture onChange={setNewDate} />
           <Button
             className="press h-12 w-full rounded-2xl"
             disabled={applyDate.isPending}
-            onClick={() => applyDate.mutate(new Date(newDate).toISOString())}
+            onClick={() => applyDate.mutate(newDate)}
           >
             {t("reset.saveNewDate")}
           </Button>
@@ -308,7 +303,10 @@ export function MoreDrawer({
               {t("drawer.developerName", "No Contact Labs")}
             </p>
             <p>
-              <span className="text-muted-foreground">{t("drawer.openSourceLibraries", "Open-source libraries")}</span> ·{" "}
+              <span className="text-muted-foreground">
+                {t("drawer.openSourceLibraries", "Open-source libraries")}
+              </span>{" "}
+              ·{" "}
               {t(
                 "drawer.openSourceList",
                 "React, TanStack Router & Query, Capacitor, Supabase JS, Radix UI, Tailwind CSS, lucide-react, canvas-confetti.",

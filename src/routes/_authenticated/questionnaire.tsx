@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { SoftCard } from "@/components/SoftCard";
+import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,7 +34,10 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
         content: "Twelve quick questions so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | No Contact Tracker" },
-      { property: "og:description", content: "Personalise your no-contact recovery in two minutes." },
+      {
+        property: "og:description",
+        content: "Personalise your no-contact recovery in two minutes.",
+      },
     ],
   }),
   component: Questionnaire,
@@ -310,25 +314,15 @@ function Questionnaire() {
                 </span>
                 <span className="sr-only">(required)</span>
               </Label>
-              <Input
+              <DateTimeField
                 id="last-contact"
-                type="datetime-local"
-                required
-                aria-invalid={Boolean(contactError)}
-                value={
-                  answers.last_contact_at
-                    ? new Date(answers.last_contact_at).toISOString().slice(0, 16)
-                    : ""
-                }
-                onChange={(event) => {
+                value={answers.last_contact_at ?? null}
+                invalid={Boolean(contactError)}
+                disableFuture
+                onChange={(iso) => {
                   setContactError(null);
-                  set({
-                    last_contact_at: event.target.value
-                      ? new Date(event.target.value).toISOString()
-                      : null,
-                  });
+                  set({ last_contact_at: iso });
                 }}
-                className="h-13 rounded-2xl"
               />
               {contactError ? (
                 <p role="alert" className="text-sm text-destructive">
@@ -445,9 +439,7 @@ function Questionnaire() {
                 }
               />
               <SoftCard className="bg-sky">
-                <p className="text-sm text-on-tint">
-                  {t("questionnaire.step10.note")}
-                </p>
+                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
               </SoftCard>
             </div>
           ),

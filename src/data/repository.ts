@@ -308,7 +308,7 @@ export const winRepo = {
       user_id: userId,
       title: input.title,
       note: input.note ?? null,
-      achieved_on: input.achieved_on ?? new Date().toISOString().slice(0, 10),
+      achieved_on: input.achieved_on ?? localDayKey(),
       created_at: input.created_at ?? new Date().toISOString(),
     };
     const next = [win, ...list.filter((item) => item.id !== win.id)];
@@ -448,7 +448,7 @@ function listRepo<T extends { id: string; user_id: string; created_at: string }>
 export const pictureRepo = listRepo<Picture>("pictures", "pictures", () => ({
   image_url: "",
   caption: null,
-  taken_on: new Date().toISOString().slice(0, 10),
+  taken_on: localDayKey(),
 }));
 
 export const affirmationRepo = listRepo<Affirmation>("affirmations", "affirmations", () => ({
@@ -472,13 +472,13 @@ export const journalRepo = listRepo<JournalEntry>("journal", "journal_entries", 
 }));
 
 const promiseList = listRepo<DailyPromise>("promises", "daily_promises", () => ({
-  promised_on: new Date().toISOString().slice(0, 10),
+  promised_on: localDayKey(),
 }));
 
 export const promiseRepo = {
   list: promiseList.list,
   async makeToday(userId: string): Promise<DailyPromise[]> {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDayKey();
     const list = await promiseList.list(userId);
     if (list.some((item) => item.promised_on === today)) return list;
     return promiseList.save(userId, { promised_on: today });
