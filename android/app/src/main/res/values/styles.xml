@@ -13,6 +13,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Day/night window background so no white band can show through in
+             dark mode while the WebView paints. -->
+        <item name="android:windowBackground">@color/window_background</item>
         <!-- Android 15 edge-to-edge: the window draws behind the system bars and
              the bars stay fully transparent. statusBarColor / navigationBarColor
              are deprecated & no-ops on API 35+, so they are intentionally unset.
@@ -27,5 +30,8 @@
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <!-- Hand off to the day/night app theme once the splash is dismissed,
+             instead of leaving the white splash drawable as window background. -->
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>
