@@ -270,7 +270,7 @@ export function LettersIllustration({ className }: { className?: string }) {
       {/* inner flap */}
       <path d="M38 51a9 9 0 0 1 9-9h66a9 9 0 0 1 9 9L80 76 38 51Z" className={LAVENDER} />
       {/* front fold */}
-      <path d="M38 84a0 0 0 0 1 0 0V60l30 16-30 8Zm84 0-30-8 30-16v24Z" className={GREEN} opacity="0.55" />
+      <path d="M38 60l30 16-30 8V60Zm84 0v24l-30-8 30-16Z" className={GREEN} opacity="0.55" />
       {/* heart seal */}
       <Heart x={80} y={70} s={0.62} className={CORAL} />
       {/* released particles */}
