@@ -13,6 +13,14 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Android 15 edge-to-edge: the window draws behind the system bars and
+             the bars stay fully transparent. statusBarColor / navigationBarColor
+             are deprecated & no-ops on API 35+, so they are intentionally unset.
+             Insets are consumed by the WebView through env(safe-area-inset-*). -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
 
