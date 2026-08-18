@@ -54,6 +54,23 @@ export function toLocalParts(date: Date) {
 }
 
 /** Human label such as "18 Aug 2026, 06:17 AM" in the device timezone. */
+export function isFutureTimestamp(value: string | Date | null | undefined): boolean {
+  const date = typeof value === "string" || !value ? parseTimestamp(value as string) : value;
+  if (!date) return false;
+  return date.getTime() > Date.now();
+}
+
+/**
+ * Never allow a moment later than the device's current local time.
+ * Returns a UTC ISO string clamped to "now".
+ */
+export function clampToNow(value: string | Date | null | undefined): string {
+  const date = typeof value === "string" || !value ? parseTimestamp(value as string) : value;
+  const now = new Date();
+  if (!date || date.getTime() > now.getTime()) return now.toISOString();
+  return date.toISOString();
+}
+
 export function formatLocalDateTime(value: string | Date): string {
   const date = typeof value === "string" ? parseTimestamp(value) : value;
   if (!date) return "";
