@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
+import { LettersIllustration } from "@/components/LettersIllustration";
 import { SoftCard } from "@/components/SoftCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -150,6 +151,7 @@ function LettersScreen() {
         </Dialog>
       }
     >
+      <LettersIllustration className="mx-auto mb-5 mt-1 w-40" />
       <div className="space-y-3">
         {(letters.data ?? []).length === 0 ? (
           <SoftCard className="bg-lavender">
