@@ -22,7 +22,10 @@
 
 
 # ---- Capacitor / plugins ----
--keep class com.getcapacitor.** { *; }
+# Targeted keeps only — the broad `com.getcapacitor.**` rule is intentionally
+# removed so R8 can shrink unused Capacitor internals. The plugin registry,
+# annotated plugins, and the JS bridge entry points below are the only parts
+# that must survive minification.
 -keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
 -keep class * extends com.getcapacitor.Plugin { *; }
 -keepclassmembers class * {
@@ -35,13 +38,11 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 
-# ---- Firebase Cloud Messaging ----
--keep class com.google.firebase.** { *; }
--dontwarn com.google.firebase.**
-
-# ---- RevenueCat ----
--keep class com.revenuecat.purchases.** { *; }
--dontwarn com.revenuecat.purchases.**
+# ---- Firebase / RevenueCat ----
+# Library-provided consumer R8 rules (firebase-bom, firebase-crashlytics,
+# firebase-perf, purchases-capacitor) keep what they need at runtime.
+# Removed the broad `com.google.firebase.**` / `com.revenuecat.purchases.**`
+# keep+dontwarn rules so R8 can remove unused classes.
 
 # Keep annotations & source info for readable crash reports
 -keepattributes *Annotation*, Signature, InnerClasses, SourceFile, LineNumberTable
