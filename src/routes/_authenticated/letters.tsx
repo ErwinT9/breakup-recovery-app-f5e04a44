@@ -150,6 +150,7 @@ function LettersScreen() {
         </Dialog>
       }
     >
+      <LettersIllustration className="mx-auto mb-5 mt-1 w-40" />
       <div className="space-y-3">
         {(letters.data ?? []).length === 0 ? (
           <SoftCard className="bg-lavender">
