@@ -316,7 +316,7 @@ function SettingsScreen() {
       avatar_url: avatar.trim() || null,
     });
     if (recovery && streak.data) {
-      const next = await streakRepo.setStart(userId, streak.data, recovery);
+      const next = await streakRepo.setStart(userId, streak.data, clampToNow(recovery));
       queryClient.setQueryData(["streak", userId], next);
     }
     toastOnce("profile-saved", t("toast.saved"), "success");
