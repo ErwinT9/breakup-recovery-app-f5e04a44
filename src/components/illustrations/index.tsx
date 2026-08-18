@@ -14,7 +14,7 @@ const YELLOW = "fill-[#E9AD32] dark:fill-[#F7CE68]";
 const CREAM = "fill-[#FBEBD2] dark:fill-[#3A3348]";
 const INK = "fill-[#4A4458] dark:fill-[#EDE9F5]";
 
-function Canvas({ children, className }: { children: ReactNode; className?: string }) {
+function Canvas({ children, className }: { children: ReactNode; className?: string | undefined }) {
   return (
     <div className={className} aria-hidden>
       <svg viewBox="0 0 160 96" className="size-full" role="img">
