@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
 import { SoftCard } from "@/components/SoftCard";
+import { PicturesIllustration } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { localId, pictureRepo } from "@/data/repository";
@@ -100,6 +101,7 @@ function Pictures() {
 
   return (
     <AppShell title={t("pictures.title")} subtitle={t("pictures.subtitle")}>
+      <PicturesIllustration className="mx-auto mb-5 mt-1 w-40" />
       <SoftCard className="space-y-3">
         <Input
           value={caption}

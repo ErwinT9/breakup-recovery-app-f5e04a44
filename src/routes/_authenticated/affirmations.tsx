@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
+import { AffirmationsIllustration } from "@/components/illustrations";
 import { affirmationRepo } from "@/data/repository";
 
 export const Route = createFileRoute("/_authenticated/affirmations")({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/affirmations")({
       <ActivityListScreen
         title={t("affirmations.title")}
         subtitle={t("affirmations.subtitle")}
+        illustration={<AffirmationsIllustration />}
         cacheKey="affirmations"
         repo={affirmationRepo}
         mainField="body"
