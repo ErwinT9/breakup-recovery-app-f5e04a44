@@ -15,6 +15,7 @@ import { profileRepo, questionnaireRepo, streakRepo } from "@/data/repository";
 import type { QuestionnaireAnswers } from "@/data/types";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics, humanizeError } from "@/lib/analytics";
+import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
@@ -138,6 +139,10 @@ function Questionnaire() {
         setContactError("Please select when you last had contact.");
         return;
       }
+      if (isFutureTimestamp(lastContact)) {
+        setContactError("Please pick a time that isn't in the future.");
+        return;
+      }
       setContactError(null);
     }
     if (patch) set(patch);
@@ -162,11 +167,13 @@ function Questionnaire() {
         setContactError("Please select when you last had contact.");
         return;
       }
+      const lastContactAt = clampToNow(answers.last_contact_at);
       // "Under 18" is no longer an allowed answer.
       const ageRange = answers.age_range === "Under 18" ? null : (answers.age_range ?? null);
       await questionnaireRepo.save(userId, {
         ...answers,
         nickname,
+        last_contact_at: lastContactAt,
         age_range: ageRange,
         completed: true,
       });
@@ -176,7 +183,7 @@ function Questionnaire() {
         notifications_enabled: Boolean(answers.wants_reminders),
       });
       // The saved "last contact" moment is the single source of truth for the counter.
-      const startedAt = answers.last_contact_at ?? new Date().toISOString();
+      const startedAt = lastContactAt;
       const streak = await streakRepo.ensure(userId, startedAt);
       if (streak.started_at !== startedAt) {
         await streakRepo.setStart(userId, streak, startedAt);
@@ -473,7 +480,9 @@ function Questionnaire() {
         return Boolean(answers.who_ended);
       case 5:
         return Boolean(
-          answers.last_contact_at && !Number.isNaN(new Date(answers.last_contact_at).getTime()),
+          answers.last_contact_at &&
+            !Number.isNaN(new Date(answers.last_contact_at).getTime()) &&
+            !isFutureTimestamp(answers.last_contact_at),
         );
       case 7:
         return Boolean(answers.checks_social);
