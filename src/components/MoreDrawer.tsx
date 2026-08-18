@@ -64,7 +64,7 @@ export function MoreDrawer({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [redoOpen, setRedoOpen] = useState(false);
   const [noEmailOpen, setNoEmailOpen] = useState(false);
-  const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 16));
+  const [newDate, setNewDate] = useState(() => new Date().toISOString());
 
   const profile = useQuery({
     queryKey: ["profile", userId],
@@ -265,18 +265,16 @@ export function MoreDrawer({
             <DialogTitle>{t("reset.pickNew")}</DialogTitle>
           </DialogHeader>
           <Label htmlFor="reset-date">{t("reset.since")}</Label>
-          <Input
+          <DateTimeField
             id="reset-date"
-            type="datetime-local"
             value={newDate}
-            max={new Date().toISOString().slice(0, 16)}
-            onChange={(event) => setNewDate(event.target.value)}
-            className="h-12 rounded-2xl"
+            disableFuture
+            onChange={setNewDate}
           />
           <Button
             className="press h-12 w-full rounded-2xl"
             disabled={applyDate.isPending}
-            onClick={() => applyDate.mutate(new Date(newDate).toISOString())}
+            onClick={() => applyDate.mutate(newDate)}
           >
             {t("reset.saveNewDate")}
           </Button>
