@@ -1,11 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { ChevronRight, Flame, Footprints, Lotus } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
-import { SoftCard } from "@/components/SoftCard";
 import { MotivationIllustration } from "@/components/illustrations";
-import { MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/_authenticated/motivation/")({
@@ -26,58 +23,54 @@ export const Route = createFileRoute("/_authenticated/motivation/")({
   component: MotivationScreen,
 });
 
+const CARDS = [
+  {
+    to: "/motivation/guide",
+    icon: Flame,
+    title: "Motivational Guide",
+    tagline: "Short guides written for the moments the urge feels loudest.",
+    tint: "bg-mint",
+  },
+  {
+    to: "/motivation/meditation",
+    icon: Lotus,
+    title: "Mindful Meditation",
+    tagline: "Practice for few minutes meditation to relax and focus",
+    tint: "bg-sky",
+  },
+  {
+    to: "/motivation/walk",
+    icon: Footprints,
+    title: "Outdoor Walk",
+    tagline: "Go for a walk and record it for physical and mental well-being",
+    tint: "bg-sand",
+  },
+] as const;
+
 function MotivationScreen() {
-  const [open, setOpen] = useState(true);
-
   return (
-    <AppShell
-      title="Motivation"
-      subtitle="A little reminder to keep choosing yourself."
-    >
+    <AppShell title="Motivation" subtitle="A little reminder to keep choosing yourself.">
       <MotivationIllustration className="mx-auto mb-5 mt-1 w-40" />
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => {
-          haptic.select();
-          setOpen((value) => !value);
-        }}
-        className="press soft-card block w-full rounded-3xl bg-mint p-5 text-left"
-      >
-        <span className="flex items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-background/40">
-            <Flame className="size-5 text-on-tint" aria-hidden />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-lg font-semibold text-on-tint">Motivational Guide</span>
-            <span className="mt-1 block text-sm text-on-tint/80">
-              Tap to open short guides written for the moments the urge feels loudest.
-            </span>
-          </span>
-        </span>
-      </button>
-
-      {open ? (
-        <section aria-label="Motivational topics" className="mt-5">
-          <h2 className="px-1 text-sm font-medium text-muted-foreground">Topics</h2>
-          <ul className="mt-3 space-y-3">
-            {MOTIVATION_TOPICS.map((topic) => (
-              <li key={topic.id}>
-                <Link
-                  to="/motivation/$topicId"
-                  params={{ topicId: topic.id }}
-                  onClick={() => haptic.select()}
-                  className="press soft-card flex items-center gap-3 rounded-3xl p-4"
-                >
-                  <Sparkles className="size-5 shrink-0 text-primary" aria-hidden />
-                  <span className="min-w-0 flex-1 text-sm font-medium">{topic.title}</span>
-                  <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <ul className="space-y-3">
+        {CARDS.map(({ to, icon: Icon, title, tagline, tint }) => (
+          <li key={to}>
+            <Link
+              to={to}
+              onClick={() => haptic.select()}
+              className="press soft-card flex items-center gap-4 rounded-3xl p-5"
+            >
+              <span className={`flex size-11 shrink-0 items-center justify-center rounded-2xl ${tint}`}>
+                <Icon className="size-5 text-on-tint" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{title}</span>
+                <span className="mt-1 block text-sm text-muted-foreground">{tagline}</span>
+              </span>
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+            </Link>
+          </li>
+        ))}
+      </ul>
     </AppShell>
   );
 }
