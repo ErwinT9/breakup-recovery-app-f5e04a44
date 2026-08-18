@@ -73,7 +73,9 @@ export function MoreDrawer({
   });
 
   const applyDate = useMutation({
-    mutationFn: async (iso: string) => {
+    mutationFn: async (input: string) => {
+      // Never store a moment in the future, whatever the picker returned.
+      const iso = clampToNow(input);
       const current = await streakRepo.ensure(userId, iso);
       return streakRepo.save(userId, {
         ...current,
