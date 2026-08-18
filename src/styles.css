@@ -442,3 +442,13 @@
 .ff-ripple {
   animation: ff-ripple 900ms ease-out forwards;
 }
+
+/* Walking-heart limb swing (Outdoor Walk). */
+@keyframes wiggle {
+  from {
+    transform: rotate(-11deg);
+  }
+  to {
+    transform: rotate(11deg);
+  }
+}
