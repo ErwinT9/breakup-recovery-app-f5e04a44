@@ -37,6 +37,7 @@ import { Route as AuthenticatedMotivationIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedMotivationTopicIdRouteImport } from './routes/_authenticated/motivation/$topicId'
 import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_authenticated/motivation/guide'
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
+import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
 import { Route as ApiPublicHooksEveningRemindersRouteImport } from './routes/api/public/hooks/evening-reminders'
 
 const IndexRoute = IndexRouteImport.update({
@@ -187,6 +188,12 @@ const AuthenticatedMotivationMeditationRoute =
     path: '/motivation/meditation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMotivationWalkRoute =
+  AuthenticatedMotivationWalkRouteImport.update({
+    id: '/motivation/walk',
+    path: '/motivation/walk',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksEveningRemindersRoute =
   ApiPublicHooksEveningRemindersRouteImport.update({
     id: '/api/public/hooks/evening-reminders',
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
+  '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
+  '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -283,6 +292,7 @@ export interface FileRoutesById {
   '/_authenticated/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
   '/_authenticated/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/_authenticated/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
+  '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/motivation/$topicId'
     | '/motivation/guide'
     | '/motivation/meditation'
+    | '/motivation/walk'
     | '/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/motivation/$topicId'
     | '/motivation/guide'
     | '/motivation/meditation'
+    | '/motivation/walk'
     | '/motivation'
     | '/api/public/hooks/evening-reminders'
   id:
@@ -376,6 +388,7 @@ export interface FileRouteTypes {
     | '/_authenticated/motivation/$topicId'
     | '/_authenticated/motivation/guide'
     | '/_authenticated/motivation/meditation'
+    | '/_authenticated/motivation/walk'
     | '/_authenticated/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesById: FileRoutesById
@@ -589,6 +602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationMeditationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/motivation/walk': {
+      id: '/_authenticated/motivation/walk'
+      path: '/motivation/walk'
+      fullPath: '/motivation/walk'
+      preLoaderRoute: typeof AuthenticatedMotivationWalkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/evening-reminders': {
       id: '/api/public/hooks/evening-reminders'
       path: '/api/public/hooks/evening-reminders'
@@ -620,6 +640,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMotivationTopicIdRoute: typeof AuthenticatedMotivationTopicIdRoute
   AuthenticatedMotivationGuideRoute: typeof AuthenticatedMotivationGuideRoute
   AuthenticatedMotivationMeditationRoute: typeof AuthenticatedMotivationMeditationRoute
+  AuthenticatedMotivationWalkRoute: typeof AuthenticatedMotivationWalkRoute
   AuthenticatedMotivationIndexRoute: typeof AuthenticatedMotivationIndexRoute
 }
 
@@ -645,6 +666,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMotivationGuideRoute: AuthenticatedMotivationGuideRoute,
   AuthenticatedMotivationMeditationRoute:
     AuthenticatedMotivationMeditationRoute,
+  AuthenticatedMotivationWalkRoute: AuthenticatedMotivationWalkRoute,
   AuthenticatedMotivationIndexRoute: AuthenticatedMotivationIndexRoute,
 }
 
