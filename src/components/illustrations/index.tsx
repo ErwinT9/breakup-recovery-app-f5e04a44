@@ -77,7 +77,7 @@ export function FlagsIllustration({ className }: { className?: string }) {
   return (
     <Canvas className={className}>
       {/* ground */}
-      <rect x="52" y="70" width="56" height="7" rx="3.5" className={LAVENDER} opacity="0.5" />
+      <rect x="50" y="70" width="60" height="7" rx="3.5" className={LAVENDER} opacity="0.75" />
       {/* pole */}
       <rect x="61" y="18" width="7" height="54" rx="3.5" className={INK} />
       {/* flag */}
