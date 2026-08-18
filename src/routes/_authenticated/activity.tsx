@@ -122,7 +122,7 @@ function Activity() {
     enabled,
   });
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDayKey();
   const promisedToday = (promises.data ?? []).some((row) => row.promised_on === today);
 
   const promise = useMutation({

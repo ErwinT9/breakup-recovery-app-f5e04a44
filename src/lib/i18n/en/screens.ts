@@ -212,7 +212,7 @@ export const screensEn = {
     step4: {
       title: "Who ended it?",
       hint: "There's no wrong answer here.",
-      options: ["I did", "They did", "It was mutual", "It just faded"],
+      options: ["I did", "My Ex did", "It was mutual", "It just faded"],
     },
     step5: {
       title: "When did you last have contact?",
