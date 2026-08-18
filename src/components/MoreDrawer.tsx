@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateTimeField } from "@/components/DateTimeField";
+import { clampToNow } from "@/lib/datetime";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -73,7 +74,9 @@ export function MoreDrawer({
   });
 
   const applyDate = useMutation({
-    mutationFn: async (iso: string) => {
+    mutationFn: async (input: string) => {
+      // Never store a moment in the future, whatever the picker returned.
+      const iso = clampToNow(input);
       const current = await streakRepo.ensure(userId, iso);
       return streakRepo.save(userId, {
         ...current,

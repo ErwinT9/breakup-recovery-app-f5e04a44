@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
+import { clampToNow } from "@/lib/datetime";
 import { AvatarCropper } from "@/components/AvatarCropper";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useTheme } from "@/hooks/useTheme";
@@ -316,7 +317,7 @@ function SettingsScreen() {
       avatar_url: avatar.trim() || null,
     });
     if (recovery && streak.data) {
-      const next = await streakRepo.setStart(userId, streak.data, recovery);
+      const next = await streakRepo.setStart(userId, streak.data, clampToNow(recovery));
       queryClient.setQueryData(["streak", userId], next);
     }
     toastOnce("profile-saved", t("toast.saved"), "success");
