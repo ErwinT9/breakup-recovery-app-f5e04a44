@@ -28,14 +28,7 @@ const selectClass =
  * Date + 12-hour time picker that always works in the device's local
  * timezone and emits a UTC ISO string.
  */
-export function DateTimeField({
-  value,
-  onChange,
-  disableFuture,
-  id,
-  invalid,
-  className,
-}: Props) {
+export function DateTimeField({ value, onChange, disableFuture, id, invalid, className }: Props) {
   const parts = useMemo(() => toLocalParts(parseTimestamp(value) ?? new Date()), [value]);
 
   const emit = (patch: Partial<ReturnType<typeof toLocalParts>>) => {
@@ -95,9 +88,7 @@ export function DateTimeField({
           <option value="PM">PM</option>
         </select>
       </div>
-      {value ? (
-        <p className="text-xs text-muted-foreground">{formatLocalDateTime(value)}</p>
-      ) : null}
+      {value ? <p className="text-xs text-muted-foreground">{formatLocalDateTime(value)}</p> : null}
     </div>
   );
 }

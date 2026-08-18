@@ -34,7 +34,10 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
         content: "Twelve quick questions so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | No Contact Tracker" },
-      { property: "og:description", content: "Personalise your no-contact recovery in two minutes." },
+      {
+        property: "og:description",
+        content: "Personalise your no-contact recovery in two minutes.",
+      },
     ],
   }),
   component: Questionnaire,
@@ -436,9 +439,7 @@ function Questionnaire() {
                 }
               />
               <SoftCard className="bg-sky">
-                <p className="text-sm text-on-tint">
-                  {t("questionnaire.step10.note")}
-                </p>
+                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
               </SoftCard>
             </div>
           ),

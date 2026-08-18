@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Bell,
   CalendarDays,
-
   Image as ImageIcon,
   KeyRound,
   Pencil,
@@ -584,9 +583,7 @@ function SettingsScreen() {
           ) : null}
           {notifOn || systemBlocked ? (
             <div
-              className={
-                systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"
-              }
+              className={systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"}
               aria-disabled={systemBlocked}
             >
               {NOTIFICATION_CATEGORIES.filter(
