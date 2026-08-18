@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { SoftCard } from "@/components/SoftCard";
+import { DateTimeField } from "@/components/DateTimeField";
 import { AvatarCropper } from "@/components/AvatarCropper";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useTheme } from "@/hooks/useTheme";
@@ -212,7 +213,7 @@ function SettingsScreen() {
     streak.data?.started_at ? daysSince(streak.data.started_at) + 1 : 1;
 
   useEffect(() => {
-    if (streak.data?.started_at) setRecovery(streak.data.started_at.slice(0, 16));
+    if (streak.data?.started_at) setRecovery(new Date(streak.data.started_at).toISOString());
   }, [streak.data?.started_at]);
 
   // The switch mirrors the saved preference; if the OS permission was revoked
@@ -316,7 +317,7 @@ function SettingsScreen() {
       avatar_url: avatar.trim() || null,
     });
     if (recovery && streak.data) {
-      const next = await streakRepo.setStart(userId, streak.data, new Date(recovery).toISOString());
+      const next = await streakRepo.setStart(userId, streak.data, recovery);
       queryClient.setQueryData(["streak", userId], next);
     }
     toastOnce("profile-saved", t("toast.saved"), "success");
