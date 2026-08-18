@@ -282,29 +282,3 @@ export function LettersIllustration({ className }: { className?: string }) {
     </Canvas>
   );
 }
-
-function LegacyMotivationIllustration({ className }: { className?: string }) {
-  return (
-    <Canvas className={className}>
-      {/* rays */}
-      <g className={YELLOW} opacity="0.85">
-        <rect x="77" y="6" width="6" height="12" rx="3" />
-        <rect x="77" y="6" width="6" height="12" rx="3" transform="rotate(-40 80 44)" />
-        <rect x="77" y="6" width="6" height="12" rx="3" transform="rotate(40 80 44)" />
-        <rect x="77" y="6" width="6" height="12" rx="3" transform="rotate(-70 80 44)" />
-        <rect x="77" y="6" width="6" height="12" rx="3" transform="rotate(70 80 44)" />
-      </g>
-      {/* sun */}
-      <circle cx="80" cy="46" r="20" className={YELLOW} />
-      <Heart x={80} y={45} s={0.7} className={CORAL} />
-      {/* horizon hills */}
-      <path d="M18 74c14-16 30-16 44 0H18Z" className={LAVENDER} />
-      <path d="M96 74c15-19 33-19 46 0H96Z" className={GREEN} />
-      <rect x="14" y="72" width="132" height="7" rx="3.5" className={GREEN} opacity="0.55" />
-      {/* stars */}
-      <Sparkle x={30} y={26} r={7} className={LAVENDER} />
-      <Sparkle x={134} y={34} r={5.5} className={CORAL} />
-      <circle cx="120" cy="16" r="3" className={GREEN} />
-    </Canvas>
-  );
-}
