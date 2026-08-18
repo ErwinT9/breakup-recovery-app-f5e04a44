@@ -197,3 +197,88 @@ export function MotivationIllustration({ className }: { className?: string }) {
     </Canvas>
   );
 }
+
+/** Pictures — a small stack of colourful photo prints. */
+export function PicturesIllustration({ className }: { className?: string }) {
+  return (
+    <Canvas className={className}>
+      {/* back tilted print */}
+      <g transform="rotate(-13 66 48)">
+        <rect x="40" y="22" width="50" height="54" rx="7" className={LAVENDER} />
+        <rect x="45" y="27" width="40" height="33" rx="4" className={CREAM} />
+        <path d="M45 52l11-12 9 10 7-6 13 16H45v-8Z" className={GREEN} />
+        <circle cx="76" cy="36" r="4.5" className={YELLOW} />
+      </g>
+      {/* front tilted print */}
+      <g transform="rotate(9 96 52)">
+        <rect x="72" y="26" width="52" height="56" rx="7" className={CORAL} />
+        <rect x="77" y="31" width="42" height="34" rx="4" className={CREAM} />
+        <path d="M77 58l12-13 10 11 7-7 13 16H77v-7Z" className={LAVENDER} />
+        <circle cx="110" cy="40" r="4.5" className={YELLOW} />
+        <Heart x={98} y={73} s={0.42} className={CREAM} />
+      </g>
+      {/* sparkles */}
+      <Sparkle x={26} y={30} r={7} className={YELLOW} />
+      <Sparkle x={140} y={22} r={5.5} className={GREEN} />
+      <circle cx="30" cy="70" r="3" className={CORAL} />
+    </Canvas>
+  );
+}
+
+/** Affirmations — a glowing card with a radiant heart and kind words. */
+export function AffirmationsIllustration({ className }: { className?: string }) {
+  return (
+    <Canvas className={className}>
+      {/* glow rays behind the card */}
+      <g className={YELLOW} opacity="0.7">
+        <rect x="77" y="4" width="6" height="11" rx="3" />
+        <rect x="77" y="4" width="6" height="11" rx="3" transform="rotate(-38 80 48)" />
+        <rect x="77" y="4" width="6" height="11" rx="3" transform="rotate(38 80 48)" />
+        <rect x="77" y="4" width="6" height="11" rx="3" transform="rotate(-72 80 48)" />
+        <rect x="77" y="4" width="6" height="11" rx="3" transform="rotate(72 80 48)" />
+      </g>
+      {/* stacked cards behind */}
+      <rect x="52" y="30" width="56" height="46" rx="10" className={LAVENDER} opacity="0.55" />
+      <rect x="49" y="26" width="62" height="50" rx="11" className={GREEN} opacity="0.75" />
+      {/* front card */}
+      <rect x="46" y="22" width="68" height="52" rx="12" className={CREAM} />
+      <Heart x={80} y={38} s={0.72} className={CORAL} />
+      <rect x="60" y="52" width="40" height="5" rx="2.5" className={LAVENDER} />
+      <rect x="67" y="62" width="26" height="5" rx="2.5" className={GREEN} />
+      {/* sparkles */}
+      <Sparkle x={26} y={40} r={8} className={CORAL} />
+      <Sparkle x={134} y={58} r={6.5} className={LAVENDER} />
+      <circle cx="132" cy="26" r="3.2" className={GREEN} />
+      <circle cx="24" cy="70" r="2.6" className={YELLOW} />
+    </Canvas>
+  );
+}
+
+/** Unsent letters — a written page drifting out of an open envelope. */
+export function LettersIllustration({ className }: { className?: string }) {
+  return (
+    <Canvas className={className}>
+      {/* drifting page */}
+      <g transform="rotate(-14 84 30)">
+        <rect x="62" y="6" width="44" height="40" rx="6" className={CREAM} />
+        <rect x="68" y="14" width="30" height="4" rx="2" className={LAVENDER} />
+        <rect x="68" y="23" width="24" height="4" rx="2" className={GREEN} />
+        <rect x="68" y="32" width="27" height="4" rx="2" className={LAVENDER} opacity="0.7" />
+      </g>
+      {/* envelope body */}
+      <rect x="38" y="42" width="84" height="42" rx="9" className={GREEN} />
+      {/* inner flap */}
+      <path d="M38 51a9 9 0 0 1 9-9h66a9 9 0 0 1 9 9L80 76 38 51Z" className={LAVENDER} />
+      {/* front fold */}
+      <path d="M38 60l30 16-30 8V60Zm84 0v24l-30-8 30-16Z" className={GREEN} opacity="0.55" />
+      {/* heart seal */}
+      <Heart x={80} y={70} s={0.62} className={CORAL} />
+      {/* released particles */}
+      <Sparkle x={130} y={30} r={7} className={YELLOW} />
+      <Sparkle x={28} y={26} r={6} className={CORAL} />
+      <circle cx="140" cy="52" r="3.2" className={LAVENDER} />
+      <circle cx="22" cy="52" r="2.6" className={YELLOW} />
+      <circle cx="120" cy="14" r="2.4" className={GREEN} />
+    </Canvas>
+  );
+}

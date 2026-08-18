@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
-import { LettersIllustration } from "@/components/LettersIllustration";
+import { LettersIllustration } from "@/components/illustrations";
 import { SoftCard } from "@/components/SoftCard";
 import { Button } from "@/components/ui/button";
 import {
