@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -34,6 +34,7 @@ export function ActivityListScreen({
   multiline = false,
   suggestions = [],
   emptyText,
+  illustration,
 }: {
   title: string;
   subtitle: string;
@@ -46,6 +47,7 @@ export function ActivityListScreen({
   multiline?: boolean;
   suggestions?: string[];
   emptyText: string;
+  illustration?: ReactNode;
 }) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -87,6 +89,7 @@ export function ActivityListScreen({
 
   return (
     <AppShell title={title} subtitle={subtitle}>
+      {illustration ? <div className="mx-auto mb-5 mt-1 w-40">{illustration}</div> : null}
       <SoftCard className="space-y-3">
         {multiline ? (
           <Textarea

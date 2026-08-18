@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
 import { SoftCard } from "@/components/SoftCard";
+import { FlagsIllustration } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -173,6 +174,7 @@ function FlagsScreen() {
         </Dialog>
       }
     >
+      <FlagsIllustration className="mx-auto mb-5 mt-1 w-40" />
       <div className="space-y-6">
         <section className="space-y-3">
           <div>

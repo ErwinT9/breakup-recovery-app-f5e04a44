@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
+import { TriggersIllustration } from "@/components/illustrations";
 import { triggerRepo } from "@/data/repository";
 
 export const Route = createFileRoute("/_authenticated/triggers")({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/triggers")({
       <ActivityListScreen
         title={t("triggers.title")}
         subtitle={t("triggers.subtitle")}
+        illustration={<TriggersIllustration />}
         cacheKey="triggers"
         repo={triggerRepo}
         mainField="title"

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
 import { SoftCard } from "@/components/SoftCard";
+import { MotivationIllustration } from "@/components/illustrations";
 import { MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
@@ -33,6 +34,7 @@ function MotivationScreen() {
       title="Motivation"
       subtitle="A little reminder to keep choosing yourself."
     >
+      <MotivationIllustration className="mx-auto mb-5 mt-1 w-40" />
       <button
         type="button"
         aria-expanded={open}
