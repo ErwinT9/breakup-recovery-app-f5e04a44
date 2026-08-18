@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Footprints, Lotus } from "lucide-react";
+import { ChevronRight, Flame, Flower2, Footprints } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
@@ -33,7 +33,7 @@ const CARDS = [
   },
   {
     to: "/motivation/meditation",
-    icon: Lotus,
+    icon: Flower2,
     title: "Mindful Meditation",
     tagline: "Practice for few minutes meditation to relax and focus",
     tint: "bg-sky",
