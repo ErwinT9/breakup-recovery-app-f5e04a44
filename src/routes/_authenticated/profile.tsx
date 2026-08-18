@@ -502,13 +502,11 @@ function SettingsScreen() {
             <Label htmlFor="recovery-date" className="flex items-center gap-2">
               <CalendarDays className="size-4" aria-hidden /> {t("settings.recoveryStart")}
             </Label>
-            <Input
+            <DateTimeField
               id="recovery-date"
-              type="datetime-local"
-              value={recovery}
-              max={new Date().toISOString().slice(0, 16)}
-              onChange={(event) => setRecovery(event.target.value)}
-              className="h-12 rounded-2xl"
+              value={recovery || null}
+              disableFuture
+              onChange={setRecovery}
             />
           </div>
           <Button
