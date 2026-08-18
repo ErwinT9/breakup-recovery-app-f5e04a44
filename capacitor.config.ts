@@ -9,6 +9,12 @@ const config: CapacitorConfig = {
     // Stable https://localhost origin so Supabase auth storage survives restarts.
     androidScheme: "https",
     allowMixedContent: false,
+    // Capacitor 7+ defaults this to "auto": when the app targets SDK 35 it adds
+    // status/navigation-bar sized margins around the WebView, exposing the
+    // window background as a solid band at the top. The web layer already
+    // handles insets via env(safe-area-inset-*), so margins are disabled and
+    // the WebView truly draws edge-to-edge.
+    adjustMarginsForEdgeToEdge: "disable",
     // captureInput MUST stay false: when true the WebView sets
     // TYPE_NULL on the input connection, which disables IME composing text —
     // Gboard voice typing (and swipe/autocorrect) then never reaches inputs.
