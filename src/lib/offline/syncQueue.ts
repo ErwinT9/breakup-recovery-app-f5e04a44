@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { analytics } from "@/lib/analytics";
 import { STORAGE_KEYS, storage } from "@/lib/native/storage";
+import { toastOnce } from "@/lib/toastOnce";
 
 import { isOnline, subscribeNetwork } from "./network";
 
@@ -78,6 +79,10 @@ export async function enqueue(item: Omit<QueueItem, "attempts" | "createdAt">): 
   const deduped = queue.filter((entry) => !(entry.id === item.id && entry.table === item.table));
   deduped.push({ ...item, attempts: 0, createdAt: new Date().toISOString() });
   await writeQueue(deduped);
+  // Reassure the user their data is safe on the device.
+  if (!isOnline()) {
+    toastOnce("offline-saved", "Saved! It will sync when you're back online.", "success");
+  }
   void flushQueue();
 }
 
