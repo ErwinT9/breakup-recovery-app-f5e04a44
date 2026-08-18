@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Window background behind the WebView. Light theme = app's white bg. -->
-    <color name="window_background">#FFFFFF</color>
-</resources>
