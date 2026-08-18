@@ -28,6 +28,13 @@
 # that must survive minification.
 -keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
 -keep class * extends com.getcapacitor.Plugin { *; }
+# The annotation *types* themselves must survive too. R8 drops runtime
+# annotations whose type was shrunk away, which makes
+# PluginHandle#getPluginAnnotation() return null and crashes
+# Bridge#getPermissionStates() with an NPE (e.g. PushNotifications
+# checkPermissions()).
+-keep @interface com.getcapacitor.annotation.** { *; }
+-keep @interface com.getcapacitor.PluginMethod { *; }
 -keepclassmembers class * {
     @com.getcapacitor.PluginMethod public <methods>;
 }
