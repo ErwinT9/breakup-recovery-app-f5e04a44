@@ -19,7 +19,9 @@ export type SyncTable =
   | "rituals"
   | "triggers"
   | "journal_entries"
-  | "mood_checkins";
+  | "mood_checkins"
+  | "worry_entries"
+  | "gratitude_entries";
 
 export type QueueItem = {
   id: string;

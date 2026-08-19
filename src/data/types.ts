@@ -133,3 +133,20 @@ export type MoodCheckin = {
   completed_at: string;
   created_at: string;
 };
+
+export type WorryEntry = {
+  id: string;
+  user_id: string;
+  worry_text: string;
+  created_at: string;
+};
+
+export type GratitudeItemType = "candy" | "heart" | "leaf";
+
+export type GratitudeEntry = {
+  id: string;
+  user_id: string;
+  gratitude_text: string;
+  item_type: GratitudeItemType;
+  created_at: string;
+};
