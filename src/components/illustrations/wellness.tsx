@@ -8,7 +8,7 @@ const BOX = "fill-[#A99BD6] dark:fill-[#6E62A0]";
 const BOX_DARK = "fill-[#8B79BE] dark:fill-[#564B80]";
 const CREAM = "fill-[#FBEBD2] dark:fill-[#3A3348]";
 
-function Canvas({ children, className }: { children: ReactNode; className?: string }) {
+function Canvas({ children, className }: { children: ReactNode; className?: string | undefined }) {
   return (
     <div className={cn(className)} aria-hidden>
       <svg viewBox="0 0 160 120" className="size-full" role="img">
@@ -18,7 +18,7 @@ function Canvas({ children, className }: { children: ReactNode; className?: stri
   );
 }
 
-export function WorryBoxArt({ className }: { className?: string }) {
+export function WorryBoxArt({ className }: { className?: string | undefined }) {
   return (
     <Canvas className={className}>
       {/* soft clouds behind */}
