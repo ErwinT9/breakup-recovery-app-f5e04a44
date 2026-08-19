@@ -20,6 +20,7 @@ import type {
   Trigger,
   Win,
 } from "./types";
+import type { GratitudeEntry, WorryEntry } from "./types";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -43,6 +44,8 @@ const CACHES = [
   "triggers",
   "journal",
   "moods",
+  "worries",
+  "gratitude",
 ] as const;
 
 async function cacheRead<T>(name: string, userId: string, fallback: T): Promise<T> {
@@ -458,6 +461,15 @@ export const affirmationRepo = listRepo<Affirmation>("affirmations", "affirmatio
 export const ritualRepo = listRepo<Ritual>("rituals", "rituals", () => ({
   title: "",
   note: null,
+}));
+
+export const worryRepo = listRepo<WorryEntry>("worries", "worry_entries", () => ({
+  worry_text: "",
+}));
+
+export const gratitudeRepo = listRepo<GratitudeEntry>("gratitude", "gratitude_entries", () => ({
+  gratitude_text: "",
+  item_type: "heart" as const,
 }));
 
 export const triggerRepo = listRepo<Trigger>("triggers", "triggers", () => ({

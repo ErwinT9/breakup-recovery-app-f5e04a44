@@ -35,9 +35,11 @@ import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedWinsRouteImport } from './routes/_authenticated/wins'
 import { Route as AuthenticatedMotivationIndexRouteImport } from './routes/_authenticated/motivation/index'
 import { Route as AuthenticatedMotivationTopicIdRouteImport } from './routes/_authenticated/motivation/$topicId'
+import { Route as AuthenticatedMotivationGratitudeJarRouteImport } from './routes/_authenticated/motivation/gratitude-jar'
 import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_authenticated/motivation/guide'
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
 import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
+import { Route as AuthenticatedMotivationWorryBoxRouteImport } from './routes/_authenticated/motivation/worry-box'
 import { Route as ApiPublicHooksEveningRemindersRouteImport } from './routes/api/public/hooks/evening-reminders'
 
 const IndexRoute = IndexRouteImport.update({
@@ -176,6 +178,12 @@ const AuthenticatedMotivationTopicIdRoute =
     path: '/motivation/$topicId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMotivationGratitudeJarRoute =
+  AuthenticatedMotivationGratitudeJarRouteImport.update({
+    id: '/motivation/gratitude-jar',
+    path: '/motivation/gratitude-jar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMotivationGuideRoute =
   AuthenticatedMotivationGuideRouteImport.update({
     id: '/motivation/guide',
@@ -192,6 +200,12 @@ const AuthenticatedMotivationWalkRoute =
   AuthenticatedMotivationWalkRouteImport.update({
     id: '/motivation/walk',
     path: '/motivation/walk',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMotivationWorryBoxRoute =
+  AuthenticatedMotivationWorryBoxRouteImport.update({
+    id: '/motivation/worry-box',
+    path: '/motivation/worry-box',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiPublicHooksEveningRemindersRoute =
@@ -226,9 +240,11 @@ export interface FileRoutesByFullPath {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
+  '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -257,9 +273,11 @@ export interface FileRoutesByTo {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
+  '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -290,9 +308,11 @@ export interface FileRoutesById {
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/_authenticated/wins': typeof AuthenticatedWinsRoute
   '/_authenticated/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/_authenticated/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/_authenticated/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/_authenticated/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
+  '/_authenticated/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
@@ -323,9 +343,11 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
+    | '/motivation/gratitude-jar'
     | '/motivation/guide'
     | '/motivation/meditation'
     | '/motivation/walk'
+    | '/motivation/worry-box'
     | '/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -354,9 +376,11 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
+    | '/motivation/gratitude-jar'
     | '/motivation/guide'
     | '/motivation/meditation'
     | '/motivation/walk'
+    | '/motivation/worry-box'
     | '/motivation'
     | '/api/public/hooks/evening-reminders'
   id:
@@ -386,9 +410,11 @@ export interface FileRouteTypes {
     | '/_authenticated/triggers'
     | '/_authenticated/wins'
     | '/_authenticated/motivation/$topicId'
+    | '/_authenticated/motivation/gratitude-jar'
     | '/_authenticated/motivation/guide'
     | '/_authenticated/motivation/meditation'
     | '/_authenticated/motivation/walk'
+    | '/_authenticated/motivation/worry-box'
     | '/_authenticated/motivation/'
     | '/api/public/hooks/evening-reminders'
   fileRoutesById: FileRoutesById
@@ -588,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationTopicIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/motivation/gratitude-jar': {
+      id: '/_authenticated/motivation/gratitude-jar'
+      path: '/motivation/gratitude-jar'
+      fullPath: '/motivation/gratitude-jar'
+      preLoaderRoute: typeof AuthenticatedMotivationGratitudeJarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/motivation/guide': {
       id: '/_authenticated/motivation/guide'
       path: '/motivation/guide'
@@ -607,6 +640,13 @@ declare module '@tanstack/react-router' {
       path: '/motivation/walk'
       fullPath: '/motivation/walk'
       preLoaderRoute: typeof AuthenticatedMotivationWalkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/motivation/worry-box': {
+      id: '/_authenticated/motivation/worry-box'
+      path: '/motivation/worry-box'
+      fullPath: '/motivation/worry-box'
+      preLoaderRoute: typeof AuthenticatedMotivationWorryBoxRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/hooks/evening-reminders': {
@@ -638,9 +678,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedWinsRoute: typeof AuthenticatedWinsRoute
   AuthenticatedMotivationTopicIdRoute: typeof AuthenticatedMotivationTopicIdRoute
+  AuthenticatedMotivationGratitudeJarRoute: typeof AuthenticatedMotivationGratitudeJarRoute
   AuthenticatedMotivationGuideRoute: typeof AuthenticatedMotivationGuideRoute
   AuthenticatedMotivationMeditationRoute: typeof AuthenticatedMotivationMeditationRoute
   AuthenticatedMotivationWalkRoute: typeof AuthenticatedMotivationWalkRoute
+  AuthenticatedMotivationWorryBoxRoute: typeof AuthenticatedMotivationWorryBoxRoute
   AuthenticatedMotivationIndexRoute: typeof AuthenticatedMotivationIndexRoute
 }
 
@@ -663,10 +705,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedWinsRoute: AuthenticatedWinsRoute,
   AuthenticatedMotivationTopicIdRoute: AuthenticatedMotivationTopicIdRoute,
+  AuthenticatedMotivationGratitudeJarRoute:
+    AuthenticatedMotivationGratitudeJarRoute,
   AuthenticatedMotivationGuideRoute: AuthenticatedMotivationGuideRoute,
   AuthenticatedMotivationMeditationRoute:
     AuthenticatedMotivationMeditationRoute,
   AuthenticatedMotivationWalkRoute: AuthenticatedMotivationWalkRoute,
+  AuthenticatedMotivationWorryBoxRoute: AuthenticatedMotivationWorryBoxRoute,
   AuthenticatedMotivationIndexRoute: AuthenticatedMotivationIndexRoute,
 }
 

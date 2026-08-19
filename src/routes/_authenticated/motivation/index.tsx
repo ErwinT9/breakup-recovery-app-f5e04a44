@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Flower2, Footprints } from "lucide-react";
+import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
@@ -44,6 +44,20 @@ const CARDS = [
     title: "Outdoor Walk",
     tagline: "Go for a walk and record it for physical and mental well-being",
     tint: "bg-sand",
+  },
+  {
+    to: "/motivation/worry-box",
+    icon: Inbox,
+    title: "Worry Box",
+    tagline: "Put your worries down somewhere safe when anxiety feels loud",
+    tint: "bg-sky",
+  },
+  {
+    to: "/motivation/gratitude-jar",
+    icon: Sparkles,
+    title: "Gratitude Jar",
+    tagline: "Collect the small good things, one candy, heart or leaf at a time",
+    tint: "bg-blush",
   },
 ] as const;
 
