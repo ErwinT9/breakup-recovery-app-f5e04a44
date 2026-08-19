@@ -89,7 +89,9 @@ android {
     }
 
     bundle {
-        language { enableSplit = false }
+        // App is English-only (resourceConfigurations += ["en"]), so language
+        // splitting is safe and lets Play ship a smaller per-device download.
+        language { enableSplit = true }
     }
 }
 
