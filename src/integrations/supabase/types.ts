@@ -287,6 +287,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_history_archive: {
+        Row: {
+          category: string
+          created_at: string
+          device_id: string | null
+          error: string | null
+          id: string
+          local_date: string
+          notification_id: number
+          scheduled_local_time: string
+          sent_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          device_id?: string | null
+          error?: string | null
+          id?: string
+          local_date: string
+          notification_id: number
+          scheduled_local_time?: string
+          sent_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          device_id?: string | null
+          error?: string | null
+          id?: string
+          local_date?: string
+          notification_id?: number
+          scheduled_local_time?: string
+          sent_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pictures: {
         Row: {
           caption: string | null
