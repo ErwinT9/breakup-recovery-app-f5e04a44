@@ -1,0 +1,981 @@
+{
+  "name": "30-Day Push Notification Cycle",
+  "version": "1.0",
+  "cycle_days": 30,
+  "notifications_per_day": 4,
+  "total_notifications": 120,
+  "categories": [
+    "Morning",
+    "Evening",
+    "Reminder",
+    "Motivation"
+  ],
+  "schedule": {
+    "timezone": "recipient_local_iana_timezone",
+    "cron_frequency": "*/5 * * * *",
+    "repeat_after_day": 30,
+    "repeat_cycle": true
+  },
+  "notifications": [
+    {
+      "day": 1,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "New Day, New Start 🌱",
+      "description": "Start today with one small promise to yourself. Check in and begin fresh.",
+      "feature": "Daily Check-in"
+    },
+    {
+      "day": 1,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "How Are You Feeling Today?",
+      "description": "Take a moment to check your mood. Your feelings deserve to be noticed.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 1,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Save a Moment for Yourself 📸",
+      "description": "Capture something good from today and add a picture to your journey.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 1,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "You Made It Through Today 🌙",
+      "description": "Write one thing you're proud of today and close the day with reflection.",
+      "feature": "Journal"
+    },
+    {
+      "day": 2,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Protect Your Peace 💚",
+      "description": "You don't need to reopen a door you worked hard to close. Read today's guide.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 2,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Notice Your Triggers",
+      "description": "Something bothering you? Log the trigger and understand what's behind the feeling.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 2,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Create a Small Ritual",
+      "description": "Build one calming ritual for yourself and make tonight feel different.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 2,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Give Yourself Better Words",
+      "description": "Write one affirmation you genuinely need to hear tonight.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 3,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Breathe Before You React 🧘",
+      "description": "Take three slow breaths and begin your morning with intention.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 3,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Take a Fresh-Air Break 🚶",
+      "description": "Step outside for a short walk and give your mind a reset.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 3,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Count One Win Today 🏆",
+      "description": "Record one thing you handled better than before.",
+      "feature": "Wins"
+    },
+    {
+      "day": 3,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Let Today Be Enough",
+      "description": "Release today's thoughts and give yourself permission to rest.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 4,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Write Before You Scroll ✍️",
+      "description": "Put your first thoughts into your journal instead of replaying the past.",
+      "feature": "Journal"
+    },
+    {
+      "day": 4,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "A Trigger Is Not a Command",
+      "description": "Notice the urge without acting on it. Log what happened and take control.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 4,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Capture Something Worth Keeping 📸",
+      "description": "Add a picture of a place, person, pet, or moment that matters.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 4,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Your Streak Is Your Proof 🔥",
+      "description": "Every day you choose yourself is progress. Check your streak.",
+      "feature": "No-Contact Streak"
+    },
+    {
+      "day": 5,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "I Choose Myself Today",
+      "description": "Write an affirmation that puts your recovery and peace first.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 5,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Pause and Reset 🧘",
+      "description": "Take a short mindful break before the rest of your day.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 5,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Move Your Body 🚶",
+      "description": "Take a short walk and give your mind some breathing room.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 5,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Did You Learn Today?",
+      "description": "Write one lesson you learned from today's emotions or experiences.",
+      "feature": "Journal"
+    },
+    {
+      "day": 6,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Don't Romanticize the Past",
+      "description": "Remember the full story, not only the moments you miss.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 6,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Catch the Pattern Early",
+      "description": "Log today's trigger and discover what helped you move through it.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 6,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Make Tonight Different",
+      "description": "Choose one peaceful activity and turn it into your evening ritual.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 6,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Release the Need for Answers",
+      "description": "You can move forward without solving every question from the past.",
+      "feature": "Reflection"
+    },
+    {
+      "day": 7,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "One Week of Choosing You 🎉",
+      "description": "You've made it through a week. Open the app and celebrate your progress.",
+      "feature": "Milestones"
+    },
+    {
+      "day": 7,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "What Changed This Week?",
+      "description": "Check your mood and compare how you feel now with earlier this week.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 7,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Add Your Biggest Win 🏆",
+      "description": "Record the strongest thing you did for yourself this week.",
+      "feature": "Wins"
+    },
+    {
+      "day": 7,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Rest Without Guilt 🌙",
+      "description": "Your recovery needs rest too. Slow down and breathe tonight.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 8,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Your Future Needs Your Attention",
+      "description": "Put your energy into the life you're building now.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 8,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "What Set You Off Today?",
+      "description": "Identify today's trigger before it becomes an impulse.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 8,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Add a Little Beauty to Today 📸",
+      "description": "Capture a picture of something that made you smile.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 8,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "I Am Allowed to Move On",
+      "description": "Write it down, read it slowly, and let it sink in.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 9,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Start With 60 Seconds 🧘",
+      "description": "One minute of mindful breathing can change the pace of your morning.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 9,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Walk It Out 🚶",
+      "description": "Step outside and give your thoughts a different environment.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 9,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Did You Keep Your Promise?",
+      "description": "Check today's recovery habit and keep your progress moving.",
+      "feature": "Habit Challenge"
+    },
+    {
+      "day": 9,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Felt Lighter Today?",
+      "description": "Write down one moment that felt easier than before.",
+      "feature": "Journal"
+    },
+    {
+      "day": 10,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Halfway to a New Habit 🌱",
+      "description": "Consistency matters more than perfection. Check in and keep going.",
+      "feature": "Daily Check-in"
+    },
+    {
+      "day": 10,
+      "time": "13:30",
+      "category": "Motivation",
+      "title": "Missing Them Doesn't Mean Go Back",
+      "description": "Feelings can be real without needing to become actions.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 10,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Build Your Safe List",
+      "description": "Add people, places, or activities you can turn to when you need support.",
+      "feature": "Recovery Tools"
+    },
+    {
+      "day": 10,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Put the Phone Down 🌙",
+      "description": "Give your mind a screen-free window before sleep.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 11,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "My Peace Is Worth Protecting 💚",
+      "description": "Write one sentence that reinforces the boundaries you want to keep.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 11,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Name It, Then Release It",
+      "description": "Log today's trigger and identify what helped you cope.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 11,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Get Some Fresh Air 🚶",
+      "description": "A short walk is enough. The goal is simply to move.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 11,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Notice Your Progress",
+      "description": "Look at how far you've come instead of focusing only on what's left.",
+      "feature": "Milestones"
+    },
+    {
+      "day": 12,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "What Do You Need Today?",
+      "description": "Write one thing your mind or body needs from you today.",
+      "feature": "Journal"
+    },
+    {
+      "day": 12,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Check In With Yourself",
+      "description": "Track your current mood without judging it.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 12,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Capture Your Current Life 📸",
+      "description": "Add a picture from today that has nothing to do with the past.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 12,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Keep Building 🌱",
+      "description": "Healing isn't a race. Keep taking the next healthy step.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 13,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Give Your Morning a Ritual",
+      "description": "Choose a simple routine that makes your mornings feel like yours again.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 13,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Reset Your Mind 🧘",
+      "description": "Pause, breathe slowly, and notice what's happening around you.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 13,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Record a Small Victory 🏆",
+      "description": "Small wins become big changes when you repeat them.",
+      "feature": "Wins"
+    },
+    {
+      "day": 13,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Leave It on the Page ✍️",
+      "description": "Write what you wish you could say without sending it.",
+      "feature": "Unsent Letter"
+    },
+    {
+      "day": 14,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Two Weeks Strong 💪",
+      "description": "Two weeks is worth celebrating. Open the app and look at your progress.",
+      "feature": "Milestones"
+    },
+    {
+      "day": 14,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "What Are You Proud Of?",
+      "description": "Record the biggest change you've noticed in yourself.",
+      "feature": "Wins"
+    },
+    {
+      "day": 14,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Do Something Just for You",
+      "description": "Choose one activity that makes your own life feel bigger.",
+      "feature": "Habit Challenge"
+    },
+    {
+      "day": 14,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "I Am Becoming Stronger",
+      "description": "Write an affirmation for the person you're becoming.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 15,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Your Story Is Still Being Written 📖",
+      "description": "Today is another chance to create a chapter that is about you.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 15,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Urge ≠ Action",
+      "description": "If an urge appears, log it first and give yourself time.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 15,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Take 10 Minutes Outside 🚶",
+      "description": "Move, breathe, and let your surroundings interrupt the mental loop.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 15,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Halfway Through the Cycle 🌙",
+      "description": "Look at your progress and choose one thing to improve tomorrow.",
+      "feature": "30-Day Progress"
+    },
+    {
+      "day": 16,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "How Strong Do You Feel Today?",
+      "description": "Rate your mood and notice what you need today.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 16,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Give Your Mind a Break",
+      "description": "Step away for a few minutes and practice mindful breathing.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 16,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Collect a Good Moment 📸",
+      "description": "Add a picture that reminds you your life is still happening.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 16,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Are You Letting Go Of?",
+      "description": "Write one thought, expectation, or memory you're ready to loosen.",
+      "feature": "Journal"
+    },
+    {
+      "day": 17,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "I Don't Chase What Hurts Me",
+      "description": "Create an affirmation that strengthens your boundaries today.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 17,
+      "time": "13:30",
+      "category": "Motivation",
+      "title": "Don't Let One Moment Define You",
+      "description": "A difficult moment does not erase your progress.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 17,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Create a Recovery Ritual",
+      "description": "Pick one activity you can repeat whenever emotions feel overwhelming.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 17,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Slow Down Tonight 🌙",
+      "description": "Breathe slowly and let your body know the day is over.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 18,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Write One Honest Sentence",
+      "description": "No pressure. Just write what is true for you this morning.",
+      "feature": "Journal"
+    },
+    {
+      "day": 18,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "What's Behind the Urge?",
+      "description": "Identify the emotion underneath today's trigger.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 18,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Give Yourself Credit 🏆",
+      "description": "Record something you handled with more strength than before.",
+      "feature": "Wins"
+    },
+    {
+      "day": 18,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Tomorrow Can Be Different",
+      "description": "You don't have to carry today's emotions into tomorrow.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 19,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "One Minute of Presence 🧘",
+      "description": "Focus on your breathing, surroundings, and this moment.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 19,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Change Your Environment 🚶",
+      "description": "Take a short walk somewhere that gives your mind a fresh perspective.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 19,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Save a Positive Moment 📸",
+      "description": "Add a picture from your day that makes you feel grounded.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 19,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Helped You Today?",
+      "description": "Record the coping tool or person that made today easier.",
+      "feature": "Recovery Tools"
+    },
+    {
+      "day": 20,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "You Are Not Starting Over",
+      "description": "Every day of effort counts, even when today feels difficult.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 20,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Check Your Emotional Weather",
+      "description": "Track how you feel and notice any patterns.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 20,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Do One Thing for Future You",
+      "description": "Complete one small action your future self will appreciate.",
+      "feature": "Habit Challenge"
+    },
+    {
+      "day": 20,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Write, Don't Send ✍️",
+      "description": "Put the words somewhere safe instead of sending them.",
+      "feature": "Unsent Letter"
+    },
+    {
+      "day": 21,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Three Weeks of Progress 🌿",
+      "description": "Three weeks in. Take a moment to recognize your consistency.",
+      "feature": "Milestones"
+    },
+    {
+      "day": 21,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "See Your Growth",
+      "description": "Review your moods, triggers, wins, and habits from the last week.",
+      "feature": "Recovery Insights"
+    },
+    {
+      "day": 21,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Plan One Good Thing",
+      "description": "Choose something enjoyable to look forward to this week.",
+      "feature": "Habit Challenge"
+    },
+    {
+      "day": 21,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "My Life Is Bigger Than This Chapter",
+      "description": "Write it. Believe it. Keep moving.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 22,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Start With Intention",
+      "description": "Choose one ritual that helps you begin the day feeling grounded.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 22,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Catch the Thought Loop",
+      "description": "If your mind starts replaying the past, log the trigger and redirect.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 22,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Walk Toward Something New 🚶",
+      "description": "Take a walk and notice something you've never noticed before.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 22,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Make Space for Sleep 🌙",
+      "description": "Let your final minutes tonight be calm and screen-light.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 23,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "I Deserve Consistency 💚",
+      "description": "Write an affirmation about the kind of life and love you want.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 23,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Check In, Don't Judge",
+      "description": "Whatever you feel today is information, not failure.",
+      "feature": "Mood Tracker"
+    },
+    {
+      "day": 23,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Document Your World 📸",
+      "description": "Add a picture that represents your life outside the relationship.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 23,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Are You Grateful For?",
+      "description": "Write three simple things you appreciated today.",
+      "feature": "Journal"
+    },
+    {
+      "day": 24,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Protect Your Progress",
+      "description": "Avoid small choices that can pull you back into old patterns.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 24,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Know Your High-Risk Moments",
+      "description": "Log when urges usually appear so you can prepare for them.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 24,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Create a Go-To Reset",
+      "description": "Set a ritual you can use whenever your emotions spike.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 24,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "You Handled Another Day 🔥",
+      "description": "Give yourself credit for making it through another day.",
+      "feature": "No-Contact Streak"
+    },
+    {
+      "day": 25,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Five Days to the Finish 🌱",
+      "description": "Keep your focus on the next healthy choice.",
+      "feature": "Daily Check-in"
+    },
+    {
+      "day": 25,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Take a Mental Pause 🧘",
+      "description": "Close your eyes, breathe, and reconnect with the present.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 25,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "What Went Right?",
+      "description": "Record one positive choice you made today.",
+      "feature": "Wins"
+    },
+    {
+      "day": 25,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Progress Can Be Quiet",
+      "description": "Some victories are simply moments when you chose yourself.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 26,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Meet Yourself Where You Are",
+      "description": "Write honestly about your current state without judging it.",
+      "feature": "Journal"
+    },
+    {
+      "day": 26,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Get Outside 🚶",
+      "description": "Take a short walk and let your mind reset naturally.",
+      "feature": "Outdoor Walk"
+    },
+    {
+      "day": 26,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Save Today's Bright Spot 📸",
+      "description": "Add one picture that captures something positive from today.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 26,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "I Am Moving Forward",
+      "description": "Write one sentence describing the future you're choosing.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 27,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "The Urge Will Pass",
+      "description": "You don't have to act on every feeling. Give the urge time.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 27,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Turn a Trigger Into Data",
+      "description": "Log what happened, what you felt, and what helped.",
+      "feature": "Log a Trigger"
+    },
+    {
+      "day": 27,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Choose Yourself for 10 Minutes",
+      "description": "Do one healthy activity before making an emotional decision.",
+      "feature": "Habit Challenge"
+    },
+    {
+      "day": 27,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "End the Day Gently 🌙",
+      "description": "Breathe slowly and let today's thoughts settle.",
+      "feature": "Mindful Meditation"
+    },
+    {
+      "day": 28,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "Four Weeks of Showing Up 🌱",
+      "description": "Four weeks of consistency is something to be proud of.",
+      "feature": "Milestones"
+    },
+    {
+      "day": 28,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "See Your Pattern",
+      "description": "Review your moods, triggers, wins, and habits.",
+      "feature": "Recovery Insights"
+    },
+    {
+      "day": 28,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Refresh Your Routine",
+      "description": "Adjust your recovery ritual so it continues working for you.",
+      "feature": "Set Ritual"
+    },
+    {
+      "day": 28,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "What Do You Want Next?",
+      "description": "Write about the life and routines you want to build.",
+      "feature": "Journal"
+    },
+    {
+      "day": 29,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "One More Day of Choosing You",
+      "description": "Tomorrow starts a new cycle. Finish this one with intention.",
+      "feature": "Motivation Guide"
+    },
+    {
+      "day": 29,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "Look at the Bigger Picture",
+      "description": "Notice how your reactions and habits have changed.",
+      "feature": "Recovery Insights"
+    },
+    {
+      "day": 29,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "List Three Things You Did Well 🏆",
+      "description": "Give yourself specific credit for the progress you've made.",
+      "feature": "Wins"
+    },
+    {
+      "day": 29,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "I Am Proud of My Progress",
+      "description": "Write an affirmation that celebrates the work you've done.",
+      "feature": "Write an Affirmation"
+    },
+    {
+      "day": 30,
+      "time": "09:00",
+      "category": "Morning",
+      "title": "30 Days of Progress 🎉",
+      "description": "You completed a full recovery cycle. Celebrate the work you put into yourself.",
+      "feature": "30-Day Milestone"
+    },
+    {
+      "day": 30,
+      "time": "13:30",
+      "category": "Reminder",
+      "title": "What Changed in 30 Days?",
+      "description": "Review your mood, triggers, wins, habits, and no-contact progress.",
+      "feature": "Recovery Insights"
+    },
+    {
+      "day": 30,
+      "time": "18:30",
+      "category": "Reminder",
+      "title": "Capture Your New Chapter 📸",
+      "description": "Add a picture that represents where you are now.",
+      "feature": "Add a Picture"
+    },
+    {
+      "day": 30,
+      "time": "21:30",
+      "category": "Evening",
+      "title": "Tomorrow Starts a New Cycle 🌙",
+      "description": "The next 30 days can build on everything you've learned.",
+      "feature": "30-Day Reset"
+    }
+  ]
+}

@@ -40,6 +40,7 @@ import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_auth
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
 import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
 import { Route as AuthenticatedMotivationWorryBoxRouteImport } from './routes/_authenticated/motivation/worry-box'
+import { Route as ApiPublicHooksPushSchedulerRouteImport } from './routes/api/public/hooks/push-scheduler'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -207,6 +208,12 @@ const AuthenticatedMotivationWorryBoxRoute =
     path: '/motivation/worry-box',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksPushSchedulerRoute =
+  ApiPublicHooksPushSchedulerRouteImport.update({
+    id: '/api/public/hooks/push-scheduler',
+    path: '/api/public/hooks/push-scheduler',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation/': typeof AuthenticatedMotivationIndexRoute
+  '/api/public/hooks/push-scheduler': typeof ApiPublicHooksPushSchedulerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -271,6 +279,7 @@ export interface FileRoutesByTo {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation': typeof AuthenticatedMotivationIndexRoute
+  '/api/public/hooks/push-scheduler': typeof ApiPublicHooksPushSchedulerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -305,6 +314,7 @@ export interface FileRoutesById {
   '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/_authenticated/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
+  '/api/public/hooks/push-scheduler': typeof ApiPublicHooksPushSchedulerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/motivation/'
+    | '/api/public/hooks/push-scheduler'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -371,6 +382,7 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/motivation'
+    | '/api/public/hooks/push-scheduler'
   id:
     | '__root__'
     | '/'
@@ -404,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated/motivation/walk'
     | '/_authenticated/motivation/worry-box'
     | '/_authenticated/motivation/'
+    | '/api/public/hooks/push-scheduler'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -414,6 +427,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicHooksPushSchedulerRoute: typeof ApiPublicHooksPushSchedulerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -635,6 +649,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationWorryBoxRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/push-scheduler': {
+      id: '/api/public/hooks/push-scheduler'
+      path: '/api/public/hooks/push-scheduler'
+      fullPath: '/api/public/hooks/push-scheduler'
+      preLoaderRoute: typeof ApiPublicHooksPushSchedulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -705,6 +726,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
+  ApiPublicHooksPushSchedulerRoute: ApiPublicHooksPushSchedulerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
