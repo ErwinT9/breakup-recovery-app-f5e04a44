@@ -2,10 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DEFAULT_NOTIFICATION_PREFS, type NotificationPrefs } from "@/lib/notifications/categories";
 import {
+  cycleDay,
   deepLinkFor,
   dueNotifications,
+  localDateOf,
+  localNow,
   notificationId,
   preferenceKey,
+  SCHEDULE,
 } from "@/lib/notifications/schedule";
 
 /**
@@ -39,7 +43,7 @@ function prefsOf(raw: unknown): NotificationPrefs {
   return { ...DEFAULT_NOTIFICATION_PREFS, ...stored };
 }
 
-async function run(dryRun: boolean, onlyUserId?: string) {
+async function run(dryRun: boolean, onlyUserId?: string, force = false) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const supabaseUrl = process.env["SUPABASE_URL"]!;
   const serviceRoleKey = process.env["SUPABASE_SERVICE_ROLE_KEY"]!;
@@ -68,10 +72,21 @@ async function run(dryRun: boolean, onlyUserId?: string) {
       continue;
     }
     const prefs = prefsOf(profile.notification_prefs);
-    const due = dueNotifications({
+    let due = dueNotifications({
       timezone: profile.timezone,
       startedAtIso: profile.recovery_started_at,
     });
+    // Verification hook (service-role only): dispatch today's first entry now,
+    // ignoring the clock but still honouring preferences and duplicate checks.
+    if (force && due.length === 0) {
+      const local = localNow(profile.timezone);
+      const start = localDateOf(profile.recovery_started_at, profile.timezone);
+      if (local && start) {
+        const day = cycleDay(start, local.date);
+        const entry = SCHEDULE.find((item) => item.day === day);
+        if (entry) due = [{ entry, localDate: local.date, day }];
+      }
+    }
 
     for (const { entry, localDate } of due) {
       if (!prefs[preferenceKey(entry.category)]) {
@@ -177,8 +192,10 @@ export const Route = createFileRoute("/api/public/hooks/push-scheduler")({
         const body = (await request.json().catch(() => ({}))) as {
           dry_run?: boolean;
           user_id?: string;
+          force?: boolean;
         };
-        return run(Boolean(body.dry_run), body.user_id);
+        const isServiceCall = credential === process.env["SUPABASE_SERVICE_ROLE_KEY"];
+        return run(Boolean(body.dry_run), body.user_id, Boolean(body.force) && isServiceCall);
       },
     },
   },
