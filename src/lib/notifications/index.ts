@@ -221,11 +221,6 @@ export {
   saveNotificationPrefs,
 } from "./categories";
 export type { NotificationCategory, NotificationPrefs } from "./categories";
-export {
-  EVENING_NOTIFICATIONS,
-  EVENING_SCHEDULE_TIME,
-  eveningNotificationForDay,
-} from "./eveningContent";
 export { deviceTimezone, syncNotificationDeviceState } from "./deviceState";
 export {
   currentPushToken,
