@@ -40,7 +40,6 @@ import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_auth
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
 import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
 import { Route as AuthenticatedMotivationWorryBoxRouteImport } from './routes/_authenticated/motivation/worry-box'
-import { Route as ApiPublicHooksEveningRemindersRouteImport } from './routes/api/public/hooks/evening-reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -208,12 +207,6 @@ const AuthenticatedMotivationWorryBoxRoute =
     path: '/motivation/worry-box',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicHooksEveningRemindersRoute =
-  ApiPublicHooksEveningRemindersRouteImport.update({
-    id: '/api/public/hooks/evening-reminders',
-    path: '/api/public/hooks/evening-reminders',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -246,7 +239,6 @@ export interface FileRoutesByFullPath {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation/': typeof AuthenticatedMotivationIndexRoute
-  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -279,7 +271,6 @@ export interface FileRoutesByTo {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/motivation': typeof AuthenticatedMotivationIndexRoute
-  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -314,7 +305,6 @@ export interface FileRoutesById {
   '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/_authenticated/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
-  '/api/public/hooks/evening-reminders': typeof ApiPublicHooksEveningRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -349,7 +339,6 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/motivation/'
-    | '/api/public/hooks/evening-reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -382,7 +371,6 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/motivation'
-    | '/api/public/hooks/evening-reminders'
   id:
     | '__root__'
     | '/'
@@ -416,7 +404,6 @@ export interface FileRouteTypes {
     | '/_authenticated/motivation/walk'
     | '/_authenticated/motivation/worry-box'
     | '/_authenticated/motivation/'
-    | '/api/public/hooks/evening-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -427,7 +414,6 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
-  ApiPublicHooksEveningRemindersRoute: typeof ApiPublicHooksEveningRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -649,13 +635,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationWorryBoxRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/hooks/evening-reminders': {
-      id: '/api/public/hooks/evening-reminders'
-      path: '/api/public/hooks/evening-reminders'
-      fullPath: '/api/public/hooks/evening-reminders'
-      preLoaderRoute: typeof ApiPublicHooksEveningRemindersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -726,7 +705,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
-  ApiPublicHooksEveningRemindersRoute: ApiPublicHooksEveningRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
