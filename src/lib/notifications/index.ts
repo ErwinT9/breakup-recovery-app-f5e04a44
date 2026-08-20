@@ -6,7 +6,6 @@ import {
   loadNotificationPrefs,
   type NotificationPrefs,
 } from "./categories";
-import { eveningNotificationForDay } from "./eveningContent";
 import { notificationNavigate } from "./push";
 
 /**
@@ -107,9 +106,13 @@ function atHour(hour: number, minute = 0): Date {
 export type ReminderPrefs = {
   enabled: boolean;
   morning: boolean;
+  /**
+   * Preserved user preference. The evening reminder is intentionally not
+   * scheduled here — the timezone-aware system will be rebuilt separately.
+   */
   evening: boolean;
   categories?: Partial<NotificationPrefs>;
-  /** 1-based recovery day, used to pick today's evening reminder copy. */
+  /** 1-based recovery day. Kept for the upcoming scheduler. */
   recoveryDay?: number;
 };
 
@@ -137,18 +140,6 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
         title: "Good morning",
         body: "A new quiet day. You've got this.",
         schedule: { at: atHour(9), repeats: true, every: "day" as const },
-      });
-    }
-    if (prefs.evening && categories.evening) {
-      // 16:30 local, copy from the deterministic 30-day rotation.
-      const content = eveningNotificationForDay(prefs.recoveryDay ?? 1);
-      notifications.push({
-        id: 1002,
-        channelId: CHANNEL_ID,
-        title: content.title,
-        body: content.description,
-        extra: { deep_link: content.deep_link, category: "evening_reminder" },
-        schedule: { at: atHour(16, 30), repeats: true, every: "day" as const },
       });
     }
     if (categories.inactivity) {
@@ -230,11 +221,6 @@ export {
   saveNotificationPrefs,
 } from "./categories";
 export type { NotificationCategory, NotificationPrefs } from "./categories";
-export {
-  EVENING_NOTIFICATIONS,
-  EVENING_SCHEDULE_TIME,
-  eveningNotificationForDay,
-} from "./eveningContent";
 export { deviceTimezone, syncNotificationDeviceState } from "./deviceState";
 export {
   currentPushToken,
