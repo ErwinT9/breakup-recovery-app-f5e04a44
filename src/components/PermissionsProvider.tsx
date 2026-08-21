@@ -22,10 +22,7 @@ import {
   type PermissionKey,
 } from "@/lib/native/permissions";
 import { storage } from "@/lib/native/storage";
-import {
-  setImageSourceChooser,
-  type ImageSource,
-} from "@/lib/native/imageSource";
+import { setImageSourceChooser, type ImageSource } from "@/lib/native/imageSource";
 import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 
 const ICONS: Record<PermissionKey, typeof Bell> = {
@@ -50,9 +47,9 @@ export function PermissionsProvider({ children }: { children: React.ReactNode })
   const { user } = useAuth();
   const [queue, setQueue] = useState<PermissionKey[]>([]);
   const [blocked, setBlocked] = useState<PermissionKey | null>(null);
-  const [sourceResolve, setSourceResolve] = useState<
-    ((source: ImageSource | null) => void) | null
-  >(null);
+  const [sourceResolve, setSourceResolve] = useState<((source: ImageSource | null) => void) | null>(
+    null,
+  );
 
   useEffect(() => {
     setPermissionBlockedHandler((key) => setBlocked(key));
@@ -147,13 +144,20 @@ export function PermissionsProvider({ children }: { children: React.ReactNode })
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(blocked)} onOpenChange={(open) => (!open ? setBlocked(null) : undefined)}>
+      <Dialog
+        open={Boolean(blocked)}
+        onOpenChange={(open) => (!open ? setBlocked(null) : undefined)}
+      >
         <DialogContent className="max-w-sm rounded-3xl">
           {blocked ? (
             <>
               <Explainer permission={blocked} blocked />
               <DialogFooter className="mt-2 flex-row gap-2 sm:justify-end">
-                <Button variant="ghost" className="flex-1 rounded-full" onClick={() => setBlocked(null)}>
+                <Button
+                  variant="ghost"
+                  className="flex-1 rounded-full"
+                  onClick={() => setBlocked(null)}
+                >
                   Not now
                 </Button>
                 <Button

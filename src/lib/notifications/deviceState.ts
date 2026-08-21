@@ -26,19 +26,22 @@ export async function syncNotificationDeviceState(userId: string | null): Promis
     const timezone = deviceTimezone();
     const state = await checkPermission("notifications");
     const patch: Record<string, unknown> = {};
-    if (timezone) patch['timezone'] = timezone;
+    if (timezone) patch["timezone"] = timezone;
 
     // Only persist a permission value when Android returned a definitive OS
     // state. A temporarily unavailable native bridge/plugin reports
     // "unsupported"; treating that as denied used to overwrite a valid true
     // value on app launch/resume. "prompt" is also not a denial.
     if (state === "granted" || state === "denied" || state === "blocked") {
-      patch['notifications_permission_granted'] = state === "granted";
-      patch['permission_synced_at'] = new Date().toISOString();
+      patch["notifications_permission_granted"] = state === "granted";
+      patch["permission_synced_at"] = new Date().toISOString();
     }
 
     if (Object.keys(patch).length === 0) return;
-    const { error } = await supabase.from("profiles").update(patch as never).eq("id", userId);
+    const { error } = await supabase
+      .from("profiles")
+      .update(patch as never)
+      .eq("id", userId);
     if (error) throw error;
   } catch (error) {
     analytics.error(error, { stage: "notification_device_sync" });
