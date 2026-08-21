@@ -59,7 +59,13 @@ export function ColoringGarden({
       role="img"
       aria-label="A garden scene that gains colour as your streak grows"
     >
+      <defs>
+        <clipPath id="coloring-garden-frame">
+          <rect x="10" y="18" width="300" height="208" rx="22" />
+        </clipPath>
+      </defs>
       <g
+        clipPath="url(#coloring-garden-frame)"
         stroke={monochrome ? "#2B2B2B" : "currentColor"}
         strokeWidth="2.2"
         strokeLinecap="round"
@@ -67,7 +73,7 @@ export function ColoringGarden({
         className="[&_*]:transition-[fill] [&_*]:duration-700 [&_*]:ease-out"
       >
         {/* sky band */}
-        <path d="M14 36h292v104H14z" fill={f(4, "sky")} stroke="none" opacity="0.9" />
+        <path d="M10 18h300v126H10z" fill={f(4, "sky")} stroke="none" opacity="0.9" />
 
         {/* sun — day 1 */}
         <circle cx="256" cy="58" r="20" fill={f(1, "sun")} />
@@ -95,20 +101,20 @@ export function ColoringGarden({
 
         {/* pond — day 5 */}
         <ellipse cx="86" cy="176" rx="60" ry="26" fill={f(5, "water")} />
-        <path d="M44 176c10-6 22-6 32 0" fill="none" />
-        <path d="M104 186c10-5 20-5 30 0" fill="none" />
+        <path d="M36 186c8-5 18-5 26 0" fill="none" />
+        <path d="M92 192c8-4 16-4 24 0" fill="none" />
 
         {/* lily pads + flower — day 5 */}
-        <path d="M52 166a13 13 0 1 1 24 6l-11-1-13-5Z" fill={f(5, "leaf")} />
-        <circle cx="96" cy="164" r="7" fill={f(5, "lily")} />
-        <circle cx="96" cy="164" r="2.4" fill={monochrome ? "none" : f(5, "sun")} />
+        <path d="M38 172a13 13 0 1 1 24 6l-11-1-13-5Z" fill={f(5, "leaf")} />
+        <circle cx="66" cy="188" r="7" fill={f(5, "lily")} />
+        <circle cx="66" cy="188" r="2.4" fill={monochrome ? "none" : f(5, "sun")} />
 
         {/* little duck friend — day 6 */}
-        <ellipse cx="132" cy="172" rx="20" ry="14" fill={f(6, "duck")} />
-        <circle cx="148" cy="158" r="10" fill={f(6, "duck")} />
-        <path d="M157 157h9l-9 6v-6Z" fill={f(6, "beak")} />
-        <circle cx="150" cy="155" r="1.6" fill={monochrome ? "none" : "#2B2B2B"} stroke="none" />
-        <path d="M124 170c6-4 14-4 18 2" fill="none" />
+        <ellipse cx="108" cy="176" rx="19" ry="13" fill={f(6, "duck")} />
+        <circle cx="123" cy="163" r="9.5" fill={f(6, "duck")} />
+        <path d="M131 162h9l-9 6v-6Z" fill={f(6, "beak")} />
+        <circle cx="125" cy="160" r="1.6" fill={monochrome ? "none" : "#2B2B2B"} stroke="none" />
+        <path d="M100 175c6-4 14-4 18 2" fill="none" />
 
         {/* tree — trunk day 2, canopy day 2 + 3 */}
         <path d="M242 196v-42" fill="none" />
@@ -167,9 +173,17 @@ export function ColoringGarden({
         {/* ground line */}
         <path d="M14 218h292" fill="none" />
 
-        {/* frame */}
-        <rect x="10" y="18" width="300" height="208" rx="22" fill="none" />
       </g>
+      <rect
+        x="10"
+        y="18"
+        width="300"
+        height="208"
+        rx="22"
+        fill="none"
+        stroke={monochrome ? "#2B2B2B" : "currentColor"}
+        strokeWidth="2.2"
+      />
     </svg>
   );
 }
