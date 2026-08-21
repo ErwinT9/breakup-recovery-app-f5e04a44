@@ -62,6 +62,7 @@ import {
   deactivatePushToken,
   ensurePushChannel,
   loadNotificationPrefs,
+  normalizeNotificationPrefs,
   syncNotificationDeviceState,
   registerPush,
   notificationPermissionGranted,
@@ -206,6 +207,15 @@ function SettingsScreen() {
     setName(profile.data.display_name ?? "");
     setBio(profile.data.bio ?? "");
     setAvatar(profile.data.avatar_url ?? "");
+  }, [profile.data]);
+
+  // profiles.notification_prefs is authoritative: hydrate the switches and the
+  // offline mirror from it whenever the profile loads.
+  useEffect(() => {
+    if (!profile.data) return;
+    const prefs = normalizeNotificationPrefs(profile.data.notification_prefs);
+    setNotifs(prefs);
+    void saveNotificationPrefs(prefs);
   }, [profile.data]);
 
   /** 1-based recovery day, shared with the server-side 30-day rotation. */
