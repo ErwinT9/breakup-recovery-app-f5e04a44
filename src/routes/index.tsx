@@ -35,7 +35,13 @@ function Splash() {
 
     const timer = window.setTimeout(() => {
       if (loading || cancelled) return;
-      void navigate({ to: session ? "/home" : "/auth", replace: true });
+      if (!session) {
+        void navigate({ to: "/auth", replace: true });
+        return;
+      }
+      // The streak screen decides for itself whether today needs celebrating;
+      // if not, it forwards straight to Home.
+      void navigate({ to: "/streak-unlock", search: { auto: true }, replace: true });
     }, 2400);
 
     return () => {

@@ -31,6 +31,7 @@ import { Route as AuthenticatedPicturesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuestionnaireRouteImport } from './routes/_authenticated/questionnaire'
 import { Route as AuthenticatedRitualsRouteImport } from './routes/_authenticated/rituals'
+import { Route as AuthenticatedStreakUnlockRouteImport } from './routes/_authenticated/streak-unlock'
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as AuthenticatedWinsRouteImport } from './routes/_authenticated/wins'
 import { Route as AuthenticatedMotivationIndexRouteImport } from './routes/_authenticated/motivation/index'
@@ -157,6 +158,12 @@ const AuthenticatedRitualsRoute = AuthenticatedRitualsRouteImport.update({
   path: '/rituals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStreakUnlockRoute =
+  AuthenticatedStreakUnlockRouteImport.update({
+    id: '/streak-unlock',
+    path: '/streak-unlock',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTriggersRoute = AuthenticatedTriggersRouteImport.update({
   id: '/triggers',
   path: '/triggers',
@@ -244,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/rituals': typeof AuthenticatedRitualsRoute
+  '/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
@@ -278,6 +286,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/rituals': typeof AuthenticatedRitualsRoute
+  '/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/_authenticated/rituals': typeof AuthenticatedRitualsRoute
+  '/_authenticated/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/_authenticated/wins': typeof AuthenticatedWinsRoute
   '/_authenticated/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questionnaire'
     | '/rituals'
+    | '/streak-unlock'
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questionnaire'
     | '/rituals'
+    | '/streak-unlock'
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/questionnaire'
     | '/_authenticated/rituals'
+    | '/_authenticated/streak-unlock'
     | '/_authenticated/triggers'
     | '/_authenticated/wins'
     | '/_authenticated/motivation/$topicId'
@@ -599,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRitualsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/streak-unlock': {
+      id: '/_authenticated/streak-unlock'
+      path: '/streak-unlock'
+      fullPath: '/streak-unlock'
+      preLoaderRoute: typeof AuthenticatedStreakUnlockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/triggers': {
       id: '/_authenticated/triggers'
       path: '/triggers'
@@ -695,6 +715,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuestionnaireRoute: typeof AuthenticatedQuestionnaireRoute
   AuthenticatedRitualsRoute: typeof AuthenticatedRitualsRoute
+  AuthenticatedStreakUnlockRoute: typeof AuthenticatedStreakUnlockRoute
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedWinsRoute: typeof AuthenticatedWinsRoute
   AuthenticatedMotivationTopicIdRoute: typeof AuthenticatedMotivationTopicIdRoute
@@ -723,6 +744,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuestionnaireRoute: AuthenticatedQuestionnaireRoute,
   AuthenticatedRitualsRoute: AuthenticatedRitualsRoute,
+  AuthenticatedStreakUnlockRoute: AuthenticatedStreakUnlockRoute,
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedWinsRoute: AuthenticatedWinsRoute,
   AuthenticatedMotivationTopicIdRoute: AuthenticatedMotivationTopicIdRoute,
