@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppLogo } from "@/components/AppLogo";
 import { ColoringGarden } from "@/components/illustrations/ColoringGarden";
 import { Button } from "@/components/ui/button";
-import { streakRepo } from "@/data/repository";
+import { profileRepo, streakRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { celebrate } from "@/lib/celebrate";
@@ -17,6 +17,7 @@ import {
   STREAK_UNLOCK_TARGET,
   getStreakUnlockState,
   markStreakUnlockSeen,
+  shouldAutoShowStreakUnlock,
 } from "@/lib/streakUnlock";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/_authenticated/streak-unlock")({
       },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>): { auto?: boolean } =>
+    search["auto"] === true || search["auto"] === "1" ? { auto: true } : {},
   component: StreakUnlockScreen,
 });
 
@@ -51,6 +54,7 @@ function StreakUnlockScreen() {
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const navigate = useNavigate();
+  const { auto } = Route.useSearch();
   const printRef = useRef<SVGSVGElement>(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -58,6 +62,12 @@ function StreakUnlockScreen() {
     queryKey: ["streak", userId],
     queryFn: () => streakRepo.ensure(userId),
     enabled: Boolean(userId),
+  });
+
+  const profile = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => profileRepo.get(userId),
+    enabled: Boolean(userId) && Boolean(auto),
   });
 
   const startedAt = streak.data?.started_at ?? null;
@@ -69,6 +79,16 @@ function StreakUnlockScreen() {
   useEffect(() => {
     analytics.screen("streak_unlock");
   }, []);
+
+  // Auto entry from the splash: only stay here when the streak day changed and
+  // onboarding is done — otherwise slip straight through to Home.
+  useEffect(() => {
+    if (!auto || !ready || profile.isLoading) return;
+    const onboarded = profile.data?.questionnaire_completed !== false;
+    if (!onboarded || !shouldAutoShowStreakUnlock(totalDays)) {
+      void navigate({ to: "/home", replace: true });
+    }
+  }, [auto, ready, profile.isLoading, profile.data, totalDays, navigate]);
 
   useEffect(() => {
     if (!ready) return;
