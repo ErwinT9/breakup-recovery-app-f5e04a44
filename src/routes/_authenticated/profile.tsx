@@ -248,11 +248,12 @@ function SettingsScreen() {
     const next = { ...notifs, ...patch };
     setNotifs(next);
     haptic.select();
+    // Storage keeps the offline mirror; profiles.notification_prefs is the
+    // single source of truth the push scheduler reads.
     await saveNotificationPrefs(next);
+    await update.mutateAsync({ notification_prefs: next });
     await syncReminders({
       enabled: profile.data?.notifications_enabled ?? false,
-      morning: profile.data?.morning_reminder ?? true,
-      evening: profile.data?.evening_reminder ?? true,
       categories: next,
       recoveryDay: currentRecoveryDay(),
     });
@@ -266,7 +267,7 @@ function SettingsScreen() {
       if (!enabled) {
         await storage.set(NOTIF_ENABLED_KEY, false);
         await update.mutateAsync({ notifications_enabled: false });
-        await syncReminders({ enabled: false, morning: false, evening: false, categories: notifs });
+        await syncReminders({ enabled: false, categories: notifs });
         await deactivatePushToken(userId || null);
         toast(t("settings.notificationsOff"));
         return;
@@ -293,8 +294,6 @@ function SettingsScreen() {
       await update.mutateAsync({ notifications_enabled: true });
       await syncReminders({
         enabled: true,
-        morning: profile.data?.morning_reminder ?? true,
-        evening: profile.data?.evening_reminder ?? true,
         categories: notifs,
         recoveryDay: currentRecoveryDay(),
       });
