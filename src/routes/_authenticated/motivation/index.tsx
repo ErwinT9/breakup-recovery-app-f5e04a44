@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles } from "lucide-react";
+import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles, Wine } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
+import { ALCOHOL_CONTROL_TAGLINE, ALCOHOL_CONTROL_TITLE } from "@/lib/alcoholControl";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/_authenticated/motivation/")({
@@ -58,6 +59,13 @@ const CARDS = [
     title: "Gratitude Jar",
     tagline: "Collect the small good things, one candy, heart or leaf at a time",
     tint: "bg-blush",
+  },
+  {
+    to: "/motivation/alcohol-control",
+    icon: Wine,
+    title: ALCOHOL_CONTROL_TITLE,
+    tagline: ALCOHOL_CONTROL_TAGLINE,
+    tint: "bg-mint",
   },
 ] as const;
 
