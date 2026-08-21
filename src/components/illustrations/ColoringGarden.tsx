@@ -97,7 +97,7 @@ export function ColoringGarden({
         />
 
         {/* rolling hill — day 3 */}
-        <path d="M8 142c48-30 94-30 142-6 48 24 100 24 162 0v70H8v-64Z" fill={f(3, "hill")} />
+        <path d="M8 142c48-30 94-30 142-6 48 24 100 24 162 0v84H8v-78Z" fill={f(3, "hill")} />
 
         {/* pond — day 5 */}
         <ellipse cx="86" cy="176" rx="60" ry="26" fill={f(5, "water")} />
@@ -161,9 +161,9 @@ export function ColoringGarden({
         </g>
 
         {/* watering can — day 1 (the first splash of colour) */}
-        <path d="M262 214v-24a4 4 0 0 1 4-4h26a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4h-26a4 4 0 0 1-4-4Z" fill={f(1, "can")} />
-        <path d="M296 194l14-8-4 22-10-6" fill={f(1, "can")} />
-        <path d="M268 186c0-8 12-8 12 0" fill="none" />
+        <path d="M250 214v-24a4 4 0 0 1 4-4h26a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4h-26a4 4 0 0 1-4-4Z" fill={f(1, "can")} />
+        <path d="M284 194l14-8-4 22-10-6" fill={f(1, "can")} />
+        <path d="M256 186c0-8 12-8 12 0" fill="none" />
 
         {/* grass tufts — day 7 */}
         <path d="M96 210c0-6 4-10 4-10s4 4 4 10" fill={f(7, "grass")} />
