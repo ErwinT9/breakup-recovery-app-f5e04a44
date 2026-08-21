@@ -2,6 +2,7 @@ import { Bell, Camera as CameraIcon, Images, Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ import {
   setImageSourceChooser,
   type ImageSource,
 } from "@/lib/native/imageSource";
+import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 
 const ICONS: Record<PermissionKey, typeof Bell> = {
   notifications: Bell,
@@ -45,6 +47,7 @@ const ONBOARDING_ORDER: PermissionKey[] = ["notifications"];
  *  - the "permanently denied" dialog with a shortcut to system settings
  */
 export function PermissionsProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [queue, setQueue] = useState<PermissionKey[]>([]);
   const [blocked, setBlocked] = useState<PermissionKey | null>(null);
   const [sourceResolve, setSourceResolve] = useState<
@@ -89,7 +92,12 @@ export function PermissionsProvider({ children }: { children: React.ReactNode })
 
   const allow = async () => {
     if (!current) return;
-    await requestPermission(current);
+    const state = await requestPermission(current);
+    // Persist the newly granted/denied Android state immediately for the
+    // signed-in user instead of waiting for a later app resume.
+    if (current === "notifications" && user?.id && state !== "unsupported" && state !== "prompt") {
+      await syncNotificationDeviceState(user.id);
+    }
     advance();
   };
 
