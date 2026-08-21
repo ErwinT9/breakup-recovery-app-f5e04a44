@@ -37,7 +37,9 @@ export function ColoringGarden({
   stage,
   className,
   monochrome = false,
+  ref,
 }: {
+  ref?: React.Ref<SVGSVGElement>;
   /** Current streak day, 1-7 (values above 7 render fully coloured). */
   stage: number;
   className?: string;
@@ -49,6 +51,7 @@ export function ColoringGarden({
 
   return (
     <svg
+      ref={ref}
       viewBox="0 0 320 240"
       className={cn("size-full", className)}
       role="img"
