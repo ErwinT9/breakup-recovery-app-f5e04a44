@@ -35,6 +35,7 @@ import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedWinsRouteImport } from './routes/_authenticated/wins'
 import { Route as AuthenticatedMotivationIndexRouteImport } from './routes/_authenticated/motivation/index'
 import { Route as AuthenticatedMotivationTopicIdRouteImport } from './routes/_authenticated/motivation/$topicId'
+import { Route as AuthenticatedMotivationAlcoholControlRouteImport } from './routes/_authenticated/motivation/alcohol-control'
 import { Route as AuthenticatedMotivationGratitudeJarRouteImport } from './routes/_authenticated/motivation/gratitude-jar'
 import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_authenticated/motivation/guide'
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
@@ -178,6 +179,12 @@ const AuthenticatedMotivationTopicIdRoute =
     path: '/motivation/$topicId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMotivationAlcoholControlRoute =
+  AuthenticatedMotivationAlcoholControlRouteImport.update({
+    id: '/motivation/alcohol-control',
+    path: '/motivation/alcohol-control',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMotivationGratitudeJarRoute =
   AuthenticatedMotivationGratitudeJarRouteImport.update({
     id: '/motivation/gratitude-jar',
@@ -240,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
@@ -273,6 +281,7 @@ export interface FileRoutesByTo {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/wins': typeof AuthenticatedWinsRoute
   '/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
@@ -308,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/_authenticated/wins': typeof AuthenticatedWinsRoute
   '/_authenticated/motivation/$topicId': typeof AuthenticatedMotivationTopicIdRoute
+  '/_authenticated/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/_authenticated/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/_authenticated/motivation/guide': typeof AuthenticatedMotivationGuideRoute
   '/_authenticated/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
+    | '/motivation/alcohol-control'
     | '/motivation/gratitude-jar'
     | '/motivation/guide'
     | '/motivation/meditation'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/wins'
     | '/motivation/$topicId'
+    | '/motivation/alcohol-control'
     | '/motivation/gratitude-jar'
     | '/motivation/guide'
     | '/motivation/meditation'
@@ -410,6 +422,7 @@ export interface FileRouteTypes {
     | '/_authenticated/triggers'
     | '/_authenticated/wins'
     | '/_authenticated/motivation/$topicId'
+    | '/_authenticated/motivation/alcohol-control'
     | '/_authenticated/motivation/gratitude-jar'
     | '/_authenticated/motivation/guide'
     | '/_authenticated/motivation/meditation'
@@ -614,6 +627,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationTopicIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/motivation/alcohol-control': {
+      id: '/_authenticated/motivation/alcohol-control'
+      path: '/motivation/alcohol-control'
+      fullPath: '/motivation/alcohol-control'
+      preLoaderRoute: typeof AuthenticatedMotivationAlcoholControlRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/motivation/gratitude-jar': {
       id: '/_authenticated/motivation/gratitude-jar'
       path: '/motivation/gratitude-jar'
@@ -678,6 +698,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedWinsRoute: typeof AuthenticatedWinsRoute
   AuthenticatedMotivationTopicIdRoute: typeof AuthenticatedMotivationTopicIdRoute
+  AuthenticatedMotivationAlcoholControlRoute: typeof AuthenticatedMotivationAlcoholControlRoute
   AuthenticatedMotivationGratitudeJarRoute: typeof AuthenticatedMotivationGratitudeJarRoute
   AuthenticatedMotivationGuideRoute: typeof AuthenticatedMotivationGuideRoute
   AuthenticatedMotivationMeditationRoute: typeof AuthenticatedMotivationMeditationRoute
@@ -705,6 +726,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedWinsRoute: AuthenticatedWinsRoute,
   AuthenticatedMotivationTopicIdRoute: AuthenticatedMotivationTopicIdRoute,
+  AuthenticatedMotivationAlcoholControlRoute:
+    AuthenticatedMotivationAlcoholControlRoute,
   AuthenticatedMotivationGratitudeJarRoute:
     AuthenticatedMotivationGratitudeJarRoute,
   AuthenticatedMotivationGuideRoute: AuthenticatedMotivationGuideRoute,

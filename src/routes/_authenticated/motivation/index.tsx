@@ -59,6 +59,13 @@ const CARDS = [
     tagline: "Collect the small good things, one candy, heart or leaf at a time",
     tint: "bg-blush",
   },
+  {
+    to: "/motivation/alcohol-control",
+    icon: Wine,
+    title: ALCOHOL_CONTROL_TITLE,
+    tagline: ALCOHOL_CONTROL_TAGLINE,
+    tint: "bg-mint",
+  },
 ] as const;
 
 function MotivationScreen() {
