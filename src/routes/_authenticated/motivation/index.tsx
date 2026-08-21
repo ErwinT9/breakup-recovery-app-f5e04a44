@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles } from "lucide-react";
+import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles, Wine } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
+import { ALCOHOL_CONTROL_TAGLINE, ALCOHOL_CONTROL_TITLE } from "@/lib/alcoholControl";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/_authenticated/motivation/")({
