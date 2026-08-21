@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Flower2, Footprints, Inbox, Sparkles, Wine } from "lucide-react";
+import { ChevronRight, Flame, Flower2, Footprints, Inbox, Palette, Sparkles, Wine } from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
@@ -25,6 +25,13 @@ export const Route = createFileRoute("/_authenticated/motivation/")({
 });
 
 const CARDS = [
+  {
+    to: "/streak-unlock",
+    icon: Palette,
+    title: "7-Day Streak Unlock",
+    tagline: "Watch your garden gain colour and unlock a printable coloring page",
+    tint: "bg-lavender",
+  },
   {
     to: "/motivation/guide",
     icon: Flame,
