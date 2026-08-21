@@ -5,6 +5,8 @@
  * once the user's streak reaches that day, the shape fades from empty paper to
  * its colour. Day 7 = fully coloured.
  */
+import type { Ref } from "react";
+
 import { cn } from "@/lib/utils";
 
 export const COLORING_STAGES = 7;
@@ -39,7 +41,7 @@ export function ColoringGarden({
   monochrome = false,
   ref,
 }: {
-  ref?: React.Ref<SVGSVGElement>;
+  ref?: Ref<SVGSVGElement>;
   /** Current streak day, 1-7 (values above 7 render fully coloured). */
   stage: number;
   className?: string;

@@ -11,6 +11,8 @@ const FILE_NAME = "no-contact-coloring-page.png";
 function svgToDataUrl(svg: SVGSVGElement): string {
   const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", "1240");
+  clone.setAttribute("height", "930");
   const markup = new XMLSerializer().serializeToString(clone);
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
 }
