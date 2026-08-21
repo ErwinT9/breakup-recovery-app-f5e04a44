@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DEFAULT_NOTIFICATION_PREFS, type NotificationPrefs } from "@/lib/notifications/categories";
+import { normalizeNotificationPrefs } from "@/lib/notifications/categories";
 import {
   cycleDay,
   deepLinkFor,
@@ -38,11 +38,6 @@ function json(body: unknown, status = 200) {
   });
 }
 
-function prefsOf(raw: unknown): NotificationPrefs {
-  const stored = (raw && typeof raw === "object" ? raw : {}) as Partial<NotificationPrefs>;
-  return { ...DEFAULT_NOTIFICATION_PREFS, ...stored };
-}
-
 async function run(dryRun: boolean, onlyUserId?: string, force = false) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const supabaseUrl = process.env["SUPABASE_URL"]!;
@@ -71,7 +66,7 @@ async function run(dryRun: boolean, onlyUserId?: string, force = false) {
       skipped += 1;
       continue;
     }
-    const prefs = prefsOf(profile.notification_prefs);
+    const prefs = normalizeNotificationPrefs(profile.notification_prefs);
     let due = dueNotifications({
       timezone: profile.timezone,
       startedAtIso: profile.recovery_started_at,

@@ -139,8 +139,7 @@ export function emptyProfile(userId: string): Profile {
     avatar_url: null,
     recovery_started_at: new Date().toISOString(),
     notifications_enabled: false,
-    morning_reminder: true,
-    evening_reminder: true,
+    notification_prefs: { morning: true, evening: true, reminder: true, motivation: true },
     push_token: null,
     questionnaire_completed: false,
     is_premium: false,
@@ -161,7 +160,12 @@ export const profileRepo = {
   },
   async update(userId: string, patch: Partial<Profile>): Promise<Profile> {
     const current = await cacheRead<Profile | null>("profile", userId, null);
-    const next: Profile = { ...(current ?? emptyProfile(userId)), ...patch, id: userId };
+    const merged = { ...(current ?? emptyProfile(userId)), ...patch, id: userId } as Profile &
+      Record<string, unknown>;
+    // Legacy columns no longer exist in Supabase — never write them back.
+    delete merged['morning_reminder'];
+    delete merged['evening_reminder'];
+    const next: Profile = merged;
     await cacheWrite("profile", userId, next);
     await writeThrough("profiles", userId, { ...next });
     return next;
