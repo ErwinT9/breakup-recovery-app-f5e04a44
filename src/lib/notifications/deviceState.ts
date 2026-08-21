@@ -2,8 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { analytics } from "@/lib/analytics";
 import { checkPermission } from "@/lib/native/permissions";
 
-import { loadNotificationPrefs } from "./categories";
-
 /** The device's IANA timezone, e.g. "Asia/Kolkata". Null when unavailable. */
 export function deviceTimezone(): string | null {
   try {
@@ -28,11 +26,9 @@ export async function syncNotificationDeviceState(userId: string | null): Promis
     const timezone = deviceTimezone();
     const state = await checkPermission("notifications");
     const granted = state === "granted";
-    const prefs = await loadNotificationPrefs();
     const patch: Record<string, unknown> = {
       notifications_permission_granted: granted,
       permission_synced_at: new Date().toISOString(),
-      notification_prefs: prefs,
     };
     if (timezone) patch['timezone'] = timezone;
     const { error } = await supabase.from("profiles").update(patch as never).eq("id", userId);
