@@ -31,7 +31,8 @@ export function notificationId(entry: ScheduledNotification): number {
 export function preferenceKey(category: ScheduledNotification["category"]): NotificationCategory {
   if (category === "Morning") return "morning";
   if (category === "Evening") return "evening";
-  return "daily_motivation";
+  if (category === "Reminder") return "reminder";
+  return "motivation";
 }
 
 const FEATURE_LINKS: Record<string, string> = {

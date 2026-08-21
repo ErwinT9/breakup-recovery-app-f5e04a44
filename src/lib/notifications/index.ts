@@ -105,14 +105,9 @@ function atHour(hour: number, minute = 0): Date {
 
 export type ReminderPrefs = {
   enabled: boolean;
-  morning: boolean;
-  /**
-   * Preserved user preference. The evening reminder is intentionally not
-   * scheduled here — the timezone-aware system will be rebuilt separately.
-   */
-  evening: boolean;
+  /** The four category preferences; loaded from storage when omitted. */
   categories?: Partial<NotificationPrefs>;
-  /** 1-based recovery day. Kept for the upcoming scheduler. */
+  /** 1-based recovery day, shared with the server-side 30-day rotation. */
   recoveryDay?: number;
 };
 
@@ -133,7 +128,7 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
 
     await ensureChannel();
     const notifications = [];
-    if (prefs.morning && categories.morning) {
+    if (categories.morning) {
       notifications.push({
         id: 1001,
         channelId: CHANNEL_ID,
@@ -142,7 +137,7 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
         schedule: { at: atHour(9), repeats: true, every: "day" as const },
       });
     }
-    if (categories.inactivity) {
+    if (categories.reminder) {
       notifications.push({
         id: 1003,
         channelId: CHANNEL_ID,
@@ -151,7 +146,7 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
         schedule: { at: atHour(13), repeats: true, every: "day" as const },
       });
     }
-    if (categories.daily_motivation) {
+    if (categories.motivation) {
       notifications.push({
         id: 1004,
         channelId: CHANNEL_ID,
@@ -160,23 +155,12 @@ export async function syncReminders(prefs: ReminderPrefs): Promise<void> {
         schedule: { at: atHour(11), repeats: true, every: "day" as const },
       });
     }
-    if (categories.streak) {
-      notifications.push({
-        id: 1005,
-        channelId: CHANNEL_ID,
-        title: "Your streak is alive",
-        body: "Open the app and see how far you've come.",
-        schedule: { at: atHour(18), repeats: true, every: "day" as const },
-      });
-    }
 
     if (notifications.length > 0) await LocalNotifications.schedule({ notifications });
   });
 }
 
 export async function celebrateMilestone(label: string): Promise<void> {
-  const categories = await loadNotificationPrefs();
-  if (!categories.milestone) return;
   await safeNative(async () => {
     const LocalNotifications = await localPlugin();
     await ensureChannel();
@@ -195,8 +179,6 @@ export async function celebrateMilestone(label: string): Promise<void> {
 }
 
 export async function sosEncouragement(): Promise<void> {
-  const categories = await loadNotificationPrefs();
-  if (!categories.sos) return;
   await safeNative(async () => {
     const LocalNotifications = await localPlugin();
     await ensureChannel();
@@ -217,6 +199,7 @@ export async function sosEncouragement(): Promise<void> {
 export {
   DEFAULT_NOTIFICATION_PREFS,
   NOTIFICATION_CATEGORIES,
+  normalizeNotificationPrefs,
   loadNotificationPrefs,
   saveNotificationPrefs,
 } from "./categories";
