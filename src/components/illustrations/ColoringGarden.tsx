@@ -97,7 +97,7 @@ export function ColoringGarden({
         />
 
         {/* rolling hill — day 3 */}
-        <path d="M14 140c48-30 94-30 142-6 46 23 96 24 150 2v54H14v-50Z" fill={f(3, "hill")} />
+        <path d="M8 142c48-30 94-30 142-6 48 24 100 24 162 0v70H8v-64Z" fill={f(3, "hill")} />
 
         {/* pond — day 5 */}
         <ellipse cx="86" cy="176" rx="60" ry="26" fill={f(5, "water")} />
@@ -149,15 +149,15 @@ export function ColoringGarden({
         </g>
 
         <g>
-          <path d="M32 214v-26" fill="none" />
-          <path d="M32 202c-8 0-12-4-12-4s4-5 12-1" fill={f(7, "grass")} />
+          <path d="M160 214v-26" fill="none" />
+          <path d="M160 202c-8 0-12-4-12-4s4-5 12-1" fill={f(7, "grass")} />
           {[0, 72, 144, 216, 288].map((deg) => {
             const r = (deg * Math.PI) / 180;
             return (
-              <circle key={deg} cx={32 + Math.cos(r) * 8} cy={182 + Math.sin(r) * 8} r="5.6" fill={f(7, "petalB")} />
+              <circle key={deg} cx={160 + Math.cos(r) * 8} cy={182 + Math.sin(r) * 8} r="5.6" fill={f(7, "petalB")} />
             );
           })}
-          <circle cx="32" cy="182" r="4.2" fill={f(7, "sun")} />
+          <circle cx="160" cy="182" r="4.2" fill={f(7, "sun")} />
         </g>
 
         {/* watering can — day 1 (the first splash of colour) */}
