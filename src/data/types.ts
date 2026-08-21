@@ -5,8 +5,7 @@ export type Profile = {
   avatar_url: string | null;
   recovery_started_at: string;
   notifications_enabled: boolean;
-  morning_reminder: boolean;
-  evening_reminder: boolean;
+  notification_prefs: Record<string, boolean>;
   push_token: string | null;
   questionnaire_completed: boolean;
   is_premium: boolean;

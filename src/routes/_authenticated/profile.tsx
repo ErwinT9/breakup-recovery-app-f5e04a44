@@ -62,6 +62,7 @@ import {
   deactivatePushToken,
   ensurePushChannel,
   loadNotificationPrefs,
+  normalizeNotificationPrefs,
   syncNotificationDeviceState,
   registerPush,
   notificationPermissionGranted,
@@ -208,6 +209,15 @@ function SettingsScreen() {
     setAvatar(profile.data.avatar_url ?? "");
   }, [profile.data]);
 
+  // profiles.notification_prefs is authoritative: hydrate the switches and the
+  // offline mirror from it whenever the profile loads.
+  useEffect(() => {
+    if (!profile.data) return;
+    const prefs = normalizeNotificationPrefs(profile.data.notification_prefs);
+    setNotifs(prefs);
+    void saveNotificationPrefs(prefs);
+  }, [profile.data]);
+
   /** 1-based recovery day, shared with the server-side 30-day rotation. */
   const currentRecoveryDay = () =>
     streak.data?.started_at ? daysSince(streak.data.started_at) + 1 : 1;
@@ -248,11 +258,12 @@ function SettingsScreen() {
     const next = { ...notifs, ...patch };
     setNotifs(next);
     haptic.select();
+    // Storage keeps the offline mirror; profiles.notification_prefs is the
+    // single source of truth the push scheduler reads.
     await saveNotificationPrefs(next);
+    await update.mutateAsync({ notification_prefs: next });
     await syncReminders({
       enabled: profile.data?.notifications_enabled ?? false,
-      morning: profile.data?.morning_reminder ?? true,
-      evening: profile.data?.evening_reminder ?? true,
       categories: next,
       recoveryDay: currentRecoveryDay(),
     });
@@ -266,7 +277,7 @@ function SettingsScreen() {
       if (!enabled) {
         await storage.set(NOTIF_ENABLED_KEY, false);
         await update.mutateAsync({ notifications_enabled: false });
-        await syncReminders({ enabled: false, morning: false, evening: false, categories: notifs });
+        await syncReminders({ enabled: false, categories: notifs });
         await deactivatePushToken(userId || null);
         toast(t("settings.notificationsOff"));
         return;
@@ -293,8 +304,6 @@ function SettingsScreen() {
       await update.mutateAsync({ notifications_enabled: true });
       await syncReminders({
         enabled: true,
-        morning: profile.data?.morning_reminder ?? true,
-        evening: profile.data?.evening_reminder ?? true,
         categories: notifs,
         recoveryDay: currentRecoveryDay(),
       });
@@ -582,67 +591,26 @@ function SettingsScreen() {
               </Button>
             </div>
           ) : null}
-          {notifOn || systemBlocked ? (
-            <div
-              className={systemBlocked ? "space-y-3 pointer-events-none opacity-50" : "space-y-3"}
-              aria-disabled={systemBlocked}
-            >
-              {NOTIFICATION_CATEGORIES.filter(
-                ({ key }) => key !== "morning" && key !== "evening",
-              ).map(({ key, labelKey, label }) => (
-                <div key={key} className="flex items-center justify-between">
-                  <span className="text-sm">{t(labelKey, label)}</span>
-                  <Switch
-                    checked={notifs[key]}
-                    onCheckedChange={(checked) => void saveNotifs({ [key]: checked })}
-                    disabled={systemBlocked}
-                    aria-label={t(labelKey, label)}
-                  />
-                </div>
-              ))}
-              <div className="flex items-center justify-between">
-                <span className="text-sm">{t("settings.morningReminder")}</span>
+          <div
+            className={
+              notifOn && !systemBlocked
+                ? "space-y-3"
+                : "space-y-3 pointer-events-none opacity-50"
+            }
+            aria-disabled={!notifOn || systemBlocked}
+          >
+            {NOTIFICATION_CATEGORIES.map(({ key, labelKey, label }) => (
+              <div key={key} className="flex items-center justify-between">
+                <span className="text-sm">{t(labelKey, label)}</span>
                 <Switch
-                  checked={profile.data?.morning_reminder ?? true}
-                  disabled={systemBlocked}
-                  onCheckedChange={(checked) => {
-                    void update.mutateAsync({ morning_reminder: checked }).then(() =>
-                      syncReminders({
-                        enabled: true,
-                        morning: checked,
-                        evening: profile.data?.evening_reminder ?? true,
-                        recoveryDay: currentRecoveryDay(),
-                      }),
-                    );
-                  }}
-                  aria-label={t("settings.morningReminder")}
+                  checked={notifs[key]}
+                  onCheckedChange={(checked) => void saveNotifs({ [key]: checked })}
+                  disabled={!notifOn || systemBlocked}
+                  aria-label={t(labelKey, label)}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">
-                  {t("settings.eveningReminder")}
-                  <span className="block text-xs text-muted-foreground">
-                    {t("settings.eveningReminderDesc")}
-                  </span>
-                </span>
-                <Switch
-                  checked={profile.data?.evening_reminder ?? true}
-                  disabled={systemBlocked}
-                  onCheckedChange={(checked) => {
-                    void update.mutateAsync({ evening_reminder: checked }).then(() =>
-                      syncReminders({
-                        enabled: true,
-                        morning: profile.data?.morning_reminder ?? true,
-                        evening: checked,
-                        recoveryDay: currentRecoveryDay(),
-                      }),
-                    );
-                  }}
-                  aria-label={t("settings.eveningReminder")}
-                />
-              </div>
-            </div>
-          ) : null}
+            ))}
+          </div>
         </SoftCard>
 
         <SoftCard className="space-y-3">

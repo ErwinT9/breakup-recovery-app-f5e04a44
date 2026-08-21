@@ -198,7 +198,7 @@ function Questionnaire() {
           ]);
           if (granted) {
             await Promise.race([
-              syncReminders({ enabled: true, morning: true, evening: true }),
+              syncReminders({ enabled: true }),
               new Promise<void>((resolve) => setTimeout(resolve, 5000)),
             ]);
           }

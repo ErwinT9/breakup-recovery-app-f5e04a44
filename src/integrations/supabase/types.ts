@@ -368,11 +368,9 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
-          evening_reminder: boolean
           evening_reminder_time_override: string | null
           id: string
           is_premium: boolean
-          morning_reminder: boolean
           notification_prefs: Json
           notifications_enabled: boolean
           notifications_permission_granted: boolean
@@ -388,11 +386,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
-          evening_reminder?: boolean
           evening_reminder_time_override?: string | null
           id: string
           is_premium?: boolean
-          morning_reminder?: boolean
           notification_prefs?: Json
           notifications_enabled?: boolean
           notifications_permission_granted?: boolean
@@ -408,11 +404,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
-          evening_reminder?: boolean
           evening_reminder_time_override?: string | null
           id?: string
           is_premium?: boolean
-          morning_reminder?: boolean
           notification_prefs?: Json
           notifications_enabled?: boolean
           notifications_permission_granted?: boolean
