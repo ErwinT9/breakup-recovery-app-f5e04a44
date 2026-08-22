@@ -226,23 +226,6 @@ function SettingsScreen() {
     if (streak.data?.started_at) setRecovery(new Date(streak.data.started_at).toISOString());
   }, [streak.data?.started_at]);
 
-  // The switch mirrors the saved preference; if the OS permission was revoked
-  // outside the app we fall back to off so the control never lies.
-  useEffect(() => {
-    const saved = profile.data?.notifications_enabled;
-    if (saved === undefined) return;
-    if (!saved) {
-      setNotifOn(false);
-      void storage.set(NOTIF_ENABLED_KEY, false);
-      return;
-    }
-    void notificationPermissionGranted().then((granted) => {
-      // "unsupported" platforms (web preview) report false — keep the stored
-      // preference there instead of forcing the toggle off.
-      setNotifOn(granted || typeof Notification === "undefined");
-    });
-  }, [profile.data?.notifications_enabled]);
-
   const update = useMutation({
     mutationFn: async (patch: Parameters<typeof profileRepo.update>[1]) =>
       profileRepo.update(userId, patch),
@@ -254,69 +237,77 @@ function SettingsScreen() {
     onError: (error) => toast.error(humanizeError(error)),
   });
 
-  const saveNotifs = async (patch: Partial<NotifPrefs>) => {
-    const next = { ...notifs, ...patch };
+  // Fresh install / never-configured user: all four categories default to ON
+  // and are written straight to profiles.notification_prefs.
+  const [defaultsWritten, setDefaultsWritten] = useState(false);
+  useEffect(() => {
+    if (!profile.data || defaultsWritten || !userId) return;
+    const raw = profile.data.notification_prefs as Record<string, unknown> | null;
+    const unconfigured =
+      !raw ||
+      typeof raw !== "object" ||
+      NOTIFICATION_CATEGORIES.some(({ key }) => typeof raw[key] !== "boolean");
+    if (!unconfigured && profile.data.notifications_enabled) return;
+    setDefaultsWritten(true);
+    const next = normalizeNotificationPrefs(raw);
     setNotifs(next);
-    haptic.select();
-    // Storage keeps the offline mirror; profiles.notification_prefs is the
-    // single source of truth the push scheduler reads.
-    await saveNotificationPrefs(next);
-    await update.mutateAsync({ notification_prefs: next });
-    await syncReminders({
-      enabled: profile.data?.notifications_enabled ?? false,
-      categories: next,
-      recoveryDay: currentRecoveryDay(),
+    void saveNotificationPrefs(next);
+    void update.mutateAsync({
+      notification_prefs: next,
+      // There is no master switch any more: delivery is decided by the four
+      // categories AND the Android permission mirror.
+      notifications_enabled: true,
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.data, defaultsWritten, userId]);
 
-  const toggleReminders = async (enabled: boolean) => {
+  /**
+   * One category toggle. Writes to Supabase immediately so the scheduler picks
+   * the change up on its next 5-minute run — no app restart involved.
+   */
+  const setCategory = async (key: NotificationCategory, checked: boolean) => {
     haptic.select();
-    setNotifBusy(true);
-    setNotifOn(enabled);
-    try {
-      if (!enabled) {
-        await storage.set(NOTIF_ENABLED_KEY, false);
-        await update.mutateAsync({ notifications_enabled: false });
-        await syncReminders({ enabled: false, categories: notifs });
-        await deactivatePushToken(userId || null);
-        toast(t("settings.notificationsOff"));
-        return;
-      }
-
-      // Feature-time request: also routes a permanent denial to the settings dialog.
+    if (checked) {
+      // The in-app switch must never claim delivery the OS won't allow.
       const state = await requestPermission("notifications");
       setPermState(state);
       if (state === "denied" || state === "blocked") {
-        setNotifOn(false);
-        await storage.set(NOTIF_ENABLED_KEY, false);
-        await update.mutateAsync({ notifications_enabled: false });
-        // Android best practice: don't leave a dead switch — send the user
-        // straight to the app's system notification screen.
         toast(t("settings.notificationsSystemOff"));
-        await openNotificationSettings();
         return;
       }
+    }
 
-      // Channel first, then Firebase registration, then the local schedule.
-      await ensurePushChannel();
-      const token = await registerPush(userId);
-      await storage.set(NOTIF_ENABLED_KEY, true);
-      await update.mutateAsync({ notifications_enabled: true });
+    const previous = notifs;
+    const next = { ...notifs, [key]: checked };
+    setNotifs(next);
+    setNotifBusy(true);
+    try {
+      const anyOn = NOTIFICATION_CATEGORIES.some((category) => next[category.key]);
+      await saveNotificationPrefs(next);
+      await update.mutateAsync({
+        notification_prefs: next,
+        notifications_enabled: anyOn,
+      });
+      if (checked) {
+        await ensurePushChannel();
+        await registerPush(userId);
+        await syncNotificationDeviceState(userId);
+      } else if (!anyOn) {
+        await deactivatePushToken(userId || null);
+      }
       await syncReminders({
-        enabled: true,
-        categories: notifs,
+        enabled: anyOn,
+        categories: next,
         recoveryDay: currentRecoveryDay(),
       });
-      // Push the fresh permission + timezone up so the 16:30 dispatcher sees it.
-      await syncNotificationDeviceState(userId);
-      toast.success(token ? t("settings.notificationsOnDevice") : t("settings.notificationsOn"));
     } catch (error) {
-      setNotifOn(!enabled);
+      setNotifs(previous);
       toast.error(humanizeError(error));
     } finally {
       setNotifBusy(false);
     }
   };
+
 
   const saveProfile = async () => {
     haptic.light();
