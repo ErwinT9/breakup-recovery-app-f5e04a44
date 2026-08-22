@@ -25,6 +25,11 @@ export const Route = createFileRoute("/_authenticated/motivation/$topicId")({
   component: MotivationTopicScreen,
 });
 
+/** Remove a leading Markdown heading prefix (e.g. "# ") so the title shows as plain text. */
+function stripMarkdownPrefix(value: string): string {
+  return value.replace(/^\s*#{1,6}\s+/, "").trim();
+}
+
 function MotivationTopicScreen() {
   const { topicId } = Route.useParams();
   const router = useRouter();
@@ -33,12 +38,7 @@ function MotivationTopicScreen() {
     queryFn: fetchMotivationGuides,
     retry: 1,
     staleTime: 5 * 60 * 1000,
-});
-
-/** Remove a leading Markdown heading prefix (e.g. "# ") so the title shows as plain text. */
-function stripMarkdownPrefix(value: string): string {
-  return value.replace(/^\s*#{1,6}\s+/, "").trim();
-}
+  });
   const topic = topics.find((t) => t.id === topicId) ?? null;
 
   return (
