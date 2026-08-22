@@ -124,6 +124,9 @@ async function wireListeners(): Promise<void> {
     });
     await PushNotifications.addListener("pushNotificationReceived", (notification) => {
       analytics.track("push_received", { title: notification.title ?? "" });
+      // Android does not render a push while the app is in the foreground, so
+      // re-post it as a local notification on the same push channel.
+      void showForegroundPush(notification);
     });
     await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
       analytics.track("push_opened");
