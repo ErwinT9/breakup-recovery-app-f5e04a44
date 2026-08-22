@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
             token: row.token,
             notification: { title, body },
             data: payload.data ?? {},
-            android: { priority: "HIGH", notification: { channel_id: "no-contact-reminders" } },
+            android: { priority: "HIGH", notification: { channel_id: "push-alerts" } },
           },
         }),
       });
