@@ -1,25 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, Download, Lock } from "lucide-react";
+import { Check, Download, Loader2, Lock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { AppLogo } from "@/components/AppLogo";
 import { ColoringGarden } from "@/components/illustrations/ColoringGarden";
 import { Button } from "@/components/ui/button";
-import { profileRepo, streakRepo } from "@/data/repository";
+import { profileRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { celebrate } from "@/lib/celebrate";
 import { downloadColoringPage } from "@/lib/coloringPage";
 import { haptic } from "@/lib/native/haptics";
-import { daysSince } from "@/lib/streak";
 import {
   STREAK_UNLOCK_TARGET,
-  getStreakUnlockState,
-  markStreakUnlockSeen,
-  shouldAutoShowStreakUnlock,
+  peekAppStreak,
+  registerAppStreakVisit,
 } from "@/lib/streakUnlock";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/streak-unlock")({
   head: () => ({
