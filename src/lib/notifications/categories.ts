@@ -14,8 +14,8 @@ export const NOTIFICATION_CATEGORIES: {
   label: string;
   labelKey: string;
 }[] = [
-  { key: "morning", label: "Morning", labelKey: "notif.morning" },
-  { key: "evening", label: "Evening", labelKey: "notif.evening" },
+  { key: "morning", label: "Morning reminder", labelKey: "notif.morning" },
+  { key: "evening", label: "Evening reminder", labelKey: "notif.evening" },
   { key: "reminder", label: "Reminder", labelKey: "notif.reminder" },
   { key: "motivation", label: "Motivation", labelKey: "notif.motivation" },
 ];
