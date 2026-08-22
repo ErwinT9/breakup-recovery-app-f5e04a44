@@ -1,5 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Flame, Flower2, Footprints, Inbox, Palette, Sparkles, Wine } from "lucide-react";
+import {
+  ChevronRight,
+  Flame,
+  Flower2,
+  Footprints,
+  Inbox,
+  Leaf,
+  Palette,
+  Sparkles,
+  Wine,
+} from "lucide-react";
 
 import { AppShell } from "@/components/AppShell";
 import { MotivationIllustration } from "@/components/illustrations";
@@ -25,6 +35,13 @@ export const Route = createFileRoute("/_authenticated/motivation/")({
 });
 
 const CARDS = [
+  {
+    to: "/motivation/journey",
+    icon: Leaf,
+    title: "Journey",
+    tagline: "Small steps to help you heal, grow, and reconnect with yourself.",
+    tint: "bg-mint",
+  },
   {
     to: "/streak-unlock",
     icon: Palette,
