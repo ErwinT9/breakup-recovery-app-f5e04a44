@@ -149,3 +149,28 @@ export type GratitudeEntry = {
   item_type: GratitudeItemType;
   created_at: string;
 };
+
+export type JourneyProgress = {
+  id: string;
+  user_id: string;
+  level_id: string;
+  activity_id: string;
+  status: string;
+  completed: boolean;
+  completed_at: string | null;
+  /** Unique local calendar dates (YYYY-MM-DD) on which the practice was done. */
+  day_dates: string[];
+  data: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type JourneyLevel = {
+  id: string;
+  user_id: string;
+  level_id: string;
+  completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
