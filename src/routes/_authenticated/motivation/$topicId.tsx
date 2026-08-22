@@ -3,6 +3,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { SoftCard } from "@/components/SoftCard";
+import { MarkdownContent } from "@/components/MarkdownContent";
 import { fetchMotivationGuides, MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
