@@ -42,3 +42,24 @@ export const MOTIVATION_TOPICS: MotivationTopic[] = [
 export function motivationTopicById(id: string) {
   return MOTIVATION_TOPICS.find((topic) => topic.id === id) ?? null;
 }
+
+/**
+ * Fetch published motivational guides from the Supabase `motivation_guides`
+ * table. Maps DB rows to the MotivationTopic shape (content -> guide, bigint
+ * id -> string) so the rest of the app is unchanged.
+ */
+export async function fetchMotivationGuides(): Promise<MotivationTopic[]> {
+  const { data, error } = await supabase
+    .from("motivation_guides")
+    .select("id, title, content")
+    .eq("is_published", true)
+    .order("id");
+
+  if (error) throw error;
+
+  return (data ?? []).map((row) => ({
+    id: String(row.id),
+    title: row.title,
+    guide: row.content,
+  }));
+}
