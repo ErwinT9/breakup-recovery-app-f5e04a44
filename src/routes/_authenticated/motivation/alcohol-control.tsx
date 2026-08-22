@@ -60,30 +60,52 @@ function AlcoholControlScreen() {
   const ensureAudio = useCallback(() => {
     if (audioRef.current) return audioRef.current;
     const audio = new Audio();
-    audio.preload = "none"; // never pre-download; stream only when asked
+    // Stream only; no CORS request — the host serves no Access-Control-Allow-Origin
+    // header, so crossOrigin would make the media request fail outright.
+    audio.preload = "metadata";
     audio.src = ALCOHOL_CONTROL_AUDIO_URL;
-    audio.crossOrigin = "anonymous";
+    log("created audio element", { src: audio.src });
 
-    const onMeta = () => setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+    const onMeta = () => {
+      const d = Number.isFinite(audio.duration) ? audio.duration : 0;
+      log("metadata loaded", { duration: d });
+      setDuration(d);
+    };
     const onTime = () => setElapsed(audio.currentTime);
-    const onWaiting = () => setLoading(true);
+    const onWaiting = () => {
+      log("buffering…");
+      setLoading(true);
+    };
+    const onCanPlay = () => setLoading(false);
     const onPlaying = () => {
+      log("playing");
       setLoading(false);
       setError(null);
       setPlaying(true);
     };
     const onPause = () => setPlaying(false);
     const onEnded = () => {
+      log("ended");
       setPlaying(false);
       setElapsed(audio.duration || 0);
       haptic.success();
     };
     const onError = () => {
+      const mediaError = audio.error;
+      log("media error", {
+        src: audio.currentSrc || audio.src,
+        code: mediaError?.code,
+        name: MEDIA_ERROR_NAMES[mediaError?.code ?? 0] ?? "UNKNOWN",
+        message: mediaError?.message,
+        networkState: audio.networkState,
+        readyState: audio.readyState,
+      });
       setLoading(false);
       setPlaying(false);
       setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
     };
 
+    audio.addEventListener("canplay", onCanPlay);
     audio.addEventListener("loadedmetadata", onMeta);
     audio.addEventListener("durationchange", onMeta);
     audio.addEventListener("timeupdate", onTime);
