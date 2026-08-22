@@ -20,7 +20,7 @@ import type {
   Trigger,
   Win,
 } from "./types";
-import type { GratitudeEntry, WorryEntry } from "./types";
+import type { GratitudeEntry, JourneyLevel, JourneyProgress, WorryEntry } from "./types";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -46,6 +46,8 @@ const CACHES = [
   "moods",
   "worries",
   "gratitude",
+  "journey",
+  "journeyLevels",
 ] as const;
 
 async function cacheRead<T>(name: string, userId: string, fallback: T): Promise<T> {
