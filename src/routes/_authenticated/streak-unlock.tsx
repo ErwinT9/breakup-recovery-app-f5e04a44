@@ -111,7 +111,7 @@ function StreakUnlockScreen() {
     return () => {
       cancelled = true;
     };
-  }, [eligible, confirmed, userId]);
+  }, [eligible, confirmed, userId, startedAt]);
 
   const totalDays = confirmed?.day ?? peek.data?.day ?? 1;
   const stage = Math.min(STREAK_UNLOCK_TARGET, Math.max(1, totalDays));
