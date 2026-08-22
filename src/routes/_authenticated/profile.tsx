@@ -543,24 +543,7 @@ function SettingsScreen() {
             icon={Bell}
             title={t("settings.notifications")}
             description={t("settings.notificationsDesc")}
-          >
-            <Switch
-              // Android permission is authoritative: while blocked the switch
-              // reads OFF, but the saved preference in Supabase is untouched.
-              checked={notifOn && !systemBlocked}
-              onCheckedChange={(checked) => {
-                if (systemBlocked) {
-                  haptic.light();
-                  toast(t("settings.notificationsSystemOff"));
-                  void openNotificationSettings();
-                  return;
-                }
-                void toggleReminders(checked);
-              }}
-              disabled={notifBusy}
-              aria-label={t("settings.notifications")}
-            />
-          </Row>
+          />
           {systemBlocked ? (
             <div className="space-y-3 rounded-2xl bg-muted/60 p-3">
               <p className="text-sm text-muted-foreground">
