@@ -20,7 +20,7 @@ import type {
   Trigger,
   Win,
 } from "./types";
-import type { GratitudeEntry, WorryEntry } from "./types";
+import type { GratitudeEntry, JourneyLevel, JourneyProgress, WorryEntry } from "./types";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -46,6 +46,8 @@ const CACHES = [
   "moods",
   "worries",
   "gratitude",
+  "journey",
+  "journeyLevels",
 ] as const;
 
 async function cacheRead<T>(name: string, userId: string, fallback: T): Promise<T> {
@@ -554,6 +556,141 @@ export const moodRepo = {
     const next = [row, ...list];
     await cacheWrite("moods", userId, next);
     await writeThrough("mood_checkins", row.id, { ...row });
+    return next;
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/* Journey (Motivation → Journey) progress                             */
+/* ------------------------------------------------------------------ */
+
+function emptyJourneyRow(
+  userId: string,
+  levelId: string,
+  activityId: string,
+): JourneyProgress {
+  const now = new Date().toISOString();
+  return {
+    id: newId(),
+    user_id: userId,
+    level_id: levelId,
+    activity_id: activityId,
+    status: "in_progress",
+    completed: false,
+    completed_at: null,
+    day_dates: [],
+    data: {},
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+export const journeyRepo = {
+  async list(userId: string): Promise<JourneyProgress[]> {
+    return readThrough<JourneyProgress[]>("journey", userId, [], async () => {
+      const { data, error } = await supabase
+        .from("journey_progress")
+        .select("*")
+        .eq("user_id", userId)
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as unknown as JourneyProgress[];
+    });
+  },
+
+  async levels(userId: string): Promise<JourneyLevel[]> {
+    return readThrough<JourneyLevel[]>("journeyLevels", userId, [], async () => {
+      const { data, error } = await supabase
+        .from("journey_levels")
+        .select("*")
+        .eq("user_id", userId)
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as unknown as JourneyLevel[];
+    });
+  },
+
+  /**
+   * Idempotent upsert keyed on (user_id, activity_id) so repeated taps, retries
+   * and offline replays can never create a duplicate progress record.
+   */
+  async upsert(
+    userId: string,
+    levelId: string,
+    activityId: string,
+    patch: Partial<Pick<JourneyProgress, "status" | "completed" | "completed_at" | "day_dates" | "data">>,
+  ): Promise<JourneyProgress[]> {
+    const list = await cacheRead<JourneyProgress[]>("journey", userId, []);
+    const current =
+      list.find((row) => row.activity_id === activityId) ??
+      emptyJourneyRow(userId, levelId, activityId);
+    const row: JourneyProgress = {
+      ...current,
+      ...patch,
+      data: { ...current.data, ...(patch.data ?? {}) },
+      level_id: levelId,
+      updated_at: new Date().toISOString(),
+    };
+    const next = [row, ...list.filter((item) => item.activity_id !== activityId)];
+    await cacheWrite("journey", userId, next);
+    await writeThrough("journey_progress", row.id, { ...row }, "user_id,activity_id");
+    return next;
+  },
+
+  /** Records today's local calendar date once per day for multi-day activities. */
+  async markDay(
+    userId: string,
+    levelId: string,
+    activityId: string,
+  ): Promise<JourneyProgress[]> {
+    const list = await cacheRead<JourneyProgress[]>("journey", userId, []);
+    const current = list.find((row) => row.activity_id === activityId);
+    const today = localDayKey();
+    const days = current?.day_dates ?? [];
+    if (days.includes(today)) return list;
+    return journeyRepo.upsert(userId, levelId, activityId, {
+      day_dates: [...days, today].sort(),
+      status: "in_progress",
+    });
+  },
+
+  async complete(
+    userId: string,
+    levelId: string,
+    activityId: string,
+    data?: Record<string, unknown>,
+  ): Promise<JourneyProgress[]> {
+    const list = await cacheRead<JourneyProgress[]>("journey", userId, []);
+    const current = list.find((row) => row.activity_id === activityId);
+    if (current?.completed) {
+      // Revisiting a finished activity never rewrites its completion stamp.
+      return data ? journeyRepo.upsert(userId, levelId, activityId, { data }) : list;
+    }
+    return journeyRepo.upsert(userId, levelId, activityId, {
+      completed: true,
+      status: "completed",
+      completed_at: new Date().toISOString(),
+      ...(data ? { data } : {}),
+    });
+  },
+
+  async completeLevel(userId: string, levelId: string): Promise<JourneyLevel[]> {
+    const list = await cacheRead<JourneyLevel[]>("journeyLevels", userId, []);
+    const current = list.find((row) => row.level_id === levelId);
+    if (current?.completed) return list;
+    const now = new Date().toISOString();
+    const row: JourneyLevel = {
+      id: current?.id ?? newId(),
+      user_id: userId,
+      level_id: levelId,
+      completed: true,
+      completed_at: now,
+      created_at: current?.created_at ?? now,
+      updated_at: now,
+    };
+    const next = [row, ...list.filter((item) => item.level_id !== levelId)];
+    await cacheWrite("journeyLevels", userId, next);
+    await writeThrough("journey_levels", row.id, { ...row }, "user_id,level_id");
     return next;
   },
 };

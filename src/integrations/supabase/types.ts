@@ -206,6 +206,78 @@ export type Database = {
         }
         Relationships: []
       }
+      journey_levels: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          level_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journey_progress: {
+        Row: {
+          activity_id: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          data: Json
+          day_dates: string[]
+          id: string
+          level_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          day_dates?: string[]
+          id?: string
+          level_id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          day_dates?: string[]
+          id?: string
+          level_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       letters: {
         Row: {
           body: string
