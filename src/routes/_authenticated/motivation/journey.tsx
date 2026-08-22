@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, ChevronRight, Lock } from "lucide-react";
+import type * as React from "react";
 import { useState } from "react";
 
 import { SubScreen } from "@/components/SubScreen";
@@ -47,7 +48,7 @@ export const Route = createFileRoute("/_authenticated/motivation/journey")({
   component: JourneyScreen,
 });
 
-const COMPONENTS: Record<JourneyActivityId, (props: ActivityProps) => JSX.Element> = {
+const COMPONENTS: Record<JourneyActivityId, (props: ActivityProps) => React.ReactElement> = {
   "l1-feelings": FeelingsActivity,
   "l1-breathing": BreathingActivity,
   "l1-grounding": GroundingActivity,
@@ -103,7 +104,7 @@ function JourneyScreen() {
           await markDay.mutateAsync(open);
         }}
         onComplete={async (data) => {
-          await complete.mutateAsync({ activityId: open, data });
+          await complete.mutateAsync(data ? { activityId: open, data } : { activityId: open });
         }}
         onExit={() => setOpen(null)}
       />

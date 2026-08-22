@@ -39,6 +39,7 @@ import { Route as AuthenticatedMotivationTopicIdRouteImport } from './routes/_au
 import { Route as AuthenticatedMotivationAlcoholControlRouteImport } from './routes/_authenticated/motivation/alcohol-control'
 import { Route as AuthenticatedMotivationGratitudeJarRouteImport } from './routes/_authenticated/motivation/gratitude-jar'
 import { Route as AuthenticatedMotivationGuideRouteImport } from './routes/_authenticated/motivation/guide'
+import { Route as AuthenticatedMotivationJourneyRouteImport } from './routes/_authenticated/motivation/journey'
 import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/_authenticated/motivation/meditation'
 import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
 import { Route as AuthenticatedMotivationWorryBoxRouteImport } from './routes/_authenticated/motivation/worry-box'
@@ -204,6 +205,12 @@ const AuthenticatedMotivationGuideRoute =
     path: '/motivation/guide',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMotivationJourneyRoute =
+  AuthenticatedMotivationJourneyRouteImport.update({
+    id: '/motivation/journey',
+    path: '/motivation/journey',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMotivationMeditationRoute =
   AuthenticatedMotivationMeditationRouteImport.update({
     id: '/motivation/meditation',
@@ -258,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
+  '/motivation/journey': typeof AuthenticatedMotivationJourneyRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/motivation/guide': typeof AuthenticatedMotivationGuideRoute
+  '/motivation/journey': typeof AuthenticatedMotivationJourneyRoute
   '/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
@@ -330,6 +339,7 @@ export interface FileRoutesById {
   '/_authenticated/motivation/alcohol-control': typeof AuthenticatedMotivationAlcoholControlRoute
   '/_authenticated/motivation/gratitude-jar': typeof AuthenticatedMotivationGratitudeJarRoute
   '/_authenticated/motivation/guide': typeof AuthenticatedMotivationGuideRoute
+  '/_authenticated/motivation/journey': typeof AuthenticatedMotivationJourneyRoute
   '/_authenticated/motivation/meditation': typeof AuthenticatedMotivationMeditationRoute
   '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/_authenticated/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/motivation/alcohol-control'
     | '/motivation/gratitude-jar'
     | '/motivation/guide'
+    | '/motivation/journey'
     | '/motivation/meditation'
     | '/motivation/walk'
     | '/motivation/worry-box'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/motivation/alcohol-control'
     | '/motivation/gratitude-jar'
     | '/motivation/guide'
+    | '/motivation/journey'
     | '/motivation/meditation'
     | '/motivation/walk'
     | '/motivation/worry-box'
@@ -438,6 +450,7 @@ export interface FileRouteTypes {
     | '/_authenticated/motivation/alcohol-control'
     | '/_authenticated/motivation/gratitude-jar'
     | '/_authenticated/motivation/guide'
+    | '/_authenticated/motivation/journey'
     | '/_authenticated/motivation/meditation'
     | '/_authenticated/motivation/walk'
     | '/_authenticated/motivation/worry-box'
@@ -668,6 +681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMotivationGuideRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/motivation/journey': {
+      id: '/_authenticated/motivation/journey'
+      path: '/motivation/journey'
+      fullPath: '/motivation/journey'
+      preLoaderRoute: typeof AuthenticatedMotivationJourneyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/motivation/meditation': {
       id: '/_authenticated/motivation/meditation'
       path: '/motivation/meditation'
@@ -722,6 +742,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMotivationAlcoholControlRoute: typeof AuthenticatedMotivationAlcoholControlRoute
   AuthenticatedMotivationGratitudeJarRoute: typeof AuthenticatedMotivationGratitudeJarRoute
   AuthenticatedMotivationGuideRoute: typeof AuthenticatedMotivationGuideRoute
+  AuthenticatedMotivationJourneyRoute: typeof AuthenticatedMotivationJourneyRoute
   AuthenticatedMotivationMeditationRoute: typeof AuthenticatedMotivationMeditationRoute
   AuthenticatedMotivationWalkRoute: typeof AuthenticatedMotivationWalkRoute
   AuthenticatedMotivationWorryBoxRoute: typeof AuthenticatedMotivationWorryBoxRoute
@@ -753,6 +774,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMotivationGratitudeJarRoute:
     AuthenticatedMotivationGratitudeJarRoute,
   AuthenticatedMotivationGuideRoute: AuthenticatedMotivationGuideRoute,
+  AuthenticatedMotivationJourneyRoute: AuthenticatedMotivationJourneyRoute,
   AuthenticatedMotivationMeditationRoute:
     AuthenticatedMotivationMeditationRoute,
   AuthenticatedMotivationWalkRoute: AuthenticatedMotivationWalkRoute,
