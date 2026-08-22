@@ -112,7 +112,7 @@ export const en = {
     notificationsSystemOff: "Notifications are disabled in your device settings.",
     openSystemNotifications: "Open device notification settings",
     notificationsSystemOffHint:
-      "Turn notifications on for this app in Android settings, then come back — your preferences below will unlock automatically.",
+      "Turn notifications on for this app in Android settings, then come back — we'll re-check automatically.",
     openingSystemSettings: "Opening your device notification settings…",
     deleteBody1:
       "Deleting your account will permanently remove all data associated with your account from our servers. This action cannot be undone.",
