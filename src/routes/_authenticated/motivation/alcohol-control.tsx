@@ -176,14 +176,21 @@ function AlcoholControlScreen() {
     setError(null);
     setLoading(true);
     const el = ensureAudio();
+    // Replay from the top once the session has finished.
+    if (el.ended) el.currentTime = 0;
+    log("play requested", { src: el.src, readyState: el.readyState });
     try {
       await el.play();
       setPlaying(true);
-    } catch {
-      setPlaying(false);
-      setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
-    } finally {
       setLoading(false);
+    } catch (err) {
+      const name = (err as { name?: string })?.name;
+      log("play() rejected", { name, message: (err as Error)?.message });
+      setPlaying(false);
+      setLoading(false);
+      // AbortError just means a newer load/pause superseded this request —
+      // not a genuine failure, so don't surface the error card for it.
+      if (name !== "AbortError") setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
     }
   }, [ensureAudio]);
 
