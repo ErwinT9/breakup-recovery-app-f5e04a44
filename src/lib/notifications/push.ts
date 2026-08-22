@@ -30,20 +30,35 @@ export function notificationNavigate(path: string | undefined | null): void {
 let currentUserId: string | null = null;
 
 /**
- * Android 8+ drops any notification whose channel does not exist. Both the FCM
- * default channel (AndroidManifest meta-data) and local reminders use this id,
- * so it must exist before the first push arrives — not only once reminders are
- * scheduled.
+ * Android 8+ drops any notification whose channel does not exist. This is the
+ * ONE channel used for remote FCM pushes: the AndroidManifest default channel
+ * meta-data, the FCM payload's android.notification.channel_id and the
+ * foreground re-post below all use this exact id, at HIGH importance.
+ * Local reminders deliberately use a separate channel (see ./index.ts).
  */
-const CHANNEL_ID = "no-contact-reminders";
+export const PUSH_CHANNEL_ID = "push-alerts";
 
 export async function ensurePushChannel(): Promise<void> {
   await safeNative(async () => {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     await PushNotifications.createChannel({
-      id: CHANNEL_ID,
-      name: "Daily support",
-      description: "Reminders, encouragement and milestone celebrations",
+      id: PUSH_CHANNEL_ID,
+      name: "Push alerts",
+      description: "Daily support messages sent from the server",
+      importance: 5,
+      visibility: 1,
+      vibration: true,
+      lights: true,
+    });
+  });
+  // The same channel must exist for the LocalNotifications plugin so
+  // foreground pushes can be re-posted on it.
+  await safeNative(async () => {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.createChannel({
+      id: PUSH_CHANNEL_ID,
+      name: "Push alerts",
+      description: "Daily support messages sent from the server",
       importance: 5,
       visibility: 1,
       vibration: true,
@@ -92,6 +107,33 @@ async function saveToken(userId: string, token: string): Promise<void> {
   }
 }
 
+/** Re-posts a push received in the foreground so the user actually sees it. */
+async function showForegroundPush(notification: {
+  title?: string | null;
+  body?: string | null;
+  data?: unknown;
+}): Promise<void> {
+  const title = notification.title ?? "";
+  const body = notification.body ?? "";
+  if (!title && !body) return;
+  const data = (notification.data ?? {}) as Record<string, string>;
+  await safeNative(async () => {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: Math.floor(Math.random() * 100000) + 5000,
+          channelId: PUSH_CHANNEL_ID,
+          title,
+          body,
+          extra: { deep_link: data['deep_link'] || data['deepLink'] || "" },
+          schedule: { at: new Date(Date.now() + 300) },
+        },
+      ],
+    });
+  });
+}
+
 async function wireListeners(): Promise<void> {
   if (listenersWired) return;
   listenersWired = true;
@@ -109,6 +151,9 @@ async function wireListeners(): Promise<void> {
     });
     await PushNotifications.addListener("pushNotificationReceived", (notification) => {
       analytics.track("push_received", { title: notification.title ?? "" });
+      // Android does not render a push while the app is in the foreground, so
+      // re-post it as a local notification on the same push channel.
+      void showForegroundPush(notification);
     });
     await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
       analytics.track("push_opened");
