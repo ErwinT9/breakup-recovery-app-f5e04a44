@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppLogo } from "@/components/AppLogo";
 import { ColoringGarden } from "@/components/illustrations/ColoringGarden";
 import { Button } from "@/components/ui/button";
-import { profileRepo } from "@/data/repository";
+import { profileRepo, streakRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { celebrate } from "@/lib/celebrate";
@@ -103,7 +103,7 @@ function StreakUnlockScreen() {
   useEffect(() => {
     if (!eligible || confirmed) return;
     let cancelled = false;
-    void registerAppStreakVisit(userId).then((state) => {
+    void registerAppStreakVisit(userId, startedAt).then((state) => {
       if (cancelled) return;
       setConfirmed({ day: state.day, unlocked: state.unlocked });
       if (state.unlocked) void celebrate();
