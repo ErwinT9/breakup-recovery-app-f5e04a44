@@ -35,6 +35,18 @@ export const Route = createFileRoute("/_authenticated/motivation/alcohol-control
   component: AlcoholControlScreen,
 });
 
+/** Dev-only diagnostics for the streamed session. */
+function log(event: string, detail?: Record<string, unknown>) {
+  if (import.meta.env.DEV) console.info(`[alcohol-control] ${event}`, detail ?? "");
+}
+
+const MEDIA_ERROR_NAMES: Record<number, string> = {
+  1: "MEDIA_ERR_ABORTED",
+  2: "MEDIA_ERR_NETWORK",
+  3: "MEDIA_ERR_DECODE",
+  4: "MEDIA_ERR_SRC_NOT_SUPPORTED",
+};
+
 const TIPS = [
   "Cravings peak and pass — usually within twenty minutes.",
   "Drink a full glass of water before you decide anything.",
