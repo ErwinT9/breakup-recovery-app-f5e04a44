@@ -347,6 +347,30 @@ export type Database = {
         }
         Relationships: []
       }
+      motivation_guides: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          is_published: boolean
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: number
+          is_published: boolean
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: number
+          is_published?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
       notification_history: {
         Row: {
           category: string
