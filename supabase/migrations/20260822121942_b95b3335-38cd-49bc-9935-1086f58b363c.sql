@@ -1,0 +1,1 @@
+GRANT ALL ON public.motivation_guides TO service_role;
