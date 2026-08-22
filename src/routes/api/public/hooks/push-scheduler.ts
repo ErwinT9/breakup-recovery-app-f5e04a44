@@ -48,7 +48,8 @@ async function run(dryRun: boolean, onlyUserId?: string, force = false) {
     .select(
       "id, timezone, recovery_started_at, notifications_enabled, notifications_permission_granted, notification_prefs",
     )
-    .eq("notifications_enabled", true)
+    // No master switch any more: delivery is decided per category by
+    // notification_prefs AND the Android permission mirror below.
     .not("timezone", "is", null);
   if (onlyUserId) query = query.eq("id", onlyUserId);
 
