@@ -16,7 +16,8 @@ import { notificationNavigate } from "./push";
  * Remote push lives in ./push.ts and is native-only.
  */
 
-const CHANNEL_ID = "no-contact-reminders";
+/** Local reminders keep their own channel, separate from the FCM push channel. */
+const CHANNEL_ID = "local-reminders";
 
 let tapsWired = false;
 
