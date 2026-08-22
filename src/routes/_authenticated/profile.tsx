@@ -206,10 +206,14 @@ function SettingsScreen() {
     setAvatar(profile.data.avatar_url ?? "");
   }, [profile.data]);
 
-  // profiles.notification_prefs is authoritative: hydrate the switches and the
-  // offline mirror from it whenever the profile loads.
+  // A local toggle always wins over any later profile read: a refetch that
+  // races the write (or an offline-queued write) must never snap the switch
+  // back to its old value.
+  const localEditRef = useRef(false);
+
+  // profiles.notification_prefs is authoritative for the *initial* hydrate.
   useEffect(() => {
-    if (!profile.data) return;
+    if (!profile.data || localEditRef.current) return;
     const prefs = normalizeNotificationPrefs(profile.data.notification_prefs);
     setNotifs(prefs);
     void saveNotificationPrefs(prefs);
