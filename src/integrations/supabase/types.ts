@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      app_streaks: {
+        Row: {
+          best_day: number
+          coloring_unlocked: boolean
+          created_at: string
+          current_day: number
+          last_active_date: string
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_day?: number
+          coloring_unlocked?: boolean
+          created_at?: string
+          current_day?: number
+          last_active_date?: string
+          start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_day?: number
+          coloring_unlocked?: boolean
+          created_at?: string
+          current_day?: number
+          last_active_date?: string
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_key: string

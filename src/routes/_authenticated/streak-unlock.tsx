@@ -1,25 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, Download, Lock } from "lucide-react";
+import { Check, Download, Loader2, Lock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { AppLogo } from "@/components/AppLogo";
 import { ColoringGarden } from "@/components/illustrations/ColoringGarden";
 import { Button } from "@/components/ui/button";
-import { profileRepo, streakRepo } from "@/data/repository";
+import { profileRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { celebrate } from "@/lib/celebrate";
 import { downloadColoringPage } from "@/lib/coloringPage";
 import { haptic } from "@/lib/native/haptics";
-import { daysSince } from "@/lib/streak";
 import {
   STREAK_UNLOCK_TARGET,
-  getStreakUnlockState,
-  markStreakUnlockSeen,
-  shouldAutoShowStreakUnlock,
+  peekAppStreak,
+  registerAppStreakVisit,
 } from "@/lib/streakUnlock";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/streak-unlock")({
   head: () => ({
@@ -51,17 +50,22 @@ function formatToday(): string {
 }
 
 function StreakUnlockScreen() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const userId = user?.id ?? "";
   const navigate = useNavigate();
   const { auto } = Route.useSearch();
   const printRef = useRef<SVGSVGElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [confirmed, setConfirmed] = useState<{ day: number; unlocked: boolean } | null>(null);
 
-  const streak = useQuery({
-    queryKey: ["streak", userId],
-    queryFn: () => streakRepo.ensure(userId),
+  // Read-only look at today's state — never mutates, so the eligibility check
+  // below can decide before anything is rendered or recorded.
+  const peek = useQuery({
+    queryKey: ["app-streak", userId],
+    queryFn: () => peekAppStreak(userId),
     enabled: Boolean(userId),
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const profile = useQuery({
@@ -70,36 +74,53 @@ function StreakUnlockScreen() {
     enabled: Boolean(userId) && Boolean(auto),
   });
 
-  const startedAt = streak.data?.started_at ?? null;
-  const totalDays = startedAt ? daysSince(startedAt) + 1 : 1;
-  const stage = Math.min(STREAK_UNLOCK_TARGET, Math.max(1, totalDays));
-  const unlocked = getStreakUnlockState().unlocked || totalDays >= STREAK_UNLOCK_TARGET;
-  const ready = Boolean(startedAt);
+  const resolved =
+    !authLoading && Boolean(userId) && peek.isSuccess && (!auto || !profile.isLoading);
+  const onboarded = profile.data?.questionnaire_completed !== false;
+  // Auto entry from the splash may only stay here once per calendar day.
+  const eligible = resolved && (!auto || (onboarded && !peek.data!.seenToday));
 
   useEffect(() => {
     analytics.screen("streak_unlock");
   }, []);
 
-  // Auto entry from the splash: only stay here when the streak day changed and
-  // onboarding is done — otherwise slip straight through to Home.
   useEffect(() => {
-    if (!auto || !ready || profile.isLoading) return;
-    const onboarded = profile.data?.questionnaire_completed !== false;
-    if (!onboarded || !shouldAutoShowStreakUnlock(totalDays)) {
-      void navigate({ to: "/home", replace: true });
-    }
-  }, [auto, ready, profile.isLoading, profile.data, totalDays, navigate]);
+    if (resolved && !eligible) void navigate({ to: "/home", replace: true });
+  }, [resolved, eligible, navigate]);
 
+  // Record today's usage exactly once, only when the screen actually shows.
   useEffect(() => {
-    if (!ready) return;
-    markStreakUnlockSeen(totalDays);
-    if (totalDays >= STREAK_UNLOCK_TARGET) void celebrate();
-  }, [ready, totalDays]);
+    if (!eligible || confirmed) return;
+    let cancelled = false;
+    void registerAppStreakVisit(userId).then((state) => {
+      if (cancelled) return;
+      setConfirmed({ day: state.day, unlocked: state.unlocked });
+      if (state.unlocked) void celebrate();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [eligible, confirmed, userId]);
+
+  const totalDays = confirmed?.day ?? peek.data?.day ?? 1;
+  const stage = Math.min(STREAK_UNLOCK_TARGET, Math.max(1, totalDays));
+  const unlocked = confirmed?.unlocked ?? peek.data?.unlocked ?? false;
 
   const dismiss = () => {
     haptic.light();
     void navigate({ to: "/home", replace: true });
   };
+
+  // Initialization state — prevents the screen from flashing before we know
+  // whether it should be shown at all.
+  if (!eligible || !confirmed) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+      </div>
+    );
+  }
+
 
   return (
     <div className="animate-in fade-in mx-auto flex min-h-screen w-full max-w-md flex-col px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] duration-500">
