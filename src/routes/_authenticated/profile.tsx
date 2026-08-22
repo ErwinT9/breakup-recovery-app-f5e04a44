@@ -242,15 +242,23 @@ function SettingsScreen() {
   // and are written straight to profiles.notification_prefs.
   const [defaultsWritten, setDefaultsWritten] = useState(false);
   useEffect(() => {
-    if (!profile.data || defaultsWritten || !userId) return;
+    if (!profile.data || defaultsWritten || !userId || localEditRef.current) return;
     const raw = profile.data.notification_prefs as Record<string, unknown> | null;
-    const unconfigured =
+    const missingKeys =
       !raw ||
       typeof raw !== "object" ||
       NOTIFICATION_CATEGORIES.some(({ key }) => typeof raw[key] !== "boolean");
-    if (!unconfigured && profile.data.notifications_enabled) return;
+    // Legacy rows written by the removed master switch have every category
+    // explicitly false with notifications_enabled false. That is not a user
+    // choice — it is an unconfigured account, so it gets the ON defaults too.
+    const legacyAllOff =
+      !missingKeys &&
+      !profile.data.notifications_enabled &&
+      NOTIFICATION_CATEGORIES.every(({ key }) => raw![key] === false);
+    const unconfigured = missingKeys || legacyAllOff;
+    if (!unconfigured) return;
     setDefaultsWritten(true);
-    const next = normalizeNotificationPrefs(raw);
+    const next = legacyAllOff ? { ...DEFAULT_NOTIFS } : normalizeNotificationPrefs(raw);
     setNotifs(next);
     void saveNotificationPrefs(next);
     void update.mutateAsync({
@@ -263,50 +271,54 @@ function SettingsScreen() {
   }, [profile.data, defaultsWritten, userId]);
 
   /**
-   * One category toggle. Writes to Supabase immediately so the scheduler picks
-   * the change up on its next 5-minute run — no app restart involved.
+   * One category toggle. The UI flips instantly; persistence and the native
+   * side effects run in the background so a slow/offline write can never make
+   * the switch look frozen or bounce back.
    */
-  const setCategory = async (key: NotificationCategory, checked: boolean) => {
+  const setCategory = (key: NotificationCategory, checked: boolean) => {
     haptic.select();
-    if (checked) {
-      // The in-app switch must never claim delivery the OS won't allow.
-      const state = await requestPermission("notifications");
-      setPermState(state);
-      if (state === "denied" || state === "blocked") {
-        toast(t("settings.notificationsSystemOff"));
-        return;
-      }
-    }
-
     const previous = notifs;
     const next = { ...notifs, [key]: checked };
+    localEditRef.current = true;
     setNotifs(next);
-    setNotifBusy(true);
-    try {
-      const anyOn = NOTIFICATION_CATEGORIES.some((category) => next[category.key]);
-      await saveNotificationPrefs(next);
-      await update.mutateAsync({
-        notification_prefs: next,
-        notifications_enabled: anyOn,
-      });
-      if (checked) {
-        await ensurePushChannel();
-        await registerPush(userId);
-        await syncNotificationDeviceState(userId);
-      } else if (!anyOn) {
-        await deactivatePushToken(userId || null);
+    void saveNotificationPrefs(next);
+
+    void (async () => {
+      try {
+        if (checked) {
+          // The in-app switch must never claim delivery the OS won't allow.
+          const state = await requestPermission("notifications");
+          setPermState(state);
+          if (state === "denied" || state === "blocked") {
+            setNotifs(previous);
+            void saveNotificationPrefs(previous);
+            toast(t("settings.notificationsSystemOff"));
+            return;
+          }
+        }
+        const anyOn = NOTIFICATION_CATEGORIES.some((category) => next[category.key]);
+        await update.mutateAsync({
+          notification_prefs: next,
+          notifications_enabled: anyOn,
+        });
+        if (checked) {
+          await ensurePushChannel();
+          await registerPush(userId);
+          await syncNotificationDeviceState(userId);
+        } else if (!anyOn) {
+          await deactivatePushToken(userId || null);
+        }
+        await syncReminders({
+          enabled: anyOn,
+          categories: next,
+          recoveryDay: currentRecoveryDay(),
+        });
+      } catch (error) {
+        setNotifs(previous);
+        void saveNotificationPrefs(previous);
+        toast.error(humanizeError(error));
       }
-      await syncReminders({
-        enabled: anyOn,
-        categories: next,
-        recoveryDay: currentRecoveryDay(),
-      });
-    } catch (error) {
-      setNotifs(previous);
-      toast.error(humanizeError(error));
-    } finally {
-      setNotifBusy(false);
-    }
+    })();
   };
 
 
