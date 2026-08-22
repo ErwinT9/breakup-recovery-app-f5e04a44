@@ -35,6 +35,18 @@ export const Route = createFileRoute("/_authenticated/motivation/alcohol-control
   component: AlcoholControlScreen,
 });
 
+/** Dev-only diagnostics for the streamed session. */
+function log(event: string, detail?: Record<string, unknown>) {
+  if (import.meta.env.DEV) console.info(`[alcohol-control] ${event}`, detail ?? "");
+}
+
+const MEDIA_ERROR_NAMES: Record<number, string> = {
+  1: "MEDIA_ERR_ABORTED",
+  2: "MEDIA_ERR_NETWORK",
+  3: "MEDIA_ERR_DECODE",
+  4: "MEDIA_ERR_SRC_NOT_SUPPORTED",
+};
+
 const TIPS = [
   "Cravings peak and pass — usually within twenty minutes.",
   "Drink a full glass of water before you decide anything.",
@@ -60,30 +72,52 @@ function AlcoholControlScreen() {
   const ensureAudio = useCallback(() => {
     if (audioRef.current) return audioRef.current;
     const audio = new Audio();
-    audio.preload = "none"; // never pre-download; stream only when asked
+    // Stream only; no CORS request — the host serves no Access-Control-Allow-Origin
+    // header, so crossOrigin would make the media request fail outright.
+    audio.preload = "metadata";
     audio.src = ALCOHOL_CONTROL_AUDIO_URL;
-    audio.crossOrigin = "anonymous";
+    log("created audio element", { src: audio.src });
 
-    const onMeta = () => setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+    const onMeta = () => {
+      const d = Number.isFinite(audio.duration) ? audio.duration : 0;
+      log("metadata loaded", { duration: d });
+      setDuration(d);
+    };
     const onTime = () => setElapsed(audio.currentTime);
-    const onWaiting = () => setLoading(true);
+    const onWaiting = () => {
+      log("buffering…");
+      setLoading(true);
+    };
+    const onCanPlay = () => setLoading(false);
     const onPlaying = () => {
+      log("playing");
       setLoading(false);
       setError(null);
       setPlaying(true);
     };
     const onPause = () => setPlaying(false);
     const onEnded = () => {
+      log("ended");
       setPlaying(false);
       setElapsed(audio.duration || 0);
       haptic.success();
     };
     const onError = () => {
+      const mediaError = audio.error;
+      log("media error", {
+        src: audio.currentSrc || audio.src,
+        code: mediaError?.code,
+        name: MEDIA_ERROR_NAMES[mediaError?.code ?? 0] ?? "UNKNOWN",
+        message: mediaError?.message,
+        networkState: audio.networkState,
+        readyState: audio.readyState,
+      });
       setLoading(false);
       setPlaying(false);
       setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
     };
 
+    audio.addEventListener("canplay", onCanPlay);
     audio.addEventListener("loadedmetadata", onMeta);
     audio.addEventListener("durationchange", onMeta);
     audio.addEventListener("timeupdate", onTime);
@@ -94,6 +128,7 @@ function AlcoholControlScreen() {
     audio.addEventListener("error", onError);
 
     (audio as HTMLAudioElement & { _cleanup?: () => void })._cleanup = () => {
+      audio.removeEventListener("canplay", onCanPlay);
       audio.removeEventListener("loadedmetadata", onMeta);
       audio.removeEventListener("durationchange", onMeta);
       audio.removeEventListener("timeupdate", onTime);
@@ -141,14 +176,21 @@ function AlcoholControlScreen() {
     setError(null);
     setLoading(true);
     const el = ensureAudio();
+    // Replay from the top once the session has finished.
+    if (el.ended) el.currentTime = 0;
+    log("play requested", { src: el.src, readyState: el.readyState });
     try {
       await el.play();
       setPlaying(true);
-    } catch {
-      setPlaying(false);
-      setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
-    } finally {
       setLoading(false);
+    } catch (err) {
+      const name = (err as { name?: string })?.name;
+      log("play() rejected", { name, message: (err as Error)?.message });
+      setPlaying(false);
+      setLoading(false);
+      // AbortError just means a newer load/pause superseded this request —
+      // not a genuine failure, so don't surface the error card for it.
+      if (name !== "AbortError") setError(ALCOHOL_CONTROL_ERROR_MESSAGE);
     }
   }, [ensureAudio]);
 
