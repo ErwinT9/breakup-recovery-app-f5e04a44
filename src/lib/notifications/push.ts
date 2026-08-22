@@ -107,6 +107,33 @@ async function saveToken(userId: string, token: string): Promise<void> {
   }
 }
 
+/** Re-posts a push received in the foreground so the user actually sees it. */
+async function showForegroundPush(notification: {
+  title?: string | null;
+  body?: string | null;
+  data?: unknown;
+}): Promise<void> {
+  const title = notification.title ?? "";
+  const body = notification.body ?? "";
+  if (!title && !body) return;
+  const data = (notification.data ?? {}) as Record<string, string>;
+  await safeNative(async () => {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: Math.floor(Math.random() * 100000) + 5000,
+          channelId: PUSH_CHANNEL_ID,
+          title,
+          body,
+          extra: { deep_link: data['deep_link'] || data['deepLink'] || "" },
+          schedule: { at: new Date(Date.now() + 300) },
+        },
+      ],
+    });
+  });
+}
+
 async function wireListeners(): Promise<void> {
   if (listenersWired) return;
   listenersWired = true;
