@@ -25,6 +25,13 @@ export const Route = createFileRoute("/_authenticated/motivation/guide")({
 });
 
 function MotivationGuideScreen() {
+  const { data: topics = MOTIVATION_TOPICS } = useQuery({
+    queryKey: ["motivation-guides"],
+    queryFn: fetchMotivationGuides,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <SubScreen
       title="Motivational Guide"
@@ -32,7 +39,7 @@ function MotivationGuideScreen() {
     >
       <h2 className="px-1 text-sm font-medium text-muted-foreground">Topics</h2>
       <ul className="mt-3 space-y-3">
-        {MOTIVATION_TOPICS.map((topic) => (
+        {topics.map((topic) => (
           <li key={topic.id}>
             <Link
               to="/motivation/$topicId"

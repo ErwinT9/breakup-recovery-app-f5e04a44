@@ -27,7 +27,13 @@ export const Route = createFileRoute("/_authenticated/motivation/$topicId")({
 function MotivationTopicScreen() {
   const { topicId } = Route.useParams();
   const router = useRouter();
-  const topic = motivationTopicById(topicId);
+  const { data: topics = MOTIVATION_TOPICS } = useQuery({
+    queryKey: ["motivation-guides"],
+    queryFn: fetchMotivationGuides,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+  });
+  const topic = topics.find((t) => t.id === topicId) ?? null;
 
   return (
     <div className="animate-in slide-in-from-right-6 fade-in mx-auto flex min-h-screen w-full max-w-md flex-col duration-300">
