@@ -142,7 +142,6 @@ function SettingsScreen() {
   const [deleting, setDeleting] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [cropSource, setCropSource] = useState<string | null>(null);
-  const [notifBusy, setNotifBusy] = useState(false);
   // OS-level (Android system) notification permission — the master control.
   const [permState, setPermState] = useState<PermissionState>("granted");
 
@@ -591,9 +590,8 @@ function SettingsScreen() {
                       void openNotificationSettings();
                       return;
                     }
-                    void setCategory(key, checked);
+                    setCategory(key, checked);
                   }}
-                  disabled={notifBusy}
                   aria-label={t(labelKey, label)}
                 />
               </div>
