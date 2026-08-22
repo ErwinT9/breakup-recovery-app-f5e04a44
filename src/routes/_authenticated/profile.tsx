@@ -565,21 +565,22 @@ function SettingsScreen() {
               </Button>
             </div>
           ) : null}
-          <div
-            className={
-              notifOn && !systemBlocked
-                ? "space-y-3"
-                : "space-y-3 pointer-events-none opacity-50"
-            }
-            aria-disabled={!notifOn || systemBlocked}
-          >
+          <div className="space-y-3">
             {NOTIFICATION_CATEGORIES.map(({ key, labelKey, label }) => (
               <div key={key} className="flex items-center justify-between">
                 <span className="text-sm">{t(labelKey, label)}</span>
                 <Switch
-                  checked={notifs[key]}
-                  onCheckedChange={(checked) => void saveNotifs({ [key]: checked })}
-                  disabled={!notifOn || systemBlocked}
+                  checked={notifs[key] && !systemBlocked}
+                  onCheckedChange={(checked) => {
+                    if (systemBlocked && checked) {
+                      haptic.light();
+                      toast(t("settings.notificationsSystemOff"));
+                      void openNotificationSettings();
+                      return;
+                    }
+                    void setCategory(key, checked);
+                  }}
+                  disabled={notifBusy}
                   aria-label={t(labelKey, label)}
                 />
               </div>
