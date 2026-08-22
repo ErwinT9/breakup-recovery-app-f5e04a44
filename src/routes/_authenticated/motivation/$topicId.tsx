@@ -3,6 +3,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { SoftCard } from "@/components/SoftCard";
+import { MarkdownContent } from "@/components/MarkdownContent";
 import { fetchMotivationGuides, MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
@@ -23,6 +24,11 @@ export const Route = createFileRoute("/_authenticated/motivation/$topicId")({
   }),
   component: MotivationTopicScreen,
 });
+
+/** Remove a leading Markdown heading prefix (e.g. "# ") so the title shows as plain text. */
+function stripMarkdownPrefix(value: string): string {
+  return value.replace(/^\s*#{1,6}\s+/, "").trim();
+}
 
 function MotivationTopicScreen() {
   const { topicId } = Route.useParams();
@@ -50,17 +56,15 @@ function MotivationTopicScreen() {
           <ArrowLeft className="size-5" aria-hidden />
         </button>
         <h1 className="mt-4 text-[1.75rem] font-semibold leading-tight tracking-tight">
-          {topic?.title ?? "Guide unavailable"}
+          {topic ? stripMarkdownPrefix(topic.title) : "Guide unavailable"}
         </h1>
       </header>
 
       <main className="flex-1 px-5 py-6 pb-20">
         <SoftCard className="p-6">
           {topic ? (
-            <div className="space-y-4 text-[1.0625rem] leading-8 text-foreground/90">
-              {topic.guide.split("\n\n").map((paragraph) => (
-                <p key={paragraph.slice(0, 24)}>{paragraph}</p>
-              ))}
+            <div className="space-y-4">
+              <MarkdownContent content={topic.guide} />
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
