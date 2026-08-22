@@ -184,9 +184,9 @@ const BREATH_TOTAL = 120;
 
 export function BreathingActivity({ progress, onMarkDay, onComplete, onExit, busy }: ActivityProps) {
   const [running, setRunning] = useState(false);
-  const [left, setLeft] = useState(BREATH_TOTAL);
+  const [left, setLeft] = useState<number>(BREATH_TOTAL);
   const [phase, setPhase] = useState(0);
-  const [phaseLeft, setPhaseLeft] = useState(BREATH_PHASES[0]!.seconds);
+  const [phaseLeft, setPhaseLeft] = useState<number>(BREATH_PHASES[0]!.seconds);
   const [sessionDone, setSessionDone] = useState(false);
   const [done, setDone] = useState(false);
   const markedRef = useRef(false);
