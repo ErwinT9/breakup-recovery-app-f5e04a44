@@ -1,8 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { SoftCard } from "@/components/SoftCard";
-import { motivationTopicById } from "@/lib/motivation";
+import { fetchMotivationGuides, MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/_authenticated/motivation/$topicId")({

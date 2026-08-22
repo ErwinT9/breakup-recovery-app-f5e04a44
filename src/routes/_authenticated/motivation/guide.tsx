@@ -1,8 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Sparkles } from "lucide-react";
 
 import { SubScreen } from "@/components/SubScreen";
-import { MOTIVATION_TOPICS } from "@/lib/motivation";
+import { fetchMotivationGuides, MOTIVATION_TOPICS } from "@/lib/motivation";
 import { haptic } from "@/lib/native/haptics";
 
 export const Route = createFileRoute("/_authenticated/motivation/guide")({

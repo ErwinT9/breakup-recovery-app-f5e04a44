@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export type MotivationTopic = {
   id: string;
   title: string;
