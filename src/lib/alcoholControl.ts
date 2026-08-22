@@ -5,7 +5,7 @@
  * app and never downloaded/cached to disk. To point the session at a new
  * recording, change AUDIO_URL only; nothing else in the feature depends on it.
  */
-export const ALCOHOL_CONTROL_AUDIO_URL = "https://vexalabs.biz/alc.wav";
+export const ALCOHOL_CONTROL_AUDIO_URL = "https://vexalabs.biz/audio/alc.m4a";
 
 export const ALCOHOL_CONTROL_TITLE = "Alcohol Control";
 export const ALCOHOL_CONTROL_TAGLINE =
