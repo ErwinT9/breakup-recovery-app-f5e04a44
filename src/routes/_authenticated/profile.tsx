@@ -65,9 +65,9 @@ import {
   normalizeNotificationPrefs,
   syncNotificationDeviceState,
   registerPush,
-  notificationPermissionGranted,
   saveNotificationPrefs,
   syncReminders,
+  type NotificationCategory,
   type NotificationPrefs,
 } from "@/lib/notifications";
 import {
@@ -95,7 +95,6 @@ export const Route = createFileRoute("/_authenticated/profile")({
 
 type NotifPrefs = NotificationPrefs;
 const DEFAULT_NOTIFS: NotifPrefs = DEFAULT_NOTIFICATION_PREFS;
-const NOTIF_ENABLED_KEY = "nc:notifications-enabled";
 
 function Row({
   icon: Icon,
@@ -144,7 +143,6 @@ function SettingsScreen() {
   const [photoBusy, setPhotoBusy] = useState(false);
   const [cropSource, setCropSource] = useState<string | null>(null);
   const [notifBusy, setNotifBusy] = useState(false);
-  const [notifOn, setNotifOn] = useState(false);
   // OS-level (Android system) notification permission — the master control.
   const [permState, setPermState] = useState<PermissionState>("granted");
 
@@ -161,7 +159,6 @@ function SettingsScreen() {
   useEffect(() => {
     analytics.screen("settings");
     void loadNotificationPrefs().then(setNotifs);
-    void storage.get<boolean>(NOTIF_ENABLED_KEY, false).then((value) => setNotifOn(Boolean(value)));
   }, []);
 
   // Re-check the OS permission on open and whenever the user comes back from
