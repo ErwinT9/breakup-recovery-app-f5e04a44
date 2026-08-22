@@ -60,10 +60,18 @@ function StreakUnlockScreen() {
 
   // Read-only look at today's state — never mutates, so the eligibility check
   // below can decide before anything is rendered or recorded.
-  const peek = useQuery({
-    queryKey: ["app-streak", userId],
-    queryFn: () => peekAppStreak(userId),
+  // The no-contact timestamp is the single source of truth for this screen.
+  const streak = useQuery({
+    queryKey: ["streak", userId],
+    queryFn: () => streakRepo.ensure(userId),
     enabled: Boolean(userId),
+  });
+  const startedAt = streak.data?.started_at ?? null;
+
+  const peek = useQuery({
+    queryKey: ["app-streak", userId, startedAt],
+    queryFn: () => peekAppStreak(userId, startedAt),
+    enabled: Boolean(userId) && Boolean(startedAt),
     staleTime: 0,
     gcTime: 0,
   });
@@ -77,8 +85,11 @@ function StreakUnlockScreen() {
   const resolved =
     !authLoading && Boolean(userId) && peek.isSuccess && (!auto || !profile.isLoading);
   const onboarded = profile.data?.questionnaire_completed !== false;
-  // Auto entry from the splash may only stay here once per calendar day.
-  const eligible = resolved && (!auto || (onboarded && !peek.data!.seenToday));
+  // Last contact must be recent, and the screen shows once per calendar day.
+  const eligible =
+    resolved &&
+    peek.data!.eligible &&
+    (!auto || (onboarded && !peek.data!.seenToday));
 
   useEffect(() => {
     analytics.screen("streak_unlock");
