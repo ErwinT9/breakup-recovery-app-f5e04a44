@@ -30,18 +30,33 @@ export function notificationNavigate(path: string | undefined | null): void {
 let currentUserId: string | null = null;
 
 /**
- * Android 8+ drops any notification whose channel does not exist. Both the FCM
- * default channel (AndroidManifest meta-data) and local reminders use this id,
- * so it must exist before the first push arrives — not only once reminders are
- * scheduled.
+ * Android 8+ drops any notification whose channel does not exist. This is the
+ * ONE channel used for remote FCM pushes: the AndroidManifest default channel
+ * meta-data, the FCM payload's android.notification.channel_id and the
+ * foreground re-post below all use this exact id, at HIGH importance.
+ * Local reminders deliberately use a separate channel (see ./index.ts).
  */
-const CHANNEL_ID = "no-contact-reminders";
+export const PUSH_CHANNEL_ID = "push-alerts";
 
 export async function ensurePushChannel(): Promise<void> {
   await safeNative(async () => {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     await PushNotifications.createChannel({
-      id: CHANNEL_ID,
+      id: PUSH_CHANNEL_ID,
+      name: "Push alerts",
+      description: "Daily support messages sent from the server",
+      importance: 5,
+      visibility: 1,
+      vibration: true,
+      lights: true,
+    });
+  });
+  // The same channel must exist for the LocalNotifications plugin so
+  // foreground pushes can be re-posted on it.
+  await safeNative(async () => {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.createChannel({
+      id: PUSH_CHANNEL_ID,
       name: "Daily support",
       description: "Reminders, encouragement and milestone celebrations",
       importance: 5,
