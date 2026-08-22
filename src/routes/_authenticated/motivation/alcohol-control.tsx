@@ -128,6 +128,7 @@ function AlcoholControlScreen() {
     audio.addEventListener("error", onError);
 
     (audio as HTMLAudioElement & { _cleanup?: () => void })._cleanup = () => {
+      audio.removeEventListener("canplay", onCanPlay);
       audio.removeEventListener("loadedmetadata", onMeta);
       audio.removeEventListener("durationchange", onMeta);
       audio.removeEventListener("timeupdate", onTime);
