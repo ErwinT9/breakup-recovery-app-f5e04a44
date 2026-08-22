@@ -32,7 +32,7 @@ function parseMarkdown(markdown: string): Block[] {
     // leading heading marker if present.
     const headingMatch = /^(#{1,3})\s+(.*)$/s.exec(paragraph);
 
-    if (headingMatch) {
+    if (headingMatch?.[1] && headingMatch[2] !== undefined) {
       const level = headingMatch[1].length;
       const text = headingMatch[2].replace(/\n/g, " ").trim();
       if (level === 1) blocks.push({ kind: "h1", text });
