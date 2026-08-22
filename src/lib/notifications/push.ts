@@ -57,8 +57,8 @@ export async function ensurePushChannel(): Promise<void> {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     await LocalNotifications.createChannel({
       id: PUSH_CHANNEL_ID,
-      name: "Daily support",
-      description: "Reminders, encouragement and milestone celebrations",
+      name: "Push alerts",
+      description: "Daily support messages sent from the server",
       importance: 5,
       visibility: 1,
       vibration: true,
