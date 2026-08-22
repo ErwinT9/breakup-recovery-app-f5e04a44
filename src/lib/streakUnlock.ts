@@ -1,28 +1,36 @@
 /**
  * 7-Day Streak Unlock state.
  *
- * This streak is deliberately INDEPENDENT of the no-contact / breakup date.
- * It starts on the day the user first uses the app (first authenticated open
- * after sign-up / onboarding) and counts consecutive calendar days of app
- * usage — so every user starts at Day 1 no matter how old their breakup is.
+ * SINGLE SOURCE OF TRUTH: the user's "When did you last have contact?"
+ * timestamp (`public.streaks.started_at`) — the very same value the No
+ * Contact Counter uses. There is no separate streak clock here; the day
+ * number is derived from that timestamp, so resetting the no-contact date
+ * automatically updates this screen.
  *
- * Source of truth is Supabase (`public.app_streaks`) so reinstalling the app
- * or signing in on another device keeps the streak. A localStorage mirror
- * keeps it working offline.
+ * Eligibility: only users whose last contact was within the last 3 days see
+ * the screen, and only once per calendar day. The "seen today" marker is
+ * stored in Supabase (`public.app_streaks.last_active_date`) with a
+ * localStorage mirror so it survives reinstalls and works offline.
  */
 import { supabase } from "@/integrations/supabase/client";
+import { elapsedSince } from "@/lib/streak";
 
 export const STREAK_UNLOCK_TARGET = 7;
+
+/** Last contact must be within this many days for the screen to show. */
+export const STREAK_UNLOCK_MAX_DAYS = 3;
 
 const MIRROR_KEY = "nc:app-streak-v2";
 
 export type AppStreak = {
-  /** Calendar day of the current run, 1-based (can exceed 7). */
+  /** Day number derived from the last-contact timestamp, 1-based. */
   day: number;
-  /** True when the streak screen was already shown/counted today. */
+  /** True when the screen was already shown/counted today. */
   seenToday: boolean;
-  /** True once a full 7-day run has ever been completed. */
+  /** True once the 7-day no-contact mark has been reached. */
   unlocked: boolean;
+  /** False when the last contact is older than the allowed window. */
+  eligible: boolean;
 };
 
 type Row = {
@@ -48,12 +56,6 @@ export function todayLocal(): string {
   return toLocalDate(new Date());
 }
 
-function yesterdayLocal(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return toLocalDate(d);
-}
-
 /* ----------------------------------------------------------------- mirror */
 
 function readMirror(userId: string): Row | null {
@@ -77,8 +79,6 @@ function writeMirror(userId: string, row: Row): void {
 
 /* ------------------------------------------------------------------- data */
 
-// The generated Supabase types may not include this table yet; the query
-// shape below is exact, so a narrow cast keeps things type-safe enough.
 const table = () => (supabase as unknown as {
   from: (name: string) => {
     select: (columns: string) => {
@@ -109,59 +109,62 @@ async function persist(userId: string, row: Row): Promise<void> {
   try {
     await table().upsert(row, { onConflict: "user_id" });
   } catch {
-    /* offline — mirror keeps the streak until the next successful write */
+    /* offline — mirror keeps the marker until the next successful write */
   }
 }
 
-function project(row: Row | null): { day: number; seenToday: boolean; unlocked: boolean; startDate: string; bestDay: number } {
-  const today = todayLocal();
-  if (!row) {
-    return { day: 1, seenToday: false, unlocked: false, startDate: today, bestDay: 1 };
-  }
-  if (row.last_active_date === today) {
-    return {
-      day: row.current_day,
-      seenToday: true,
-      unlocked: row.coloring_unlocked || row.current_day >= STREAK_UNLOCK_TARGET,
-      startDate: row.start_date,
-      bestDay: row.best_day,
-    };
-  }
-  const consecutive = row.last_active_date === yesterdayLocal();
-  const day = consecutive ? row.current_day + 1 : 1; // a missed day restarts at Day 1
+/* ------------------------------------------------------------------ logic */
+
+/** Day number + unlock state derived purely from the last-contact timestamp. */
+export function deriveStreak(startedAt: string | null | undefined): {
+  day: number;
+  elapsedDays: number;
+  unlocked: boolean;
+  eligible: boolean;
+} {
+  if (!startedAt) return { day: 1, elapsedDays: 0, unlocked: false, eligible: false };
+  const elapsedDays = elapsedSince(startedAt).days;
   return {
-    day,
-    seenToday: false,
-    unlocked: row.coloring_unlocked || day >= STREAK_UNLOCK_TARGET,
-    startDate: consecutive ? row.start_date : today,
-    bestDay: Math.max(row.best_day, day),
+    day: elapsedDays + 1,
+    elapsedDays,
+    unlocked: elapsedDays + 1 >= STREAK_UNLOCK_TARGET,
+    eligible: elapsedDays <= STREAK_UNLOCK_MAX_DAYS,
   };
 }
 
-/** Read-only look at where the user stands today. Never mutates. */
-export async function peekAppStreak(userId: string): Promise<AppStreak> {
-  const { day, seenToday, unlocked } = project(await fetchRow(userId));
-  return { day, seenToday, unlocked };
-}
-
-/**
- * Records today's usage (idempotent per calendar day) and returns the state
- * the screen should display.
- */
-export async function registerAppStreakVisit(userId: string): Promise<AppStreak> {
+/** Read-only look at today's state. Never mutates. */
+export async function peekAppStreak(
+  userId: string,
+  startedAt: string | null | undefined,
+): Promise<AppStreak> {
+  const derived = deriveStreak(startedAt);
   const row = await fetchRow(userId);
-  const next = project(row);
-  if (next.seenToday) {
-    return { day: next.day, seenToday: true, unlocked: next.unlocked };
-  }
-  const updated: Row = {
-    user_id: userId,
-    start_date: next.startDate,
-    last_active_date: todayLocal(),
-    current_day: next.day,
-    best_day: Math.max(next.bestDay, next.day),
-    coloring_unlocked: (row?.coloring_unlocked ?? false) || next.day >= STREAK_UNLOCK_TARGET,
+  return {
+    day: derived.day,
+    seenToday: row?.last_active_date === todayLocal(),
+    unlocked: derived.unlocked,
+    eligible: derived.eligible,
   };
-  await persist(userId, updated);
-  return { day: updated.current_day, seenToday: false, unlocked: updated.coloring_unlocked };
+}
+
+/** Marks the screen as seen for today (idempotent per calendar day). */
+export async function registerAppStreakVisit(
+  userId: string,
+  startedAt: string | null | undefined,
+): Promise<AppStreak> {
+  const derived = deriveStreak(startedAt);
+  const row = await fetchRow(userId);
+  const today = todayLocal();
+  if (row?.last_active_date === today) {
+    return { day: derived.day, seenToday: true, unlocked: derived.unlocked, eligible: derived.eligible };
+  }
+  await persist(userId, {
+    user_id: userId,
+    start_date: row?.start_date ?? today,
+    last_active_date: today,
+    current_day: derived.day,
+    best_day: Math.max(row?.best_day ?? 0, derived.day),
+    coloring_unlocked: (row?.coloring_unlocked ?? false) || derived.unlocked,
+  });
+  return { day: derived.day, seenToday: false, unlocked: derived.unlocked, eligible: derived.eligible };
 }
